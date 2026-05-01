@@ -1,0 +1,3 @@
+[submodule "content/mistorias-contenido"]
+	path = content/mistorias-contenido
+	url = https://github.com/mistorias/mistorias-contenido.git
