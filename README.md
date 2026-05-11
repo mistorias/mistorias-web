@@ -11,6 +11,17 @@ nvm install 24
 nvm use
 ```
 
+## Gestor de paquetes (pnpm)
+
+Este repositorio usa `pnpm`. Recomendamos instalarlo con `npm` para mantener un flujo simple y estable:
+
+```bash
+npm install -g pnpm
+pnpm --version
+```
+
+Si ya usas `corepack`, puedes seguir haciendolo como alternativa, pero este proyecto documenta y soporta oficialmente la instalacion via `npm`.
+
 ## Desarrollo
 
 ```bash
