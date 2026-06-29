@@ -9,7 +9,6 @@ overrides:
   vite@<=6.4.2: '>=6.4.3'
   astro@<6.3.3: '>=6.3.3'
   astro@<6.4.6: '>=6.4.6'
-  js-yaml@>=4.0.0 <=4.1.1: '>=4.2.0'
 
 ignoredBuiltDependencies:
   - esbuild

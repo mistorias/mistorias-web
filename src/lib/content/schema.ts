@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "astro/zod";
 
 export const storySchema = z.object({
   title: z.string().min(1),

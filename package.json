@@ -11,12 +11,12 @@
   },
   "dependencies": {
     "@astrojs/check": "^0.9.9",
-    "astro": "^5.7.0",
-    "zod": "^3.25.0"
+    "astro": "^7.0.3"
   },
   "devDependencies": {
+    "@types/node": "^24.13.2",
     "typescript": "^5.9.3",
-    "vitest": "^2.1.8"
+    "vitest": "^4.1.9"
   },
   "packageManager": "pnpm@10.8.1"
 }
