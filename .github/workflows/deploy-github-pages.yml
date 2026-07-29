@@ -21,7 +21,7 @@ concurrency:
 jobs:
   build-and-deploy:
     environment:
-      name: github-pages
+      name: development
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
@@ -42,7 +42,7 @@ jobs:
       - name: Build for GitHub Pages
         run: pnpm build
         env:
-          DEPLOY_TARGET: github-pages
+          DEPLOY_TARGET: development
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
