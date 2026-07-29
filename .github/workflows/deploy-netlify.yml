@@ -40,7 +40,13 @@ jobs:
           DEPLOY_TARGET: netlify
 
       - name: Deploy production site to Netlify
-        run: pnpm dlx netlify-cli deploy --dir=dist --prod --site="$NETLIFY_SITE_ID" --message="Release $GITHUB_REF_NAME"
+        run: >
+          pnpm --package=netlify-cli dlx netlify
+          deploy
+          --dir=dist
+          --prod
+          --site="$NETLIFY_SITE_ID"
+          --message="Release $GITHUB_REF_NAME"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: 42257747-3665-453a-9fe6-2c0bbc3bcacf
