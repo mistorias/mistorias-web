@@ -1,7 +1,7 @@
 import { defineConfig } from "astro/config";
 
-const deploymentTarget = process.env.DEPLOY_TARGET ?? "github-pages";
-const isGitHubPages = deploymentTarget === "github-pages";
+const deploymentTarget = process.env.DEPLOY_TARGET ?? "development";
+const isGitHubPages = deploymentTarget === "development";
 
 export default defineConfig({
   srcDir: "src",
