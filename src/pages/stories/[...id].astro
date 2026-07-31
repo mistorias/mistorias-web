@@ -1,0 +1,62 @@
+---
+import {
+    getCollection,
+    render,
+    type CollectionEntry
+} from "astro:content";
+
+export async function getStaticPaths() {
+    const stories = await getCollection("stories");
+
+    return stories.map((story) => ({
+        params: { id: story.id },
+        props: { story }
+    }));
+}
+
+interface Props {
+    story: CollectionEntry<"stories">;
+}
+
+const { story } = Astro.props;
+const { Content } = await render(story);
+---
+
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+
+    <title>{story.data.title} | Mistorias</title>
+    <meta name="description" content={story.data.summary} />
+</head>
+
+<body>
+<main>
+    <article>
+        <header>
+            <h1>{story.data.title}</h1>
+
+            <p>
+                Por {story.data.author} -
+                <time datetime={story.data.date.toISOString()}>
+                    {story.data.date.toLocaleDateString("es-ES")}
+                </time>
+            </p>
+        </header>
+
+        <Content />
+
+        {
+            story.data.tags.length > 0 && (
+                        <footer>
+                            <ul>
+                                {story.data.tags.map((tag) => <li>{tag}</li>)}
+                            </ul>
+                        </footer>
+            )
+        }
+    </article>
+</main>
+</body>
+</html>
