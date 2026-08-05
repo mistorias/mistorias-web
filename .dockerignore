@@ -1,0 +1,11 @@
+node_modules
+dist
+.astro
+coverage
+.git
+.gitignore
+.github
+.idea
+.vscode
+*.log
+.DS_Store
