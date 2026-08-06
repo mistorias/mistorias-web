@@ -6,7 +6,7 @@ Este documento explica cómo configurar tu entorno de desarrollo para contribuir
 
 ### Node.js y nvm
 
-Este proyecto usa **Node.js 24**. La versión se define en `.nvmrc`.
+La versión de Node.js se define en `.nvmrc` (verifica el archivo para la versión exacta).
 
 **Para Linux y macOS:**
 
@@ -22,13 +22,15 @@ nvm use
 Instala [nvm-windows](https://github.com/coreybutler/nvm-windows), luego:
 
 ```bash
-nvm install 24
-nvm use 24
+nvm install $(cat .nvmrc)
+nvm use
 ```
 
 ### Gestor de Paquetes (pnpm)
 
-Este repositorio usa **pnpm**. Recomendamos instalarlo con npm:
+La versión de pnpm se define en el campo `packageManager` de `package.json`.
+
+Recomendamos instalarlo con npm:
 
 ```bash
 npm install -g pnpm

@@ -4,30 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Quick Start
 
-**Node version:** 24 (defined in `.nvmrc`)  
-**Package manager:** pnpm 10.8.1 (pinned in `package.json`)
+See [CONTRIBUTING.md](CONTRIBUTING.md) for full setup instructions.
 
-```bash
-pnpm install
-pnpm dev              # Start dev server on port 4321
-pnpm build            # Build + type check
-pnpm test             # Run Vitest tests
-```
+Node version and pnpm version are defined in `.nvmrc` and `package.json` respectively — they may differ from values documented elsewhere.
 
-### Dev container (Docker)
-
-To develop in isolation matching the deployment environment:
-
-```bash
-docker build -t mistorias-web-dev .
-docker run --rm -it -p 4321:4321 \
-  -v "$(pwd):/workspace" \
-  -v mistorias-web-node-modules:/workspace/node_modules \
-  -v mistorias-web-astro-cache:/workspace/.astro \
-  mistorias-web-dev
-```
-
-Named volumes for `node_modules` and `.astro` avoid conflicts between host and container native binaries (esbuild, vite).
+Common commands: `pnpm dev`, `pnpm build`, `pnpm test`. For dev container setup, Docker commands, and detailed development workflow, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Architecture
 
@@ -66,39 +47,11 @@ The build behaves differently based on the `DEPLOY_TARGET` environment variable 
 
 This allows the same codebase to deploy to either platform with correct base paths. CI workflows set this env var when building.
 
-## Common Commands
 
-| Command | Purpose |
-|---------|---------|
-| `pnpm dev` | Start hot-reload dev server on 4321 |
-| `pnpm build` | Build + run type check; output in `dist/` |
-| `pnpm preview` | Preview built site locally |
-| `pnpm test` | Run all Vitest tests in `tests/**/*.spec.ts` |
-| `pnpm astro check` | Type check without building |
-
-### Running a Single Test
-
-```bash
-pnpm test -- tests/content-flow.spec.ts
-```
-
-Vitest is configured in `vitest.config.ts` with `environment: "node"`.
-
-## Git Submodule
-
-The content repo is tracked as a submodule. When cloning or switching branches:
-
-```bash
-git submodule update --init --recursive
-```
-
-The docker entrypoint runs this automatically. If you're developing and the content doesn't update, run the command above.
 
 ## TypeScript & Type Checking
 
-- TypeScript 5.9.3 with strict mode (`tsconfig.json` extends `astro/tsconfigs/strict`)
-- Type checking happens during `pnpm build` and in the CI pipeline
-- `@astrojs/check` provides Astro-specific type validation
+Configured in strict mode (`tsconfig.json` extends `astro/tsconfigs/strict`). `@astrojs/check` validates Astro-specific types. See CONTRIBUTING.md for how to run type checks.
 
 ## CI Deployments
 
