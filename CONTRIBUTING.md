@@ -1,6 +1,13 @@
 # Guía de Contribución
 
-Este documento explica cómo configurar tu entorno de desarrollo para contribuir a mistorias-web.
+Este documento explica cómo configurar tu entorno de desarrollo y las estándares que rigen la contribución a mistorias-web.
+
+## Antes de Comenzar
+
+Lee estos documentos para alinear tu trabajo con los principios del proyecto:
+
+- **[STANDARDS.md](STANDARDS.md)** — Estándares de código (SOLID, clean code, TDD), convenciones de commits (conventional commits, atomic, preemptive), y estándares de PRs.
+- **[Mistorias Esencia de Marca](https://github.com/mistorias/mistorias-esencia-de-marca)** — Principios de marca (empatía, transparencia, empoderamiento, claridad) que guían todo el trabajo.
 
 ## Requisitos Previos
 
@@ -136,13 +143,14 @@ git submodule update --init --recursive
 ## Flujo de Contribución de Código
 
 1. Crea una rama descriptiva: `git checkout -b feat/descripcion-breve` o `fix/descripcion-breve`
-2. Realiza tus cambios y asegúrate de que:
+2. Realiza tus cambios siguiendo los estándares de código en [STANDARDS.md](STANDARDS.md)
+3. Asegúrate de que:
    - `pnpm build` pasa sin errores
    - `pnpm test` pasa
    - `pnpm astro check` no reporta errores de tipo
-3. Haz commit usando conventional commits en castellano (ver ejemplos en historial)
-4. Abre un PR contra `main` con descripción clara del cambio
-5. El CI validará automáticamente; después del merge, el sitio se despliega automáticamente
+4. Haz commits atómicos siguiendo [convenciones de commits en STANDARDS.md](STANDARDS.md#commit-standards)
+5. Abre un PR contra `main` con descripción siguiendo [estándares de PR en STANDARDS.md](STANDARDS.md#pull-request-standards)
+6. El CI validará automáticamente; después del merge, el sitio se despliega automáticamente
 
 ## Decisiones Técnicas
 
@@ -151,5 +159,7 @@ Este proyecto usa Astro con las siguientes restricciones de seguridad y de marca
 - **No HTML crudo en contenido:** Todo el markdown es sanitizado; no se permite insertar HTML directo.
 - **Content Collections tipadas:** Todos los posts deben cumplir el esquema definido en `src/lib/content/schema.ts`.
 - **Transparencia de versionado:** Todo cambio de contenido o código queda registrado en Git.
+
+Todo el trabajo se alinea con los [principios de marca](https://github.com/mistorias/mistorias-esencia-de-marca) (empatía, transparencia, empoderamiento, claridad), reflejados en [STANDARDS.md](STANDARDS.md).
 
 Para más contexto arquitectónico, ver `CLAUDE.md` y `docs/adr/`.

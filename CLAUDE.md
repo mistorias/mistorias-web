@@ -2,6 +2,13 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Standards & Brand Alignment
+
+Before writing code, commits, or PRs, consult:
+
+- **[STANDARDS.md](STANDARDS.md)** — Code principles (SOLID, clean code, TDD), commit conventions (conventional commits, atomic, preemptive), and PR standards.
+- **[Mistorias Esencia de Marca](https://github.com/mistorias/mistorias-esencia-de-marca)** — Brand principles (empatía, transparencia, empoderamiento, claridad) that guide all work. These principles translate to code that is human-first, transparent to contributors, and clear.
+
 ## Quick Start
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for full setup instructions.
