@@ -8,7 +8,7 @@ El contenido editorial está separado en un repositorio dedicado: [`mistorias-co
 
 ## Inicio Rápido
 
-Node.js 24 (definido en `.nvmrc`) + pnpm 10.8.1 (definido en `package.json`).
+Requiere Node.js (ver `.nvmrc`) y pnpm (ver `package.json`).
 
 ```bash
 pnpm install
