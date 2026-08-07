@@ -178,11 +178,11 @@ Closes #XX
 
 ### Título del PR
 
-Debe seguir el formato de Conventional Commits en el título:
+Debe seguir el formato de Conventional Commits, y además redactarse en estilo preemptive (ver [Preemptive Commits](#preemptive-commits)):
 ```
-feat: descripción breve en presente (issue #XX)
-fix: descripción breve (issue #YY)
-docs: descripción breve
+feat: el usuario puede filtrar historias por tema (issue #XX)
+fix: la fecha se valida correctamente en el formulario (issue #YY)
+docs: STANDARDS.md es disponible íntegramente en castellano
 ```
 
 ---
