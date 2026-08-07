@@ -8,8 +8,10 @@ exista una corrección.
 
 Usa el reporte privado de GitHub:
 
-1. Ve a la pestaña **Security** de este repositorio.
-2. Selecciona **Report a vulnerability**.
+1. **Opción recomendada (más rápida):** ve directo a
+   https://github.com/mistorias/mistorias-web/security/advisories/new
+2. **Alternativa:** ve a la pestaña **Security** de este repositorio y
+   selecciona **Report a vulnerability**.
 3. Describe el hallazgo con el mayor detalle posible (pasos para
    reproducir, impacto, componente afectado).
 
