@@ -61,18 +61,20 @@ sin necesidad de explotar ninguna vulnerabilidad de la aplicación.
 - MFA está habilitado en las cuentas de administración de: registrador de
   dominio, proveedor de hosting/despliegue y GitHub.
 - El bloqueo de transferencia del dominio está activo en el registrador.
+- Los datos de contacto del dominio están enmascarados mediante el
+  servicio de privacidad WHOIS (proxy) del registrador.
 
 **Pendiente — no verificable ni accionable desde el código del repo,
 requiere acción manual del equipo en la plataforma correspondiente:**
-- Confirmar el estado de la privacidad WHOIS con el registrador.
-- Auditar qué personas tienen acceso de administrador al proveedor de
-  hosting, a la organización GitHub, y a los secrets del repositorio, y
-  reducirlo al mínimo necesario.
+- Auditar periódicamente qué personas tienen acceso de administrador al
+  proveedor de hosting, a la organización GitHub, y a los secrets del
+  repositorio, y reducirlo al mínimo necesario.
 
 Este punto pasa de **riesgo abierto** a **gestionado**: MFA confirmado en
-las tres cuentas administrativas relevantes y bloqueo de transferencia de
-dominio activo. Queda pendiente solo la verificación de privacidad WHOIS
-y la auditoría periódica de accesos de administrador.
+las tres cuentas administrativas relevantes, bloqueo de transferencia de
+dominio activo, y privacidad WHOIS habilitada. Solo queda como práctica
+continua la auditoría periódica de accesos de administrador (no es un
+riesgo abierto puntual, sino una tarea recurrente de higiene operativa).
 
 > Nota: este ADR evita nombrar explícitamente proveedores/registrador
 > concretos para minimizar la información de infraestructura expuesta en
@@ -178,11 +180,11 @@ duda ante futuros escaneos similares.
 
 ### Costos
 
-- El riesgo #1 (accesos a cuentas/dominio) queda gestionado salvo un
-  detalle menor pendiente (privacidad WHOIS). Los riesgos #3 (doble
-  pipeline) y #6 (visibilidad continua) siguen abiertos porque requieren
-  decisiones o acciones fuera del código del repositorio. Deben tratarse
-  como seguimiento explícito, no asumirse como resueltos por este ADR.
+- El riesgo #1 (accesos a cuentas/dominio) queda gestionado. Los riesgos
+  #3 (doble pipeline) y #6 (visibilidad continua) siguen abiertos porque
+  requieren decisiones o acciones fuera del código del repositorio. Deben
+  tratarse como seguimiento explícito, no asumirse como resueltos por
+  este ADR.
 
 ## Testing
 
@@ -194,9 +196,9 @@ duda ante futuros escaneos similares.
 
 ## Notas operativas
 
-- MFA confirmado por el equipo (2026-08-07) en registrador de dominio,
-  hosting y GitHub, y bloqueo de transferencia de dominio activo
-  (confirmado 2026-08-07). Solo queda pendiente verificar la privacidad
-  WHOIS para cerrar por completo el riesgo #1.
+- Riesgo #1 cerrado (confirmado 2026-08-07): MFA activo en registrador de
+  dominio, hosting y GitHub; bloqueo de transferencia de dominio activo;
+  privacidad WHOIS habilitada. Queda como práctica recurrente la
+  auditoría periódica de accesos de administrador.
 - La decisión sobre mantener o retirar el pipeline de GitHub Pages
   (riesgo #3) queda fuera del alcance de este ADR.
