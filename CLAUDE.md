@@ -9,6 +9,8 @@ Before writing code, commits, or PRs, consult:
 - **[STANDARDS.md](STANDARDS.md)** — Code principles (SOLID, clean code, TDD), commit conventions (conventional commits, atomic, preemptive), and PR standards.
 - **[Mistorias Esencia de Marca](https://github.com/mistorias/mistorias-esencia-de-marca)** — Brand principles (empatía, transparencia, empoderamiento, claridad) that guide all work. These principles translate to code that is human-first, transparent to contributors, and clear.
 
+Claude Code must commit atomically while working on this repo, so each commit is a safe checkpoint to revert to if needed. See [STANDARDS.md](STANDARDS.md#atomic-commits) for details.
+
 ## Quick Start
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for full setup instructions.
@@ -71,4 +73,4 @@ Both check out with `--recursive` (initializes submodules) and run `pnpm install
 
 ## Security & Validation
 
-Stories reject raw HTML (see `assertNoRawHtml` in `content-loader.ts`) to prevent injection attacks. This is enforced on every build.
+Stories reject raw HTML (see `assertNoRawHtml` in `content-loader.ts`) to prevent injection attacks. This is enforced on every build. See [SECURITY.md](SECURITY.md) for how to report vulnerabilities.

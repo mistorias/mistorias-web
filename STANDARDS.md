@@ -1,94 +1,96 @@
-# Development Standards
+# Estándares de Desarrollo
 
-This file documents code, commit, and pull request standards for Mistorias projects.
+Este archivo documenta los estándares de código, commits y pull requests para los proyectos de Mistorias.
 
-## Brand & Editorial Guidelines
+## Marca y Lineamientos Editoriales
 
-All work must align with [Mistorias brand essence](https://github.com/mistorias/mistorias-esencia-de-marca):
+Todo el trabajo debe alinearse con la [esencia de marca de Mistorias](https://github.com/mistorias/mistorias-esencia-de-marca):
 
-- **Empatía** — personas antes que datos (users before abstractions)
-- **Transparencia** — contexto claro, fuentes visibles (clear code, documented decisions)
-- **Empoderamiento** — comprensión que habilita acción (code that enables contribution)
-- **Claridad** — lo complejo se vuelve entendible (simple interfaces over complex internals)
+- **Empatía** — personas antes que datos
+- **Transparencia** — contexto claro, fuentes visibles
+- **Empoderamiento** — comprensión que habilita la acción
+- **Claridad** — lo complejo se vuelve entendible
 
-This translates to code that is **human-first**, **transparent**, **empowering to contributors**, and **clear**.
+Esto se traduce en código **centrado en las personas**, **transparente**, **que empodera a quienes contribuyen** y **claro**.
 
-## Code Standards
+## Estándares de Código
 
-### Core Principles
+### Principios Fundamentales
 
-Code at Mistorias follows:
+El código de Mistorias sigue:
 
-1. **SOLID Principles**
-   - Single Responsibility — each module has one reason to change
-   - Open/Closed — open for extension, closed for modification
-   - Liskov Substitution — subtypes must be substitutable
-   - Interface Segregation — many specific interfaces over general ones
-   - Dependency Inversion — depend on abstractions, not concretions
+1. **Principios SOLID**
+   - Responsabilidad Única — cada módulo tiene una sola razón para cambiar
+   - Abierto/Cerrado — abierto a extensión, cerrado a modificación
+   - Sustitución de Liskov — los subtipos deben poder sustituir a sus tipos base
+   - Segregación de Interfaces — varias interfaces específicas en vez de una general
+   - Inversión de Dependencias — depender de abstracciones, no de implementaciones concretas
 
-2. **Clean Code**
-   - Meaningful names that reveal intent
-   - Small, focused functions (do one thing well)
-   - Comments explain *why*, not *what* (code shows what)
-   - DRY: Don't Repeat Yourself — extract common patterns
-   - No premature optimization
+2. **Código Limpio**
+   - Nombres significativos que revelan la intención
+   - Funciones pequeñas y enfocadas (que hagan una sola cosa bien)
+   - Los comentarios explican el *por qué*, no el *qué* (el código ya muestra el qué)
+   - DRY: No te repitas — extrae los patrones que se repiten, evitando caer en abstracciones prematuras (ver [Sin Abstracciones Prematuras](#sin-abstracciones-prematuras))
+   - Sin optimización prematura
 
-3. **Clean Architecture**
-   - Separation of concerns (business logic, UI, infrastructure)
-   - Dependencies point inward (never outward)
-   - Core domain logic independent of frameworks
-   - Testable by design
+3. **Arquitectura Limpia**
+   - Separación de responsabilidades (lógica de negocio, UI, infraestructura)
+   - Las dependencias apuntan hacia adentro (nunca hacia afuera)
+   - La lógica de dominio central es independiente de los frameworks
+   - Diseñado para ser testeable
 
-4. **High Cohesion, Low Coupling**
-   - Related functionality grouped together
-   - Minimal dependencies between modules
-   - Clear contracts between layers
+4. **Alta Cohesión, Bajo Acoplamiento**
+   - La funcionalidad relacionada se agrupa junta
+   - Dependencias mínimas entre módulos
+   - Contratos claros entre capas
 
-5. **Functional Programming Where Applicable**
-   - Prefer immutability and pure functions
-   - Avoid side effects at boundaries
-   - Favor composition over inheritance
-   - Use TypeScript's type system expressively
+5. **Programación Funcional Siempre Que Sea Posible**
+   - Preferir inmutabilidad y funciones puras
+   - Evitar efectos secundarios en los límites del sistema
+   - Preferir composición antes que herencia
+   - Usar el sistema de tipos de TypeScript de forma expresiva
+   - Aplicar estos principios siempre que el contexto lo permita; si el framework o la librería exige un enfoque imperativo (por ejemplo, ciclo de vida de componentes), se documenta el motivo
 
-6. **Test-Driven Development (TDD)**
-   - Write tests before implementation (or with)
-   - Tests document expected behavior
-   - Red → Green → Refactor cycle
-   - Aim for meaningful coverage, not 100%
+6. **Desarrollo Guiado por Pruebas (TDD)**
+   - El test se escribe siempre primero: nunca después ni junto con la implementación. Se empieza con un test que falla (rojo primero); esto garantiza que el test no tenga falsos positivos ni falsos negativos
+   - Se implementa lo mínimo necesario para que el test pase, nada más
+   - Si se quiere agregar más código o funcionalidad, primero se debe crear un test que lo cubra
+   - Ciclo Rojo → Verde → Refactor
+   - El coverage debe ser mayor a 90%
 
-### TypeScript-Specific
+### Específico de TypeScript
 
-- Use strict mode (enforced in `tsconfig.json`)
-- Prefer `type` over `interface` unless class-like behavior is needed
-- Avoid `any` — use `unknown` if necessary, then narrow
-- Zod for runtime validation of external data (as in `storySchema`)
+- Usar modo estricto (definido en `tsconfig.json`)
+- Preferir `type` sobre `interface`, salvo que se necesite comportamiento tipo clase
+- Evitar `any` — usar `unknown` si es necesario, y luego acotar el tipo
+- Usar Zod para la validación en tiempo de ejecución de datos externos (como en `storySchema`)
 
-### No Premature Abstractions
+### Sin Abstracciones Prematuras
 
-Three similar lines of code is better than a premature helper function. If a pattern repeats across different domains, extract it. If it's isolated, leave it.
+Tres líneas de código similares son preferibles a una función auxiliar creada antes de tiempo. Si un patrón se repite en distintos dominios, se extrae. Si está aislado, se deja tal cual.
 
 ---
 
-## Commit Standards
+## Estándares de Commits
 
 ### Conventional Commits
 
-All commits follow [Conventional Commits](https://www.conventionalcommits.org/) in Spanish (or English if the codebase uses it).
+Todos los commits siguen [Conventional Commits](https://www.conventionalcommits.org/) en castellano (o en inglés si el código base ya usa ese idioma).
 
-Format:
+Formato:
 ```
-<type>(<scope>): <subject in present tense>
+<tipo>(<alcance>): <asunto en presente>
 
-<body explaining why and what>
+<cuerpo explicando el por qué y el qué>
 ```
 
-**Types:** `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `ci`
+**Tipos:** `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `ci`
 
-**Example (Spanish, third-person present):**
+**Ejemplo (castellano, preemptive):**
 ```
-feat(docker): agregar Dockerfile y entrypoint para dev container
+feat(docker): el desarrollador dispone de Dockerfile y entrypoint para dev container
 
-Se proporciona Dockerfile basado en node:24-bookworm-slim que emula
+Se proporciona un Dockerfile basado en node:24-bookworm-slim que emula
 el entorno de despliegue. El entrypoint inicializa submodules e
 instala dependencias de forma idempotente.
 
@@ -97,84 +99,86 @@ Cierra #19
 
 ### Atomic Commits
 
-Each commit represents one logical, self-contained change:
+Cada commit representa un cambio lógico y autocontenido:
 
-- Do not mix unrelated refactoring with feature work
-- One feature per commit (or one small sub-feature if a feature is large)
-- One bug fix per commit
-- Do not commit WIP or partially tested code
+- No mezclar refactors sin relación con trabajo de features
+- Una feature por commit (o una sub-feature pequeña si la feature es grande)
+- Un bug fix por commit
+- No commitear código WIP o parcialmente testeado
 
-Example: if fixing a bug and improving docs, make two commits:
-- `fix: corregir validación de fecha en formulario`
-- `docs: aclarar flujo de validación en README`
+Esta práctica también aplica al agente de IA que desarrolla sobre este repositorio: hacer commits atómicos genera puntos de checkpoint, de modo que se pueda revertir a cualquiera de los distintos puntos de progreso si algo sale mal.
+
+Ejemplo: si se corrige un bug y se mejora la documentación, se hacen dos commits (siguiendo el formato preemptive):
+- `fix: la fecha se valida correctamente en el formulario`
+- `docs: el flujo de validación queda explicado en el README`
 
 ### Preemptive Commits
 
-Commits describe the **result** of the change using third-person present, focusing on:
-- **What the system gains** (for infrastructure, build, or new functionality)
-- **What the user can do** (for new features)
-- **What the developer can do** (for scripts, pipelines, documentation)
+Los commits describen el **resultado** del cambio en presente, en tercera persona, enfocándose en:
+- **Qué gana el sistema** (para infraestructura, build o funcionalidad nueva)
+- **Qué puede hacer el usuario** (para features nuevas)
+- **Qué puede hacer el desarrollador** (para scripts, pipelines, documentación)
 
-Examples:
+Ejemplos:
 
-**Infrastructure/Build:**
+**Infraestructura/Build:**
 - ✅ `build: Dockerfile es disponible para levantar dev container`
-- ❌ `add Dockerfile` (too passive)
+- ❌ `add Dockerfile` (muy pasivo)
 
-**User-facing feature:**
+**Feature de cara al usuario:**
 - ✅ `feat: el usuario puede filtrar historias por tema`
-- ❌ `feat: agregar filtro de temas` (describes action, not result)
+- ❌ `feat: agregar filtro de temas` (describe la acción, no el resultado)
 
-**Developer tooling:**
+**Herramientas para el desarrollador:**
 - ✅ `chore: el desarrollador dispone de script para limpiar volúmenes Docker`
-- ❌ `add cleanup script` (too generic)
+- ❌ `add cleanup script` (muy genérico)
 
 ---
 
-## Pull Request Standards
+## Estándares de Pull Requests
 
-### PR Description
+### Descripción del PR
 
-Every PR must include:
+Todo PR debe incluir:
 
-1. **What changed** — a one-liner summarizing the change
-2. **Why it changed** — the problem it solves or requirement it fulfills
-3. **How to verify** — steps to test the change (run tests, check a feature, etc.)
-4. **Related issue** — link to the issue if applicable (e.g., `Closes #19`)
+1. **Qué cambió** — un resumen en una línea del cambio
+2. **Por qué cambió** — el problema que resuelve o el requerimiento que cumple
+3. **Cómo verificarlo** — pasos para probar el cambio (correr tests, revisar una feature, etc.)
+4. **Issue relacionado** — enlace al issue si aplica (ej. `Closes #19`)
 
-**Template:**
+**Plantilla:**
 
 ```markdown
-## What
+## Qué
 
-[One-line summary of the change]
+[Resumen del cambio en una línea]
 
-## Why
+## Por qué
 
-[Problem it solves or requirement. Link context: issue, ADR, discussion.]
+[Problema que resuelve o requerimiento. Enlazar contexto: issue, ADR, discusión.]
 
-## How to Verify
+## Cómo Verificar
 
-- [ ] Run `pnpm test` — tests pass
-- [ ] Run `pnpm build` — build succeeds
-- [ ] Navigate to http://localhost:4321 and [specific action] works
+- [ ] Correr `pnpm test` — los tests pasan
+- [ ] Correr `pnpm build` — el build es exitoso
+- [ ] Navegar a http://localhost:4321 y [acción específica] funciona
 
-## Related
+## Relacionado
 
 Closes #XX
 ```
 
-### Before Requesting Review
+### Antes de Solicitar Revisión
 
-- All tests pass locally (`pnpm test`, `pnpm build`)
-- TypeScript type check passes (`pnpm astro check`)
-- Commits are atomic and follow Conventional Commits
-- Branch is up-to-date with `main`
-- No debug code or commented-out lines
+- Todos los tests pasan localmente (`pnpm test`, `pnpm build`)
+- El type check de TypeScript pasa (`pnpm astro check`)
+- Los commits son atómicos y siguen Conventional Commits
+- La rama está actualizada respecto a `main`
+- No hay código de debug ni líneas comentadas sin usar
 
-### PR Title
+### Título del PR
 
-Follow Conventional Commits format in the title:
+Debe seguir el formato de Conventional Commits en el título:
 ```
 feat: descripción breve en presente (issue #XX)
 fix: descripción breve (issue #YY)
@@ -183,9 +187,9 @@ docs: descripción breve
 
 ---
 
-## References
+## Referencias
 
-- [Mistorias Esencia de Marca](https://github.com/mistorias/mistorias-esencia-de-marca) — brand principles, editorial guidelines
-- [CLAUDE.md](CLAUDE.md) — architecture overview
-- [CONTRIBUTING.md](CONTRIBUTING.md) — setup and development workflow
-- [docs/adr/](docs/adr/) — architectural decisions
+- [Mistorias Esencia de Marca](https://github.com/mistorias/mistorias-esencia-de-marca) — principios de marca, lineamientos editoriales
+- [CLAUDE.md](CLAUDE.md) — resumen de arquitectura
+- [CONTRIBUTING.md](CONTRIBUTING.md) — configuración y flujo de desarrollo
+- [docs/adr/](docs/adr/) — decisiones arquitectónicas
