@@ -113,7 +113,9 @@ El comando objetivo de validación es `pnpm astro check && pnpm test`.
 - El nombre de marca canónico es **Mistorias**. Cualquier referencia a
   nombres alternativos de campaña (e.g. nombres geográficos locales)
   es un alias de distribución, no reemplaza la identidad de marca.
-- La plataforma de dominio (Namecheap o IONOS) y la configuración de
-  privacidad WHOIS se definen fuera de este ADR.
+- La plataforma/registrador de dominio y la configuración de privacidad
+  WHOIS se definen fuera de este ADR; se evita nombrar el proveedor
+  específico aquí para minimizar la información de infraestructura
+  expuesta en el repositorio.
 - La decisión sobre la gestión de contenido (submodule vs. monorepo)
   se tratará en un ADR separado.

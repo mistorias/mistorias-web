@@ -58,23 +58,25 @@ sin necesidad de explotar ninguna vulnerabilidad de la aplicación.
   dependencia cambie de versión sin que el lockfile lo refleje.
 
 **Gestionado (confirmado por el equipo el 2026-08-07):**
-- MFA está habilitado en la cuenta de **GoDaddy** (registrador del dominio
-  `mistorias.pe`).
-- MFA está habilitado en la cuenta de **Netlify**.
+- MFA está habilitado en las cuentas de administración de: registrador de
+  dominio, proveedor de hosting/despliegue y GitHub.
 
 **Pendiente — no verificable ni accionable desde el código del repo,
-requiere acción manual del equipo en las plataformas correspondientes:**
-- Confirmar que MFA está habilitado también en la organización/cuenta de
-  **GitHub** que administra `mistorias-web` (no confirmado aún).
-- Confirmar el estado de lock de transferencia del dominio en GoDaddy y
-  de la privacidad WHOIS.
-- Auditar qué personas tienen acceso de administrador a Netlify, a la
-  organización GitHub, y a los secrets del repositorio, y reducirlo al
-  mínimo necesario.
+requiere acción manual del equipo en la plataforma correspondiente:**
+- Confirmar el estado de lock de transferencia del dominio y de la
+  privacidad WHOIS con el registrador.
+- Auditar qué personas tienen acceso de administrador al proveedor de
+  hosting, a la organización GitHub, y a los secrets del repositorio, y
+  reducirlo al mínimo necesario.
 
-Este punto pasa de **riesgo abierto** a **parcialmente gestionado**: el
-registrador de dominio y Netlify ya tienen MFA confirmado; GitHub y el
-lock de transferencia siguen pendientes de confirmación.
+Este punto pasa de **riesgo abierto** a **mayormente gestionado**: MFA
+confirmado en las tres cuentas administrativas relevantes; el lock de
+transferencia del dominio sigue pendiente de confirmación.
+
+> Nota: este ADR evita nombrar explícitamente proveedores/registrador
+> concretos para minimizar la información de infraestructura expuesta en
+> el repositorio. El detalle operativo (qué proveedor, credenciales de
+> acceso, etc.) se gestiona fuera del repositorio.
 
 ### 2. Ausencia de headers de seguridad HTTP (Medio-Alto) — resuelto en este cambio
 
@@ -190,8 +192,8 @@ duda ante futuros escaneos similares.
 
 ## Notas operativas
 
-- MFA en GoDaddy y Netlify confirmado por el equipo (2026-08-07). Falta
-  confirmar MFA en GitHub y el estado de lock de transferencia del dominio
-  para cerrar por completo el riesgo #1.
+- MFA confirmado por el equipo (2026-08-07) en registrador de dominio,
+  hosting y GitHub. Falta confirmar el estado de lock de transferencia del
+  dominio para cerrar por completo el riesgo #1.
 - La decisión sobre mantener o retirar el pipeline de GitHub Pages
   (riesgo #3) queda fuera del alcance de este ADR.
