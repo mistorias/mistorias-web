@@ -91,16 +91,20 @@ Corresponde a OWASP Top 10 **A05:2021 – Security Misconfiguration**.
 Se agrega `public/_headers`, el mecanismo nativo de Netlify para sitios
 estáticos, aplicando estos headers a todas las rutas (`/*`).
 
-### 3. Doble superficie pública: Netlify + GitHub Pages (Medio) — riesgo abierto
+### 3. Doble superficie pública: hosting de producción + GitHub Pages (Medio) — aceptado
 
-Además del despliegue a Netlify (`deploy-netlify.yml`, dominio
+Además del despliegue a producción (`deploy-netlify.yml`, dominio
 `mistorias.pe`), existe un segundo pipeline (`deploy-github-pages.yml`)
 que publica el mismo contenido en `mistorias.github.io/mistorias-web` en
 cada push a `main`. Esto duplica la superficie pública expuesta.
 
-No se retira en este cambio porque puede ser un entorno de desarrollo o
-preview usado intencionalmente por el equipo; se deja como decisión
-pendiente de negocio, no técnica.
+**Decisión (confirmada por el equipo el 2026-08-07):** es intencional.
+GitHub Pages es el entorno de desarrollo/preview del sitio — se despliega
+automáticamente en cada push a `main` para poder revisar cambios antes
+del release a producción, que se dispara por tags
+(`deploy-netlify.yml` corre solo `on: push: tags`). No se retira; la
+superficie duplicada es un costo aceptado del flujo de desarrollo, no un
+riesgo pendiente de resolver.
 
 ### 4. Falta de `robots.txt` (Bajo) — resuelto en este cambio
 
@@ -180,11 +184,11 @@ duda ante futuros escaneos similares.
 
 ### Costos
 
-- El riesgo #1 (accesos a cuentas/dominio) queda gestionado. Los riesgos
-  #3 (doble pipeline) y #6 (visibilidad continua) siguen abiertos porque
-  requieren decisiones o acciones fuera del código del repositorio. Deben
-  tratarse como seguimiento explícito, no asumirse como resueltos por
-  este ADR.
+- El riesgo #1 (accesos a cuentas/dominio) queda gestionado y el #3
+  (doble pipeline) queda aceptado como parte del flujo de desarrollo. El
+  riesgo #6 (visibilidad continua) sigue abierto porque requiere una
+  acción fuera del código del repositorio. Debe tratarse como seguimiento
+  explícito, no asumirse como resuelto por este ADR.
 
 ## Testing
 
@@ -200,5 +204,6 @@ duda ante futuros escaneos similares.
   dominio, hosting y GitHub; bloqueo de transferencia de dominio activo;
   privacidad WHOIS habilitada. Queda como práctica recurrente la
   auditoría periódica de accesos de administrador.
-- La decisión sobre mantener o retirar el pipeline de GitHub Pages
-  (riesgo #3) queda fuera del alcance de este ADR.
+- Riesgo #3 aceptado (confirmado 2026-08-07): el pipeline de GitHub Pages
+  se mantiene como entorno de desarrollo/preview; el de producción se
+  dispara por tags.
