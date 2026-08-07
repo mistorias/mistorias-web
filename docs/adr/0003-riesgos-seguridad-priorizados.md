@@ -57,19 +57,24 @@ sin necesidad de explotar ninguna vulnerabilidad de la aplicación.
 - `pnpm install --frozen-lockfile` en ambos pipelines evita que una
   dependencia cambie de versión sin que el lockfile lo refleje.
 
+**Gestionado (confirmado por el equipo el 2026-08-07):**
+- MFA está habilitado en la cuenta de **GoDaddy** (registrador del dominio
+  `mistorias.pe`).
+- MFA está habilitado en la cuenta de **Netlify**.
+
 **Pendiente — no verificable ni accionable desde el código del repo,
 requiere acción manual del equipo en las plataformas correspondientes:**
-- Confirmar que MFA está habilitado en la cuenta de Netlify y en la
-  organización/cuenta de GitHub que administra `mistorias-web`.
-- Confirmar el estado de lock del registrador del dominio `mistorias.pe`
-  (transfer lock) y de la privacidad WHOIS.
+- Confirmar que MFA está habilitado también en la organización/cuenta de
+  **GitHub** que administra `mistorias-web` (no confirmado aún).
+- Confirmar el estado de lock de transferencia del dominio en GoDaddy y
+  de la privacidad WHOIS.
 - Auditar qué personas tienen acceso de administrador a Netlify, a la
   organización GitHub, y a los secrets del repositorio, y reducirlo al
   mínimo necesario.
 
-Este ADR dejará este punto explícitamente como **riesgo abierto** hasta
-que alguien con acceso a esas plataformas confirme el estado y lo
-actualice aquí.
+Este punto pasa de **riesgo abierto** a **parcialmente gestionado**: el
+registrador de dominio y Netlify ya tienen MFA confirmado; GitHub y el
+lock de transferencia siguen pendientes de confirmación.
 
 ### 2. Ausencia de headers de seguridad HTTP (Medio-Alto) — resuelto en este cambio
 
@@ -185,8 +190,8 @@ duda ante futuros escaneos similares.
 
 ## Notas operativas
 
-- Este ADR debe actualizarse en cuanto alguien con acceso a Netlify/GitHub
-  confirme el estado real de MFA y lock de dominio (riesgo #1), para pasar
-  de "pendiente" a "gestionado" con evidencia.
+- MFA en GoDaddy y Netlify confirmado por el equipo (2026-08-07). Falta
+  confirmar MFA en GitHub y el estado de lock de transferencia del dominio
+  para cerrar por completo el riesgo #1.
 - La decisión sobre mantener o retirar el pipeline de GitHub Pages
   (riesgo #3) queda fuera del alcance de este ADR.
