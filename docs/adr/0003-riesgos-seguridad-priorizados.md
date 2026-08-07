@@ -40,7 +40,7 @@ puramente de configuración del repositorio, y dejando documentado —no
 resuelto en este PR— lo que depende de configuración fuera del código
 (cuentas de Netlify/GitHub, DNS).
 
-### 1. Secuestro de dominio / cuenta Netlify / cuenta GitHub (Alto)
+### 1. Secuestro de dominio / cuenta de hosting / cuenta GitHub (Alto) — gestionado
 
 Es la preocupación explícita del issue ("apropiarse del dominio"). Si un
 atacante compromete la cuenta de Netlify, la cuenta de GitHub, o el
@@ -60,18 +60,19 @@ sin necesidad de explotar ninguna vulnerabilidad de la aplicación.
 **Gestionado (confirmado por el equipo el 2026-08-07):**
 - MFA está habilitado en las cuentas de administración de: registrador de
   dominio, proveedor de hosting/despliegue y GitHub.
+- El bloqueo de transferencia del dominio está activo en el registrador.
 
 **Pendiente — no verificable ni accionable desde el código del repo,
 requiere acción manual del equipo en la plataforma correspondiente:**
-- Confirmar el estado de lock de transferencia del dominio y de la
-  privacidad WHOIS con el registrador.
+- Confirmar el estado de la privacidad WHOIS con el registrador.
 - Auditar qué personas tienen acceso de administrador al proveedor de
   hosting, a la organización GitHub, y a los secrets del repositorio, y
   reducirlo al mínimo necesario.
 
-Este punto pasa de **riesgo abierto** a **mayormente gestionado**: MFA
-confirmado en las tres cuentas administrativas relevantes; el lock de
-transferencia del dominio sigue pendiente de confirmación.
+Este punto pasa de **riesgo abierto** a **gestionado**: MFA confirmado en
+las tres cuentas administrativas relevantes y bloqueo de transferencia de
+dominio activo. Queda pendiente solo la verificación de privacidad WHOIS
+y la auditoría periódica de accesos de administrador.
 
 > Nota: este ADR evita nombrar explícitamente proveedores/registrador
 > concretos para minimizar la información de infraestructura expuesta en
@@ -177,10 +178,11 @@ duda ante futuros escaneos similares.
 
 ### Costos
 
-- Los riesgos #1 (accesos a cuentas/dominio), #3 (doble pipeline) y #6
-  (visibilidad continua) quedan abiertos porque requieren decisiones o
-  acciones fuera del código del repositorio. Deben tratarse como
-  seguimiento explícito, no asumirse como resueltos por este ADR.
+- El riesgo #1 (accesos a cuentas/dominio) queda gestionado salvo un
+  detalle menor pendiente (privacidad WHOIS). Los riesgos #3 (doble
+  pipeline) y #6 (visibilidad continua) siguen abiertos porque requieren
+  decisiones o acciones fuera del código del repositorio. Deben tratarse
+  como seguimiento explícito, no asumirse como resueltos por este ADR.
 
 ## Testing
 
@@ -193,7 +195,8 @@ duda ante futuros escaneos similares.
 ## Notas operativas
 
 - MFA confirmado por el equipo (2026-08-07) en registrador de dominio,
-  hosting y GitHub. Falta confirmar el estado de lock de transferencia del
-  dominio para cerrar por completo el riesgo #1.
+  hosting y GitHub, y bloqueo de transferencia de dominio activo
+  (confirmado 2026-08-07). Solo queda pendiente verificar la privacidad
+  WHOIS para cerrar por completo el riesgo #1.
 - La decisión sobre mantener o retirar el pipeline de GitHub Pages
   (riesgo #3) queda fuera del alcance de este ADR.
