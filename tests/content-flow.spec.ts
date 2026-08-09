@@ -1,21 +1,42 @@
 import { cp, mkdtemp, mkdir, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import type { AstroIntegration } from "astro";
 import { afterEach, describe, expect, it } from "vitest";
-import { loadStories } from "../src/lib/content/content-loader";
+import { assertStoriesHaveNoRawHtml } from "../src/lib/content/content-loader";
+import { noRawHtml } from "../src/lib/content/no-raw-html-integration";
+
+type ConfigSetupHook = NonNullable<
+  AstroIntegration["hooks"]["astro:config:setup"]
+>;
+type ConfigSetupOptions = Parameters<ConfigSetupHook>[0];
 
 const fixturePath = (name: string): string =>
   path.resolve(process.cwd(), "tests/fixtures", name);
 
 const temporaryDirectories: string[] = [];
 
-async function prepareStoriesDirectory(fixtureFilename: string): Promise<string> {
+async function prepareStoriesDirectory(
+  ...fixtureFilenames: string[]
+): Promise<string> {
   const tempRoot = await mkdtemp(path.join(os.tmpdir(), "mistorias-web-"));
   temporaryDirectories.push(tempRoot);
   const storiesDirectory = path.join(tempRoot, "stories");
   await mkdir(storiesDirectory, { recursive: true });
-  await cp(fixturePath(fixtureFilename), path.join(storiesDirectory, "story.md"));
+
+  for (const fixtureFilename of fixtureFilenames) {
+    await cp(
+      fixturePath(fixtureFilename),
+      path.join(storiesDirectory, fixtureFilename)
+    );
+  }
+
   return storiesDirectory;
+}
+
+async function runConfigSetupHook(directory: string): Promise<void> {
+  const hook = noRawHtml(directory).hooks["astro:config:setup"];
+  await hook?.({} as ConfigSetupOptions);
 }
 
 afterEach(async () => {
@@ -26,37 +47,70 @@ afterEach(async () => {
   );
 });
 
-describe("content flow", () => {
-  it("loads a valid story from markdown fixture", async () => {
+describe("assertStoriesHaveNoRawHtml", () => {
+  it("acepta una historia en markdown sin HTML crudo", async () => {
     const storiesDirectory = await prepareStoriesDirectory("valid-story.md");
 
-    const stories = await loadStories(storiesDirectory);
-
-    expect(stories).toHaveLength(1);
-    expect(stories[0]).toMatchObject({
-      title: "Historia validada",
-      summary: "Resumen breve de prueba",
-      author: "Equipo Mistorias",
-      tags: ["educacion", "comunidad"],
-      slug: "story"
-    });
-    expect(stories[0].date).toBeInstanceOf(Date);
+    await expect(
+      assertStoriesHaveNoRawHtml(storiesDirectory)
+    ).resolves.toBeUndefined();
   });
 
-  it("fails when a required schema field is missing", async () => {
+  it("acepta comparaciones numéricas que usan los signos < y >", async () => {
     const storiesDirectory = await prepareStoriesDirectory(
-      "invalid-story-missing-title.md"
+      "valid-story-with-comparisons.md"
     );
 
-    await expect(loadStories(storiesDirectory)).rejects.toThrow();
+    await expect(
+      assertStoriesHaveNoRawHtml(storiesDirectory)
+    ).resolves.toBeUndefined();
   });
 
-  it("fails when raw HTML is present in content", async () => {
+  it("rechaza una historia con HTML ejecutable en el cuerpo", async () => {
     const storiesDirectory = await prepareStoriesDirectory(
       "invalid-story-raw-html.md"
     );
 
-    await expect(loadStories(storiesDirectory)).rejects.toThrow(
+    await expect(assertStoriesHaveNoRawHtml(storiesDirectory)).rejects.toThrow(
+      /Raw HTML is not allowed/
+    );
+  });
+
+  it("rechaza el directorio completo cuando solo una historia trae HTML crudo", async () => {
+    const storiesDirectory = await prepareStoriesDirectory(
+      "valid-story.md",
+      "invalid-story-raw-html.md"
+    );
+
+    await expect(assertStoriesHaveNoRawHtml(storiesDirectory)).rejects.toThrow(
+      /invalid-story-raw-html\.md/
+    );
+  });
+
+  it("avisa que el submódulo de contenido no está inicializado", async () => {
+    const missingDirectory = path.join(os.tmpdir(), "mistorias-web-inexistente");
+
+    await expect(assertStoriesHaveNoRawHtml(missingDirectory)).rejects.toThrow(
+      /submódulo de contenido/
+    );
+  });
+});
+
+describe("integración noRawHtml", () => {
+  it("deja compilar cuando todas las historias son válidas", async () => {
+    const storiesDirectory = await prepareStoriesDirectory("valid-story.md");
+
+    await expect(
+      runConfigSetupHook(storiesDirectory)
+    ).resolves.toBeUndefined();
+  });
+
+  it("detiene la compilación cuando una historia trae HTML ejecutable", async () => {
+    const storiesDirectory = await prepareStoriesDirectory(
+      "invalid-story-raw-html.md"
+    );
+
+    await expect(runConfigSetupHook(storiesDirectory)).rejects.toThrow(
       /Raw HTML is not allowed/
     );
   });

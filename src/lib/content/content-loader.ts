@@ -1,64 +1,14 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
-import { storySchema, type StoryFrontmatter } from "./schema";
 
-const RAW_HTML_PATTERN = /<[^>]+>/;
-
-export type StoryEntry = StoryFrontmatter & {
-  slug: string;
-  body: string;
-};
+// Solo etiquetas HTML reales: una comparación numérica en prosa ("de < 5% a
+// > 8%") no debe bloquear la publicación de una historia.
+const RAW_HTML_PATTERN = /<\/?[a-zA-Z][^>]*>/;
 
 const defaultStoriesDirectory = path.resolve(
   process.cwd(),
   "content/mistorias-contenido/stories"
 );
-
-function parseFrontmatter(rawFile: string): {
-  frontmatter: Record<string, unknown>;
-  body: string;
-} {
-  const startsWithFence = rawFile.startsWith("---\n");
-  if (!startsWithFence) {
-    throw new Error("Missing frontmatter fence.");
-  }
-
-  const secondFenceIndex = rawFile.indexOf("\n---\n", 4);
-  if (secondFenceIndex < 0) {
-    throw new Error("Invalid frontmatter format.");
-  }
-
-  const frontmatterBlock = rawFile.slice(4, secondFenceIndex).trim();
-  const body = rawFile.slice(secondFenceIndex + 5).trim();
-  const frontmatter: Record<string, unknown> = {};
-
-  for (const line of frontmatterBlock.split("\n")) {
-    const separatorIndex = line.indexOf(":");
-    if (separatorIndex < 0) {
-      continue;
-    }
-
-    const key = line.slice(0, separatorIndex).trim();
-    const rawValue = line.slice(separatorIndex + 1).trim();
-    if (!key) {
-      continue;
-    }
-
-    if (rawValue.startsWith("[") && rawValue.endsWith("]")) {
-      const values = rawValue
-        .slice(1, -1)
-        .split(",")
-        .map((value) => value.trim().replace(/^"|"$/g, ""))
-        .filter(Boolean);
-      frontmatter[key] = values;
-      continue;
-    }
-
-    frontmatter[key] = rawValue.replace(/^"|"$/g, "");
-  }
-
-  return { frontmatter, body };
-}
 
 export function assertNoRawHtml(value: string, filePath: string): void {
   if (RAW_HTML_PATTERN.test(value)) {
@@ -66,35 +16,35 @@ export function assertNoRawHtml(value: string, filePath: string): void {
   }
 }
 
-export async function loadStories(
-  directory = defaultStoriesDirectory
-): Promise<StoryEntry[]> {
-  const files = await readdir(directory, { withFileTypes: true });
-  const stories: StoryEntry[] = [];
-
-  for (const file of files) {
-    if (!file.isFile() || !file.name.endsWith(".md")) {
-      continue;
-    }
-
-    const filePath = path.join(directory, file.name);
-    const rawFile = await readFile(filePath, "utf8");
-    const { frontmatter, body } = parseFrontmatter(rawFile);
-
-    for (const value of Object.values(frontmatter)) {
-      if (typeof value === "string") {
-        assertNoRawHtml(value, filePath);
-      }
-    }
-    assertNoRawHtml(body, filePath);
-
-    const parsed = storySchema.parse(frontmatter);
-    stories.push({
-      ...parsed,
-      body,
-      slug: file.name.replace(/\.md$/, "")
-    });
+async function readStoryFilenames(directory: string): Promise<string[]> {
+  try {
+    const entries = await readdir(directory, { withFileTypes: true });
+    return entries
+      .filter((entry) => entry.isFile() && entry.name.endsWith(".md"))
+      .map((entry) => entry.name);
+  } catch (cause) {
+    throw new Error(
+      `No se pudo leer ${directory}. Revisa que el submódulo de contenido esté inicializado: git submodule update --init --recursive`,
+      { cause }
+    );
   }
+}
 
-  return stories.sort((a, b) => b.date.getTime() - a.date.getTime());
+/**
+ * Rechaza HTML crudo en las historias antes de que Astro las compile.
+ *
+ * Se valida el texto completo del archivo, sin volver a parsear el
+ * frontmatter: un segundo parser que interpretara el archivo distinto a como
+ * lo hace el loader `glob()` de Astro sería justamente por donde se colaría un
+ * bypass de esta validación.
+ */
+export async function assertStoriesHaveNoRawHtml(
+  directory = defaultStoriesDirectory
+): Promise<void> {
+  const filenames = await readStoryFilenames(directory);
+
+  for (const filename of filenames) {
+    const filePath = path.join(directory, filename);
+    assertNoRawHtml(await readFile(filePath, "utf8"), filePath);
+  }
 }
