@@ -1,0 +1,37 @@
+---
+// GitHub Pages no permite configurar cabeceras HTTP, así que la CSP viaja en
+// un <meta>. Es la única barrera disponible en el entorno de desarrollo; en
+// producción, `public/_headers` la envía además como cabecera junto con
+// frame-ancestors y HSTS, que un <meta> no puede expresar.
+const contentSecurityPolicy = [
+    "default-src 'self'",
+    "img-src 'self' data:",
+    "style-src 'self' 'unsafe-inline'",
+    "script-src 'none'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'none'"
+].join("; ");
+
+interface Props {
+    title: string;
+    description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Security-Policy" content={contentSecurityPolicy} />
+
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+</head>
+
+<body>
+<slot />
+</body>
+</html>
