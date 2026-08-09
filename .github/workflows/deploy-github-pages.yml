@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "src/**"
-      - "content/**"
   workflow_dispatch:
 
 permissions:
