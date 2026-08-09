@@ -126,13 +126,24 @@ dashboard de Netlify. No hay alertas automáticas ante cambios de patrón
 Queda como mejora futura, condicionada a lo que permita el plan de
 Netlify en uso.
 
-### 7. Riesgo de contenido — ya mitigado
+### 7. Riesgo de contenido — ~~ya mitigado~~ CORREGIDO POR EL ADR 0004
 
-`src/lib/content/content-loader.ts` procesa únicamente archivos `.md`
+> **Esta sección era falsa.** El [ADR 0004](0004-triaje-reportes-seguridad-github-pages.md)
+> la corrige. `content-loader.ts` estaba huérfano: ningún archivo de `src/`
+> lo importaba, solo los tests. La ruta real de compilación
+> (`content.config.ts` → loader `glob()` de Astro) validaba únicamente el
+> frontmatter y renderizaba el HTML crudo del Markdown sin filtrar, así que
+> `assertNoRawHtml` **nunca se ejecutó en un build**.
+>
+> Se deja el texto original tachado en vez de reescribirlo: el registro de
+> que dimos por mitigado un riesgo que seguía abierto es parte de lo que este
+> ADR debe poder auditar.
+
+~~`src/lib/content/content-loader.ts` procesa únicamente archivos `.md`
 locales del repo en tiempo de build (no en runtime, no viene de usuarios
 finales), valida el frontmatter contra un schema (`storySchema.parse`) y
 rechaza HTML crudo (`assertNoRawHtml`). Documentado también en el ADR
-0001. No requiere acción adicional.
+0001. No requiere acción adicional.~~
 
 ## Riesgos descartados (no aplican a este sitio)
 

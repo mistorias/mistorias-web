@@ -33,18 +33,16 @@ Common commands: `pnpm dev`, `pnpm build`, `pnpm test`. For dev container setup,
 
 ### Content Loading
 
-The `src/lib/content/content-loader.ts` module:
-- Scans `content/mistorias-contenido/stories/*.md` for story files
-- Parses YAML frontmatter using a custom parser (not relying on gray-matter for transparency)
-- Validates frontmatter against `storySchema` (Zod schema)
-- Rejects raw HTML to prevent injection
-- Sorts stories by date descending
+Stories are loaded by Astro's Content Collections API. `src/content.config.ts` declares the `stories` collection with a `glob()` loader over `content/mistorias-contenido/stories/**/*.md`, validated against `storySchema` (`src/lib/content/schema.ts`). That loader is the single source of truth for parsing and validating frontmatter — do not add a second parser alongside it.
 
-Content is exposed via Astro's Content Collections API (`src/content.config.ts`), making stories queryable and type-safe in `.astro` pages.
+`src/lib/content/content-loader.ts` complements it with the raw-HTML gate: `assertStoriesHaveNoRawHtml()` scans every story file and rejects real HTML tags. It validates the full file text rather than re-parsing frontmatter, precisely so it cannot disagree with Astro's loader about what the file contains.
+
+The gate runs via `src/lib/content/no-raw-html-integration.ts`, an Astro integration registered in `astro.config.mjs`. Its `astro:config:setup` hook fires on both `astro dev` and `astro build`, so a story with executable HTML fails the build instead of being published. See [ADR 0004](docs/adr/0004-triaje-reportes-seguridad-github-pages.md) for why this exists.
 
 ### Pages & Routing
 
-- `src/pages/index.astro` — homepage listing stories
+- `src/layouts/BaseLayout.astro` — shared HTML skeleton; the `<meta>` Content-Security-Policy lives here and nowhere else
+- `src/pages/index.astro` — homepage
 - `src/pages/stories/[...id].astro` — dynamic story detail pages (file-based routing)
 
 ### Build Variants (DEPLOY_TARGET)
@@ -73,4 +71,8 @@ Both check out with `--recursive` (initializes submodules) and run `pnpm install
 
 ## Security & Validation
 
-Stories reject raw HTML (see `assertNoRawHtml` in `content-loader.ts`) to prevent injection attacks. This is enforced on every build. See [SECURITY.md](SECURITY.md) for how to report vulnerabilities.
+Stories reject raw HTML (`assertStoriesHaveNoRawHtml` in `content-loader.ts`) to prevent injection attacks. This is enforced on every `astro dev` and `astro build` through the integration registered in `astro.config.mjs` — the check only holds as long as that registration stays in place, so don't remove it.
+
+Pages ship a strict Content-Security-Policy from `src/layouts/BaseLayout.astro`. `script-src` is `'none'` because the site sends no JavaScript; adding an Astro island or view transitions requires relaxing it to `'self'` in both the layout and `public/_headers`, which would otherwise break in the browser without failing the build.
+
+See [ADR 0004](docs/adr/0004-triaje-reportes-seguridad-github-pages.md) for the full security triage and [SECURITY.md](SECURITY.md) for how to report vulnerabilities.
