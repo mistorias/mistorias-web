@@ -9,6 +9,15 @@ overrides:
   vite@<=6.4.2: '>=6.4.3'
   astro@<6.3.3: '>=6.3.3'
   astro@<6.4.6: '>=6.4.6'
+  # Se acota cada override a su línea mayor: el objetivo es tomar el parche de
+  # seguridad, no arrastrar un cambio de mayor en una dependencia transitiva.
+  # Sin el tope, js-yaml salta a la 5.x (solo ESM) y rompe la CLI de Astro.
+  svgo@<4.0.2: '>=4.0.2 <5'
+  sharp@<0.35.0: '>=0.35.0 <0.36'
+  js-yaml@>=4.0.0 <4.3.1: '>=4.3.1 <5'
+  nanoid@<3.3.17: '>=3.3.17 <4'
+  postcss@<8.5.23: '>=8.5.23 <9'
+  fast-uri@<3.1.5: '>=3.1.5 <4'
 
 ignoredBuiltDependencies:
   - esbuild

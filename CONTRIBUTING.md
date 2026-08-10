@@ -150,13 +150,14 @@ git submodule update --init --recursive
    - `pnpm astro check` no reporta errores de tipo
 4. Haz commits atómicos siguiendo [convenciones de commits en STANDARDS.md](STANDARDS.md#commit-standards)
 5. Abre un PR contra `main` con descripción siguiendo [estándares de PR en STANDARDS.md](STANDARDS.md#pull-request-standards)
-6. El CI validará automáticamente; después del merge, el sitio se despliega automáticamente
+6. El workflow de Verificación (`.github/workflows/ci.yml`) corre en tu PR: tests, type check, build y `pnpm audit --prod`. El paso de audit es bloqueante a propósito, así que una advisory nueva en una dependencia pone el PR en rojo aunque no la hayas introducido tú
+7. Una vez disponibles los cambios en `main`, el sitio se despliega a GitHub Pages (desarrollo). La Publicación a producción ocurre solo al empujar una etiqueta de versión — ver [CONTEXT.md](CONTEXT.md)
 
 ## Decisiones Técnicas
 
 Este proyecto usa Astro con las siguientes restricciones de seguridad y de marca:
 
-- **No HTML crudo en contenido:** Todo el markdown es sanitizado; no se permite insertar HTML directo.
+- **No HTML crudo en contenido:** el markdown no se sanitiza, se rechaza. Una historia con etiquetas HTML hace fallar `astro dev` y `astro build` con `Raw HTML is not allowed in ...`. Fallar en vez de limpiar en silencio deja el problema visible para quien edita.
 - **Content Collections tipadas:** Todos los posts deben cumplir el esquema definido en `src/lib/content/schema.ts`.
 - **Transparencia de versionado:** Todo cambio de contenido o código queda registrado en Git.
 
