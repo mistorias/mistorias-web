@@ -1,3 +1,4 @@
+import type { Dirent } from "node:fs";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -5,7 +6,7 @@ import path from "node:path";
 // > 8%") no debe bloquear la publicación de una historia.
 const RAW_HTML_PATTERN = /<\/?[a-zA-Z][^>]*>/;
 
-const defaultStoriesDirectory = path.resolve(
+export const defaultStoriesDirectory = path.resolve(
   process.cwd(),
   "content/mistorias-contenido/stories"
 );
@@ -16,18 +17,28 @@ export function assertNoRawHtml(value: string, filePath: string): void {
   }
 }
 
-async function readStoryFilenames(directory: string): Promise<string[]> {
+/**
+ * Lee las entradas de `stories/`, con el mismo mensaje de error para todo lo
+ * que valida esa carpeta (gate anti-HTML y gate de carpetas de imagen).
+ */
+export async function readStoriesDirectoryEntries(
+  directory: string
+): Promise<Dirent[]> {
   try {
-    const entries = await readdir(directory, { withFileTypes: true });
-    return entries
-      .filter((entry) => entry.isFile() && entry.name.endsWith(".md"))
-      .map((entry) => entry.name);
+    return await readdir(directory, { withFileTypes: true });
   } catch (cause) {
     throw new Error(
       `No se pudo leer ${directory}. Revisa que el submódulo de contenido esté inicializado: git submodule update --init --recursive`,
       { cause }
     );
   }
+}
+
+async function readStoryFilenames(directory: string): Promise<string[]> {
+  const entries = await readStoriesDirectoryEntries(directory);
+  return entries
+    .filter((entry) => entry.isFile() && entry.name.endsWith(".md"))
+    .map((entry) => entry.name);
 }
 
 /**
