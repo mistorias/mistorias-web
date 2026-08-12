@@ -1,10 +1,140 @@
 ---
+import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import TarjetaHistoria from "../components/TarjetaHistoria.astro";
+import { ordenarPorFechaDescendente } from "../lib/historias";
+import { rutaEtiquetas } from "../lib/rutas";
+
+const historias = ordenarPorFechaDescendente(
+    await getCollection("stories"),
+    (historia) => historia.data.date
+);
+
+const [destacada, ...anteriores] = historias;
+const hayEtiquetas = historias.some((historia) => historia.data.tags.length > 0);
 ---
 
-<BaseLayout title="Mistorias | En construcción">
-    <main>
-        <h1>En construcción</h1>
-        <p>Estamos preparando Mistorias para publicar historias y reflexión educativa.</p>
-    </main>
+<BaseLayout
+    title="Mistorias | Historias para transformar la educación"
+    description="En pocos minutos entiendes un problema educativo real y sales con algo concreto que hacer."
+>
+    <section class="franja">
+        <div class="columna">
+            <h1>Historias para transformar la educación</h1>
+
+            <p class="franja__promesa">
+                Conectamos historias individuales con la historia más grande que
+                las explica. En pocos minutos entiendes un problema educativo
+                real y sales con algo concreto que hacer.
+            </p>
+        </div>
+    </section>
+
+    {
+        destacada && (
+            <section class="destacada" aria-label="Última historia">
+                <div class="columna">
+                    <p class="destacada__rotulo">Última historia</p>
+                    <TarjetaHistoria historia={destacada} destacada />
+                </div>
+            </section>
+        )
+    }
+
+    {
+        anteriores.length > 0 && (
+            <section class="anteriores">
+                <div class="contenedor">
+                    <h2>Historias anteriores</h2>
+
+                    <div class="anteriores__rejilla">
+                        {anteriores.map((historia) => (
+                            <TarjetaHistoria
+                                historia={historia}
+                                nivelTitulo={3}
+                            />
+                        ))}
+                    </div>
+                </div>
+            </section>
+        )
+    }
+
+    {
+        historias.length === 0 && (
+            <section class="columna vacia">
+                <p>
+                    Todavía no hay historias publicadas. La primera está en
+                    camino.
+                </p>
+            </section>
+        )
+    }
+
+    {
+        hayEtiquetas && (
+            <section class="columna explorar">
+                <a href={rutaEtiquetas(import.meta.env.BASE_URL)}>
+                    Explorar las historias por etiqueta
+                </a>
+            </section>
+        )
+    }
 </BaseLayout>
+
+<style>
+    .franja {
+        padding-block: var(--esp-2xl) var(--esp-xl);
+        border-block-end: 1px solid var(--color-borde);
+        background-color: var(--color-realce);
+    }
+
+    .franja__promesa {
+        max-width: 55ch;
+        margin-block-start: var(--esp-m);
+        font-size: var(--paso-1);
+        color: var(--color-analitico);
+    }
+
+    .destacada {
+        padding-block-start: var(--esp-xl);
+    }
+
+    .destacada__rotulo {
+        margin-block-end: var(--esp-xs);
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--color-metadato);
+    }
+
+    .anteriores {
+        padding-block-start: var(--esp-xl);
+    }
+
+    /*
+     * `auto-fit` con un mínimo de 22rem resuelve solo: una columna en celular,
+     * dos desde tableta vertical, y el tope del contenedor la deja en dos en
+     * escritorio. Sin puntos de quiebre, y seguirá siendo correcta en anchos
+     * que hoy no existen.
+     */
+    .anteriores__rejilla {
+        display: grid;
+        gap: var(--esp-m);
+        margin-block-start: var(--esp-m);
+        grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+    }
+
+    .vacia,
+    .explorar {
+        padding-block-start: var(--esp-xl);
+    }
+
+    .explorar a {
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        font-weight: 600;
+    }
+</style>
