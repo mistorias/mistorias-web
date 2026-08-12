@@ -1,0 +1,87 @@
+---
+import { rutaAcerca, rutaInicio } from "../lib/rutas";
+
+const base = import.meta.env.BASE_URL;
+const inicio = rutaInicio(base);
+const acerca = rutaAcerca(base);
+
+// La navegación tiene un solo destino, así que entra en línea desde 320px. Que
+// no haga falta un menú desplegable es afortunado: exigiría JavaScript y la CSP
+// del sitio declara `script-src 'none'`.
+const esRutaActual = (ruta: string) => Astro.url.pathname === ruta;
+---
+
+<header class="cabecera">
+    <div class="contenedor cabecera__interior">
+        <a
+            class="cabecera__marca"
+            href={inicio}
+            aria-current={esRutaActual(inicio) ? "page" : undefined}
+        >
+            Mistorias
+        </a>
+
+        <nav aria-label="Principal">
+            <a
+                class="cabecera__enlace"
+                href={acerca}
+                aria-current={esRutaActual(acerca) ? "page" : undefined}
+            >
+                Acerca de
+            </a>
+        </nav>
+    </div>
+</header>
+
+<style>
+    .cabecera {
+        border-block-end: 1px solid var(--color-borde);
+        background-color: var(--color-superficie);
+    }
+
+    .cabecera__interior {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--esp-s);
+        align-items: baseline;
+        justify-content: space-between;
+        padding-block: var(--esp-s);
+    }
+
+    .cabecera__marca {
+        font-family: var(--fuente-info);
+        font-size: var(--paso-1);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--color-acento);
+        text-decoration: none;
+    }
+
+    .cabecera__enlace {
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        font-weight: 600;
+        color: var(--color-texto);
+        text-decoration: none;
+        /* Blanco de toque cómodo para el pulgar en celular. */
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        padding-inline: var(--esp-2xs);
+    }
+
+    .cabecera__enlace[aria-current="page"] {
+        color: var(--color-acento);
+        text-decoration: underline;
+        text-decoration-thickness: 0.14em;
+        text-underline-offset: 0.25em;
+    }
+
+    @media (hover: hover) {
+        .cabecera__marca:hover,
+        .cabecera__enlace:hover {
+            text-decoration: underline;
+            text-underline-offset: 0.25em;
+        }
+    }
+</style>
