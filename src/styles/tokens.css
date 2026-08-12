@@ -1,0 +1,80 @@
+/**
+ * Tokens del sistema de diseño de Mistorias.
+ *
+ * Los hexadecimales de la esencia de marca aparecen únicamente en este archivo;
+ * el resto del sitio consume nombres semánticos. Por eso el modo oscuro solo
+ * redefine seis variables y ninguna hoja de componente cambia.
+ *
+ * Los contrastes anotados están medidos contra el fondo de su propio tema.
+ * Referencia: https://github.com/mistorias/mistorias-esencia-de-marca
+ */
+
+:root {
+  color-scheme: light dark;
+
+  /* --- Color: modo claro ------------------------------------------------ */
+  --color-fondo: #f7f4ef; /* Off-White de marca */
+  --color-superficie: #fffdf9;
+  --color-texto: #1e2328; /* Deep Slate — 14.4:1 */
+  --color-acento: #8b0f0f; /* Wine Red — 8.8:1 */
+  --color-analitico: #5e2c3e; /* Deep Burgundy — 10.1:1 */
+  --color-metadato: #a24a2a; /* Rust — 5.4:1 */
+  --color-vivo: #c44336; /* Warm Red — solo bordes y decoración */
+  --color-borde: rgb(30 35 40 / 14%);
+  --color-realce: rgb(196 67 54 / 7%);
+
+  /* --- Tipografía ------------------------------------------------------- */
+  --fuente-info:
+    "IBM Plex Sans Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --fuente-narrativa:
+    "Lora Variable", Georgia, "Times New Roman", serif;
+
+  /*
+   * Escala fluida. El sumando en `rem` es deliberado: una fórmula hecha solo
+   * con `vw` ignora el tamaño de letra que la persona configuró y rompe el zoom.
+   */
+  --paso--1: clamp(0.875rem, 0.85rem + 0.15vw, 0.9375rem); /* 14 → 15 */
+  --paso-0: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem); /* 17 → 19 */
+  --paso-1: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem); /* 20 → 24 */
+  --paso-2: clamp(1.5rem, 1.3rem + 1vw, 2rem); /* 24 → 32 */
+  --paso-3: clamp(1.75rem, 1.3rem + 2.2vw, 3rem); /* 28 → 48 */
+
+  --altura-linea-narrativa: 1.7;
+  --altura-linea-titulo: 1.15;
+
+  /* --- Espaciado -------------------------------------------------------- */
+  --esp-3xs: 0.25rem;
+  --esp-2xs: 0.5rem;
+  --esp-xs: 0.75rem;
+  --esp-s: 1rem;
+  --esp-m: 1.5rem;
+  --esp-l: 2rem;
+  --esp-xl: 3rem;
+  --esp-2xl: 4rem;
+
+  /* --- Medidas ---------------------------------------------------------- */
+  --medida: 65ch; /* línea de lectura: no crece en escritorio */
+  --ancho-sitio: 64rem; /* tope de cabecera, pie y rejillas */
+  --radio: 0.375rem;
+  --grosor-foco: 3px;
+}
+
+/*
+ * Modo oscuro. Los rojos de marca dan 1.64:1 y 3.17:1 sobre Deep Slate, así que
+ * acá van tintes derivados: mismo matiz, mayor luminosidad, contraste medido.
+ * `--color-vivo` conserva el Warm Red literal porque su único uso es no textual,
+ * donde la WCAG pide 3:1 y sí cumple.
+ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-fondo: #1e2328; /* Deep Slate de marca */
+    --color-superficie: #272d33;
+    --color-texto: #f7f4ef; /* Off-White — 14.4:1 */
+    --color-acento: #f08c7f; /* Wine Red aclarado, matiz 7° — 6.6:1 */
+    --color-analitico: #d9a2b4; /* Burgundy aclarado, matiz 340° — 7.4:1 */
+    --color-metadato: #b98a76; /* Rust aclarado, matiz 18° — 5.3:1 */
+    --color-vivo: #c44336;
+    --color-borde: rgb(247 244 239 / 16%);
+    --color-realce: rgb(240 140 127 / 9%);
+  }
+}
