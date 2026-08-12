@@ -1,0 +1,197 @@
+/**
+ * Base del sistema: reinicio, elementos y prosa editorial.
+ *
+ * El diseño es intrínsecamente adaptable: `min()`, `clamp()` y `auto-fit`
+ * resuelven de 320px a 2560px sin puntos de quiebre. Las media queries que sí
+ * existen responden a una restricción real —altura corta, ausencia de puntero,
+ * preferencias del sistema— y ninguna nombra un dispositivo.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Columna flexible para que en páginas cortas —la de no encontrada, un índice
+   con pocas entradas— el pie quede al fondo de la ventana y no a media altura
+   con un vacío debajo. */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  font-family: var(--fuente-narrativa);
+  font-size: var(--paso-0);
+  line-height: var(--altura-linea-narrativa);
+  text-rendering: optimizeLegibility;
+}
+
+main {
+  flex: 1;
+}
+
+img,
+picture,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+h1,
+h2,
+h3 {
+  line-height: var(--altura-linea-titulo);
+  text-wrap: balance;
+}
+
+h1 {
+  font-family: var(--fuente-info);
+  font-size: var(--paso-3);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+h2 {
+  font-family: var(--fuente-narrativa);
+  font-size: var(--paso-2);
+  font-weight: 600;
+  color: var(--color-analitico);
+}
+
+h3 {
+  font-family: var(--fuente-narrativa);
+  font-size: var(--paso-1);
+  font-weight: 600;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--color-acento);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.18em;
+}
+
+/* Los estados de hover solo donde hay puntero: en táctil se quedan pegados
+   después del toque. */
+@media (hover: hover) {
+  a:hover {
+    text-decoration-thickness: 0.16em;
+  }
+}
+
+:focus-visible {
+  outline: var(--grosor-foco) solid var(--color-vivo);
+  outline-offset: 3px;
+  border-radius: var(--radio);
+}
+
+/* --- Estructura --------------------------------------------------------- */
+
+.contenedor {
+  width: min(var(--ancho-sitio), 100% - 2 * var(--esp-s));
+  margin-inline: auto;
+}
+
+/* La columna de lectura se detiene en 65 caracteres: en escritorio el espacio
+   sobrante va a los márgenes, nunca al párrafo. */
+.columna {
+  width: min(var(--medida), 100% - 2 * var(--esp-s));
+  margin-inline: auto;
+}
+
+.salto-contenido {
+  position: absolute;
+  left: var(--esp-s);
+  top: var(--esp-s);
+  z-index: 10;
+  padding: var(--esp-2xs) var(--esp-s);
+  background-color: var(--color-superficie);
+  border: 2px solid var(--color-acento);
+  border-radius: var(--radio);
+  font-family: var(--fuente-info);
+  font-size: var(--paso--1);
+  transform: translateY(-150%);
+}
+
+.salto-contenido:focus {
+  transform: translateY(0);
+}
+
+/* --- Prosa editorial ---------------------------------------------------- */
+
+.prosa > * + * {
+  margin-block-start: var(--esp-m);
+}
+
+.prosa > h2 {
+  margin-block-start: var(--esp-xl);
+}
+
+.prosa > h3 {
+  margin-block-start: var(--esp-l);
+}
+
+/* Los enlaces de una historia son sus fuentes y viven dentro del párrafo:
+   subrayados siempre, para no distinguirse únicamente por color. */
+.prosa a {
+  text-decoration: underline;
+}
+
+.prosa strong {
+  font-weight: 600;
+  color: var(--color-analitico);
+}
+
+.prosa ul,
+.prosa ol {
+  padding-inline-start: var(--esp-m);
+}
+
+.prosa li + li {
+  margin-block-start: var(--esp-2xs);
+}
+
+.prosa blockquote {
+  padding-inline-start: var(--esp-s);
+  border-inline-start: 4px solid var(--color-vivo);
+  font-style: italic;
+}
+
+/* --- Adaptación a alturas cortas ---------------------------------------- */
+
+/*
+ * El caso difícil no es el celular vertical sino el horizontal: ~844px de ancho
+ * pero solo ~390px de alto. Se corta por altura y no por `orientation` porque
+ * la orientación es un indicio; la altura es la restricción real.
+ */
+@media (max-height: 30rem) {
+  :root {
+    --esp-xl: 1.75rem;
+    --esp-2xl: 2.25rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
