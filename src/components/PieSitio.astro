@@ -1,0 +1,91 @@
+---
+// El pie es el principio de transparencia hecho navegación: desde acá se llega
+// al contenido editorial, al código que lo publica y a los criterios de marca
+// con los que se escribe.
+const enlaces = [
+    {
+        texto: "Contenido editorial",
+        href: "https://github.com/mistorias/mistorias-contenido"
+    },
+    {
+        texto: "Código del sitio",
+        href: "https://github.com/mistorias/mistorias-web"
+    },
+    {
+        texto: "Esencia de marca",
+        href: "https://github.com/mistorias/mistorias-esencia-de-marca"
+    },
+    {
+        texto: "Reportar un problema",
+        href: "https://github.com/mistorias/mistorias-web/blob/main/SECURITY.md"
+    }
+] as const;
+---
+
+<footer class="pie">
+    <div class="contenedor pie__interior">
+        <p class="pie__nota">
+            Cada historia de Mistorias enlaza sus fuentes y dice qué son. El
+            contenido y el código son públicos y tienen historial.
+        </p>
+
+        <nav aria-label="Enlaces del pie">
+            <ul class="pie__lista" role="list">
+                {
+                    enlaces.map((enlace) => (
+                        <li>
+                            <a class="pie__enlace" href={enlace.href}>
+                                {enlace.texto}
+                            </a>
+                        </li>
+                    ))
+                }
+            </ul>
+        </nav>
+    </div>
+</footer>
+
+<style>
+    .pie {
+        margin-block-start: var(--esp-2xl);
+        border-block-start: 1px solid var(--color-borde);
+        background-color: var(--color-superficie);
+    }
+
+    .pie__interior {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--esp-m);
+        justify-content: space-between;
+        padding-block: var(--esp-l);
+    }
+
+    .pie__nota {
+        max-width: 42ch;
+        font-size: var(--paso--1);
+        color: var(--color-metadato);
+    }
+
+    .pie__lista {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--esp-2xs) var(--esp-m);
+        padding: 0;
+        list-style: none;
+    }
+
+    .pie__enlace {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        text-decoration: none;
+    }
+
+    @media (hover: hover) {
+        .pie__enlace:hover {
+            text-decoration: underline;
+        }
+    }
+</style>

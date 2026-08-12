@@ -1,0 +1,68 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { rutaEtiquetas, rutaInicio } from "../lib/rutas";
+
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout
+    title="Página no encontrada | Mistorias"
+    description="La dirección que buscabas no existe en Mistorias."
+>
+    <div class="columna no-encontrada">
+        <p class="no-encontrada__codigo">Error 404</p>
+
+        <h1>Esta página no existe</h1>
+
+        <p class="no-encontrada__mensaje">
+            Puede que la dirección haya cambiado o que el enlace que seguiste
+            tenga un error. No es culpa tuya, y desde acá se sale rápido.
+        </p>
+
+        <ul class="no-encontrada__salidas" role="list">
+            <li><a href={rutaInicio(base)}>Ir a la portada</a></li>
+            <li>
+                <a href={rutaEtiquetas(base)}>Explorar las historias por etiqueta</a>
+            </li>
+        </ul>
+    </div>
+</BaseLayout>
+
+<style>
+    .no-encontrada {
+        padding-block: var(--esp-2xl);
+    }
+
+    .no-encontrada__codigo {
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--color-metadato);
+    }
+
+    .no-encontrada__mensaje {
+        max-width: 50ch;
+        margin-block-start: var(--esp-m);
+        font-size: var(--paso-1);
+        color: var(--color-analitico);
+    }
+
+    .no-encontrada__salidas {
+        display: grid;
+        gap: var(--esp-2xs);
+        justify-items: start;
+        margin-block-start: var(--esp-l);
+        padding: 0;
+        list-style: none;
+    }
+
+    .no-encontrada__salidas a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        font-family: var(--fuente-info);
+        font-weight: 600;
+    }
+</style>

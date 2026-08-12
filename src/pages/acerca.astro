@@ -1,0 +1,149 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const pilares = [
+    {
+        nombre: "Historias humanas",
+        descripcion:
+            "Una persona concreta, con nombre y lugar, atravesada por el problema del que hablamos."
+    },
+    {
+        nombre: "Datos explicados",
+        descripcion:
+            "Qué dice la cifra, de dónde sale y qué decisión ayuda a tomar. Nunca el dato solo."
+    },
+    {
+        nombre: "Contexto y reflexión",
+        descripcion:
+            "Cómo se conectan los hechos entre sí y qué preguntas siguen abiertas."
+    }
+] as const;
+
+const ciclo = [
+    {
+        momento: "Siente",
+        descripcion: "La historia de alguien hace visible la brecha."
+    },
+    {
+        momento: "Entiende",
+        descripcion: "Los datos explican de dónde viene esa brecha."
+    },
+    {
+        momento: "Actúa",
+        descripcion: "La comprensión se convierte en algo concreto que hacer."
+    }
+] as const;
+---
+
+<BaseLayout
+    title="Acerca de Mistorias"
+    description="Qué es Mistorias, con qué criterios se escribe cada historia y cómo se tratan las fuentes."
+>
+    <div class="columna acerca prosa">
+        <h1>Acerca de Mistorias</h1>
+
+        <p class="acerca__entrada">
+            Mistorias conecta historias individuales con la historia más grande
+            que las explica, para generar conciencia y mover a la acción. Es un
+            proyecto de blogging que mira la educación desde Arequipa, con
+            vocación transformadora.
+        </p>
+
+        <p>
+            La idea que lo sostiene es simple: las brechas educativas no se
+            entienden cuando se comunican como datos fríos. La educación no
+            falla por falta de datos, sino por falta de comprensión humana de
+            esos datos.
+        </p>
+
+        <h2>Los tres pilares</h2>
+
+        <p>
+            Toda historia combina al menos dos de estos tres; idealmente, los
+            tres.
+        </p>
+
+        <dl class="acerca__lista">
+            {
+                pilares.map((pilar) => (
+                    <div class="acerca__item">
+                        <dt>{pilar.nombre}</dt>
+                        <dd>{pilar.descripcion}</dd>
+                    </div>
+                ))
+            }
+        </dl>
+
+        <h2>Siente, entiende, actúa</h2>
+
+        <p>
+            Cada historia recorre esa secuencia completa. Si informa pero no
+            conecta, falla. Si conecta pero no explica, falla. Si explica pero no
+            moviliza, también falla.
+        </p>
+
+        <dl class="acerca__lista">
+            {
+                ciclo.map((paso) => (
+                    <div class="acerca__item">
+                        <dt>{paso.momento}</dt>
+                        <dd>{paso.descripcion}</dd>
+                    </div>
+                ))
+            }
+        </dl>
+
+        <h2>Cómo tratamos las fuentes</h2>
+
+        <p>
+            Cada fuente va enlazada y dice <strong>qué es</strong>. Un comunicado
+            gremial es parte del conflicto que reporta; una nota de divulgación
+            no es el informe original. Junto con el enlace declaramos sus límites
+            y sus posibles sesgos: quién la firma, qué interés tiene en el asunto
+            y qué preguntas deja sin responder.
+        </p>
+
+        <p>
+            También decimos qué <em>no</em> responden los datos. Una proyección a
+            2050 es un escenario, no un destino. Un dato correcto presentado sin
+            ese contexto puede seguir siendo engañoso.
+        </p>
+
+        <h2>Todo es público y tiene historial</h2>
+
+        <p>
+            El contenido editorial, el código que lo publica y los criterios de
+            marca con los que se escribe viven en repositorios abiertos, con el
+            historial completo de cada cambio. Los enlaces están al pie de esta
+            página. La transparencia acá no es una declaración: es que puedas
+            revisar quién cambió qué y cuándo.
+        </p>
+    </div>
+</BaseLayout>
+
+<style>
+    .acerca {
+        padding-block-start: var(--esp-xl);
+    }
+
+    .acerca__entrada {
+        font-size: var(--paso-1);
+        color: var(--color-analitico);
+    }
+
+    .acerca__lista {
+        display: grid;
+        gap: var(--esp-m);
+    }
+
+    .acerca__item dt {
+        font-family: var(--fuente-info);
+        font-weight: 600;
+        color: var(--color-acento);
+    }
+
+    .acerca__item dd {
+        margin-inline-start: 0;
+        margin-block-start: var(--esp-3xs);
+    }
+</style>

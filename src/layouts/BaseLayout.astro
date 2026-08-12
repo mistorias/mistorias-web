@@ -1,8 +1,20 @@
 ---
+import "@fontsource-variable/ibm-plex-sans";
+import "@fontsource-variable/lora";
+import "../styles/tokens.css";
+import "../styles/base.css";
+import loraLatino from "@fontsource-variable/lora/files/lora-latin-wght-normal.woff2?url";
+
+import CabeceraSitio from "../components/CabeceraSitio.astro";
+import PieSitio from "../components/PieSitio.astro";
+
 // GitHub Pages no permite configurar cabeceras HTTP, así que la CSP viaja en
 // un <meta>. Es la única barrera disponible en el entorno de desarrollo; en
 // producción, `public/_headers` la envía además como cabecera junto con
 // frame-ancestors y HSTS, que un <meta> no puede expresar.
+//
+// Las tipografías son propias y se sirven desde el mismo origen, así que caen
+// bajo `default-src 'self'` y no hizo falta relajar ninguna directiva.
 const contentSecurityPolicy = [
     "default-src 'self'",
     "img-src 'self' data:",
@@ -13,12 +25,15 @@ const contentSecurityPolicy = [
     "form-action 'none'"
 ].join("; ");
 
-interface Props {
+type Props = {
     title: string;
     description?: string;
-}
+};
 
 const { title, description } = Astro.props;
+const urlCanonica = Astro.site
+    ? new URL(Astro.url.pathname, Astro.site)
+    : undefined;
 ---
 
 <html lang="es">
@@ -26,12 +41,39 @@ const { title, description } = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="Content-Security-Policy" content={contentSecurityPolicy} />
+    <meta name="color-scheme" content="light dark" />
 
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
+    {urlCanonica && <link rel="canonical" href={urlCanonica} />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_PE" />
+    <meta property="og:site_name" content="Mistorias" />
+    <meta property="og:title" content={title} />
+    {description && <meta property="og:description" content={description} />}
+    {urlCanonica && <meta property="og:url" content={urlCanonica} />}
+
+    <!-- La fuente narrativa es la que bloquea la lectura: se precarga solo el
+         subconjunto latino, que es el único que el castellano necesita. -->
+    <link
+        rel="preload"
+        as="font"
+        type="font/woff2"
+        href={loraLatino}
+        crossorigin
+    />
 </head>
 
 <body>
-<slot />
+<a class="salto-contenido" href="#contenido">Saltar al contenido</a>
+
+<CabeceraSitio />
+
+<main id="contenido" tabindex="-1">
+    <slot />
+</main>
+
+<PieSitio />
 </body>
 </html>
