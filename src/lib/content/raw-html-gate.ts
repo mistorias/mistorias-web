@@ -1,14 +1,13 @@
-import { readdir, readFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
+import {
+  defaultStoriesDirectory,
+  readStoriesDirectoryEntries
+} from "./stories-directory";
 
 // Solo etiquetas HTML reales: una comparación numérica en prosa ("de < 5% a
 // > 8%") no debe bloquear la publicación de una historia.
 const RAW_HTML_PATTERN = /<\/?[a-zA-Z][^>]*>/;
-
-const defaultStoriesDirectory = path.resolve(
-  process.cwd(),
-  "content/mistorias-contenido/stories"
-);
 
 export function assertNoRawHtml(value: string, filePath: string): void {
   if (RAW_HTML_PATTERN.test(value)) {
@@ -17,17 +16,10 @@ export function assertNoRawHtml(value: string, filePath: string): void {
 }
 
 async function readStoryFilenames(directory: string): Promise<string[]> {
-  try {
-    const entries = await readdir(directory, { withFileTypes: true });
-    return entries
-      .filter((entry) => entry.isFile() && entry.name.endsWith(".md"))
-      .map((entry) => entry.name);
-  } catch (cause) {
-    throw new Error(
-      `No se pudo leer ${directory}. Revisa que el submódulo de contenido esté inicializado: git submodule update --init --recursive`,
-      { cause }
-    );
-  }
+  const entries = await readStoriesDirectoryEntries(directory);
+  return entries
+    .filter((entry) => entry.isFile() && entry.name.endsWith(".md"))
+    .map((entry) => entry.name);
 }
 
 /**
