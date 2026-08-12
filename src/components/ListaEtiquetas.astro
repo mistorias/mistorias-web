@@ -1,0 +1,56 @@
+---
+import { rutaEtiqueta } from "../lib/rutas";
+
+type Props = {
+    etiquetas: readonly string[];
+    etiquetaTextual: string;
+};
+
+const { etiquetas, etiquetaTextual } = Astro.props;
+const base = import.meta.env.BASE_URL;
+---
+
+<ul class="etiquetas" role="list" aria-label={etiquetaTextual}>
+    {
+        etiquetas.map((etiqueta) => (
+            <li>
+                <a class="etiquetas__ficha" href={rutaEtiqueta(base, etiqueta)}>
+                    {etiqueta}
+                </a>
+            </li>
+        ))
+    }
+</ul>
+
+<style>
+    .etiquetas {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--esp-2xs);
+        padding: 0;
+        list-style: none;
+    }
+
+    .etiquetas__ficha {
+        /* 44px de blanco de toque: en celular vertical las fichas son lo más
+           difícil de acertar con el pulgar. */
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        padding-inline: var(--esp-xs);
+        border: 1px solid var(--color-borde);
+        border-radius: var(--radio);
+        background-color: var(--color-realce);
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        color: var(--color-metadato);
+        text-decoration: none;
+    }
+
+    @media (hover: hover) {
+        .etiquetas__ficha:hover {
+            border-color: var(--color-vivo);
+            color: var(--color-acento);
+        }
+    }
+</style>

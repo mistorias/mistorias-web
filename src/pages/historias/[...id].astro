@@ -5,6 +5,8 @@ import {
     type CollectionEntry
 } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import ListaEtiquetas from "../../components/ListaEtiquetas.astro";
+import { fechaLegible, fechaParaAtributo } from "../../lib/fechas";
 
 export async function getStaticPaths() {
     const stories = await getCollection("stories");
@@ -15,9 +17,9 @@ export async function getStaticPaths() {
     }));
 }
 
-interface Props {
+type Props = {
     story: CollectionEntry<"stories">;
-}
+};
 
 const { story } = Astro.props;
 const { Content } = await render(story);
@@ -27,30 +29,85 @@ const { Content } = await render(story);
     title={`${story.data.title} | Mistorias`}
     description={story.data.summary}
 >
-    <main>
-        <article>
-            <header>
-                <h1>{story.data.title}</h1>
+    <article class="historia">
+        <header class="columna historia__cabecera">
+            <h1>{story.data.title}</h1>
 
-                <p>
-                    Por {story.data.author} -
-                    <time datetime={story.data.date.toISOString()}>
-                        {story.data.date.toLocaleDateString("es-ES")}
-                    </time>
-                </p>
-            </header>
+            <p class="historia__metadatos">
+                Por {story.data.author}
+                <span aria-hidden="true">·</span>
+                <time datetime={fechaParaAtributo(story.data.date)}>
+                    {fechaLegible(story.data.date)}
+                </time>
+            </p>
 
+            <p class="historia__resumen">{story.data.summary}</p>
+        </header>
+
+        {/* La prosa recibe un solo tratamiento tipográfico: el esquema no
+            garantiza qué secciones trae una historia, así que el diseño no se
+            acopla a sus títulos. */}
+        <div class="columna prosa">
             <Content />
+        </div>
 
-            {
-                story.data.tags.length > 0 && (
-                            <footer>
-                                <ul>
-                                    {story.data.tags.map((tag) => <li>{tag}</li>)}
-                                </ul>
-                            </footer>
-                )
-            }
-        </article>
-    </main>
+        {
+            story.data.tags.length > 0 && (
+                <footer class="columna historia__pie">
+                    <h2 class="historia__pie-titulo">Etiquetas</h2>
+                    <ListaEtiquetas
+                        etiquetas={story.data.tags}
+                        etiquetaTextual="Etiquetas de esta historia"
+                    />
+                </footer>
+            )
+        }
+    </article>
 </BaseLayout>
+
+<style>
+    .historia {
+        padding-block-start: var(--esp-xl);
+    }
+
+    .historia__cabecera {
+        padding-block-end: var(--esp-l);
+        border-block-end: 1px solid var(--color-borde);
+        margin-block-end: var(--esp-l);
+    }
+
+    /* Flex con `gap` en vez de espacios en el marcado: el compilador colapsa la
+       plantilla y el separador quedaba pegado a la autoría y a la fecha. */
+    .historia__metadatos {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0 0.6ch;
+        margin-block-start: var(--esp-s);
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        color: var(--color-metadato);
+    }
+
+    .historia__resumen {
+        margin-block-start: var(--esp-m);
+        font-size: var(--paso-1);
+        font-style: italic;
+        color: var(--color-analitico);
+    }
+
+    .historia__pie {
+        padding-block-start: var(--esp-l);
+        margin-block-start: var(--esp-xl);
+        border-block-start: 1px solid var(--color-borde);
+    }
+
+    .historia__pie-titulo {
+        margin-block-end: var(--esp-xs);
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--color-metadato);
+    }
+</style>

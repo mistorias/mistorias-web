@@ -1,0 +1,94 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import TarjetaHistoria from "../../components/TarjetaHistoria.astro";
+import { agruparPorEtiqueta } from "../../lib/etiquetas";
+import { ordenarPorFechaDescendente } from "../../lib/historias";
+import { rutaEtiquetas } from "../../lib/rutas";
+
+export async function getStaticPaths() {
+    const historias = ordenarPorFechaDescendente(
+        await getCollection("stories"),
+        (historia) => historia.data.date
+    );
+
+    return agruparPorEtiqueta(historias, (historia) => historia.data.tags).map(
+        (grupo) => ({
+            params: { etiqueta: grupo.etiqueta },
+            props: { historias: grupo.historias }
+        })
+    );
+}
+
+type Props = {
+    historias: readonly CollectionEntry<"stories">[];
+};
+
+const { etiqueta } = Astro.params;
+const { historias } = Astro.props;
+---
+
+<BaseLayout
+    title={`Historias sobre ${etiqueta} | Mistorias`}
+    description={`Historias de Mistorias etiquetadas como ${etiqueta}.`}
+>
+    <div class="contenedor etiqueta">
+        <p class="etiqueta__rotulo">Etiqueta</p>
+        <h1>{etiqueta}</h1>
+
+        <p class="etiqueta__cuenta">
+            {historias.length === 1
+                ? "1 historia con esta etiqueta"
+                : `${historias.length} historias con esta etiqueta`}
+        </p>
+
+        <div class="etiqueta__rejilla">
+            {
+                historias.map((historia) => (
+                    <TarjetaHistoria historia={historia} />
+                ))
+            }
+        </div>
+
+        <p class="etiqueta__volver">
+            <a href={rutaEtiquetas(import.meta.env.BASE_URL)}>
+                Ver todas las etiquetas
+            </a>
+        </p>
+    </div>
+</BaseLayout>
+
+<style>
+    .etiqueta {
+        padding-block-start: var(--esp-xl);
+    }
+
+    .etiqueta__rotulo {
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--color-metadato);
+    }
+
+    .etiqueta__cuenta {
+        margin-block-start: var(--esp-2xs);
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        color: var(--color-metadato);
+    }
+
+    .etiqueta__rejilla {
+        display: grid;
+        gap: var(--esp-m);
+        margin-block-start: var(--esp-l);
+        grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+    }
+
+    .etiqueta__volver {
+        margin-block-start: var(--esp-l);
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+    }
+</style>

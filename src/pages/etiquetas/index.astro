@@ -1,0 +1,106 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { agruparPorEtiqueta } from "../../lib/etiquetas";
+import { ordenarPorFechaDescendente } from "../../lib/historias";
+import { rutaEtiqueta } from "../../lib/rutas";
+
+const historias = ordenarPorFechaDescendente(
+    await getCollection("stories"),
+    (historia) => historia.data.date
+);
+
+const grupos = agruparPorEtiqueta(historias, (historia) => historia.data.tags);
+const base = import.meta.env.BASE_URL;
+
+const cuentaHistorias = (cantidad: number) =>
+    cantidad === 1 ? "1 historia" : `${cantidad} historias`;
+---
+
+<BaseLayout
+    title="Etiquetas | Mistorias"
+    description="Los temas que atraviesan las historias de Mistorias."
+>
+    <div class="columna etiquetas-indice">
+        <h1>Etiquetas</h1>
+
+        <p class="etiquetas-indice__entrada">
+            Los temas que distinguen a una historia de las demás. Empiezan por
+            los más presentes en el sitio.
+        </p>
+
+        {
+            grupos.length > 0 ? (
+                <ul class="etiquetas-indice__lista" role="list">
+                    {grupos.map((grupo) => (
+                        <li>
+                            <a
+                                class="etiquetas-indice__enlace"
+                                href={rutaEtiqueta(base, grupo.etiqueta)}
+                            >
+                                <span class="etiquetas-indice__nombre">
+                                    {grupo.etiqueta}
+                                </span>
+                                <span class="etiquetas-indice__cuenta">
+                                    {cuentaHistorias(grupo.historias.length)}
+                                </span>
+                            </a>
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <p>Todavía no hay etiquetas publicadas.</p>
+            )
+        }
+    </div>
+</BaseLayout>
+
+<style>
+    .etiquetas-indice {
+        padding-block-start: var(--esp-xl);
+    }
+
+    .etiquetas-indice__entrada {
+        margin-block-start: var(--esp-m);
+        color: var(--color-analitico);
+    }
+
+    .etiquetas-indice__lista {
+        display: grid;
+        gap: var(--esp-2xs);
+        margin-block-start: var(--esp-l);
+        padding: 0;
+        list-style: none;
+        grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    }
+
+    .etiquetas-indice__enlace {
+        display: flex;
+        gap: var(--esp-s);
+        align-items: baseline;
+        justify-content: space-between;
+        min-height: 44px;
+        padding: var(--esp-2xs) var(--esp-xs);
+        border: 1px solid var(--color-borde);
+        border-radius: var(--radio);
+        background-color: var(--color-superficie);
+        text-decoration: none;
+    }
+
+    .etiquetas-indice__nombre {
+        font-family: var(--fuente-info);
+        font-weight: 600;
+    }
+
+    .etiquetas-indice__cuenta {
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        color: var(--color-metadato);
+    }
+
+    @media (hover: hover) {
+        .etiquetas-indice__enlace:hover {
+            border-color: var(--color-vivo);
+        }
+    }
+</style>
