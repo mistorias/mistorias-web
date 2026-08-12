@@ -1,5 +1,5 @@
 import type { AstroIntegration } from "astro";
-import { assertStoriesHaveNoRawHtml } from "./content-loader";
+import { assertStoriesHaveNoRawHtml } from "./raw-html-gate";
 
 /**
  * Integración que impide compilar historias con HTML crudo.

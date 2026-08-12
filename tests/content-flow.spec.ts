@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import type { AstroIntegration } from "astro";
 import { afterEach, describe, expect, it } from "vitest";
-import { assertStoriesHaveNoRawHtml } from "../src/lib/content/content-loader";
+import { assertStoriesHaveNoRawHtml } from "../src/lib/content/raw-html-gate";
 import { noRawHtml } from "../src/lib/content/no-raw-html-integration";
 
 type ConfigSetupHook = NonNullable<

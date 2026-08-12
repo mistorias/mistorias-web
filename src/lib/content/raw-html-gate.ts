@@ -1,36 +1,17 @@
-import type { Dirent } from "node:fs";
-import { readdir, readFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
+import {
+  defaultStoriesDirectory,
+  readStoriesDirectoryEntries
+} from "./stories-directory";
 
 // Solo etiquetas HTML reales: una comparación numérica en prosa ("de < 5% a
 // > 8%") no debe bloquear la publicación de una historia.
 const RAW_HTML_PATTERN = /<\/?[a-zA-Z][^>]*>/;
 
-export const defaultStoriesDirectory = path.resolve(
-  process.cwd(),
-  "content/mistorias-contenido/stories"
-);
-
 export function assertNoRawHtml(value: string, filePath: string): void {
   if (RAW_HTML_PATTERN.test(value)) {
     throw new Error(`Raw HTML is not allowed in ${filePath}.`);
-  }
-}
-
-/**
- * Lee las entradas de `stories/`, con el mismo mensaje de error para todo lo
- * que valida esa carpeta (gate anti-HTML y gate de carpetas de imagen).
- */
-export async function readStoriesDirectoryEntries(
-  directory: string
-): Promise<Dirent[]> {
-  try {
-    return await readdir(directory, { withFileTypes: true });
-  } catch (cause) {
-    throw new Error(
-      `No se pudo leer ${directory}. Revisa que el submódulo de contenido esté inicializado: git submodule update --init --recursive`,
-      { cause }
-    );
   }
 }
 
