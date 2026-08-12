@@ -43,9 +43,23 @@ The gate runs via `src/lib/content/no-raw-html-integration.ts`, an Astro integra
 
 ### Pages & Routing
 
-- `src/layouts/BaseLayout.astro` — shared HTML skeleton; the `<meta>` Content-Security-Policy lives here and nowhere else
-- `src/pages/index.astro` — homepage
-- `src/pages/stories/[...id].astro` — dynamic story detail pages (file-based routing)
+- `src/layouts/BaseLayout.astro` — shared HTML skeleton; the `<meta>` Content-Security-Policy lives here and nowhere else. Also carries the header, the footer and the skip link, so every page shares them
+- `src/pages/index.astro` — homepage: promise banner, featured story, older stories
+- `src/pages/historias/[...id].astro` — dynamic story detail pages (file-based routing)
+- `src/pages/etiquetas/index.astro` and `src/pages/etiquetas/[etiqueta].astro` — tag index and per-tag listings
+- `src/pages/acerca.astro`, `src/pages/404.astro`
+
+Public URLs are in Spanish (`/historias/`, `/etiquetas/`), matching the project's ubiquitous language. **Never hardcode an internal `href`**: `base` differs per deploy target, so a hand-written path silently breaks on GitHub Pages without failing the build. Build every internal link with the helpers in `src/lib/rutas.ts`, which also own the section names.
+
+### Design System
+
+Derived from [Mistorias Esencia de Marca](https://github.com/mistorias/mistorias-esencia-de-marca); the reasoning is in [ADR 0006](docs/adr/0006-sistema-de-diseno-del-sitio.md).
+
+- `src/styles/tokens.css` — the **only** file where a brand hex appears. Everything else consumes semantic tokens (`--color-acento`, `--color-metadato`). Dark mode redefines six variables and no component stylesheet changes; keep it that way.
+- `src/styles/base.css` — reset, element defaults, editorial prose, and the few media queries the site needs. Layout is intrinsically responsive (`min()`, `clamp()`, `auto-fit`), so breakpoints exist only where a real constraint does — never per device.
+- Typefaces are self-hosted via `@fontsource-variable` and served same-origin, so they fall under `default-src 'self'` and required no CSP change.
+- Contrast ratios are annotated next to each token. Both themes clear WCAG AA; `--color-vivo` is restricted to non-text use because it does not.
+- Story pages style prose uniformly and **do not** key off section titles: `storySchema` validates frontmatter only, so section names are editorial convention and a design that depends on them would break silently.
 
 ### Build Variants (DEPLOY_TARGET)
 
