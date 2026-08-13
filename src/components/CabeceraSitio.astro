@@ -1,4 +1,5 @@
 ---
+import LogotipoMistorias from "./LogotipoMistorias.astro";
 import { rutaAcerca, rutaInicio } from "../lib/rutas";
 
 const base = import.meta.env.BASE_URL;
@@ -18,7 +19,7 @@ const esRutaActual = (ruta: string) => Astro.url.pathname === ruta;
             href={inicio}
             aria-current={esRutaActual(inicio) ? "page" : undefined}
         >
-            Mistorias
+            <LogotipoMistorias disposicion="adaptable" />
         </a>
 
         <nav aria-label="Principal">
@@ -43,18 +44,29 @@ const esRutaActual = (ruta: string) => Astro.url.pathname === ruta;
         display: flex;
         flex-wrap: wrap;
         gap: var(--esp-s);
-        align-items: baseline;
+        align-items: center;
         justify-content: space-between;
         padding-block: var(--esp-s);
     }
 
+    /*
+     * El tamaño del logotipo es el `--paso-1` de siempre: reutiliza la
+     * escala del sistema en vez de un `clamp()` propio. En pantalla vertical
+     * el logotipo va apilado (palabra + símbolo debajo, ver
+     * LogotipoMistorias) y la cabecera crece; en celular horizontal
+     * (`max-height: 30rem`) baja a `--paso-0` y pasa a fila, para que el
+     * blanco de toque de 44px del enlace de navegación siga siendo lo que
+     * fija el alto de la cabecera en 75px.
+     */
     .cabecera__marca {
-        font-family: var(--fuente-info);
         font-size: var(--paso-1);
-        font-weight: 700;
-        letter-spacing: -0.02em;
-        color: var(--color-acento);
         text-decoration: none;
+    }
+
+    @media (max-height: 30rem) {
+        .cabecera__marca {
+            font-size: var(--paso-0);
+        }
     }
 
     .cabecera__enlace {
@@ -78,7 +90,13 @@ const esRutaActual = (ruta: string) => Astro.url.pathname === ruta;
     }
 
     @media (hover: hover) {
-        .cabecera__marca:hover,
+        /* La palabra vive en LogotipoMistorias: :global() alcanza su clase
+           sin que Astro exija además el ámbito de este componente. */
+        .cabecera__marca:hover :global(.logotipo__palabra) {
+            text-decoration: underline;
+            text-underline-offset: 0.25em;
+        }
+
         .cabecera__enlace:hover {
             text-decoration: underline;
             text-underline-offset: 0.25em;

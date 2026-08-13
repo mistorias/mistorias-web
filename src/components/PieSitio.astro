@@ -1,4 +1,8 @@
 ---
+import { rutaInicio } from "../lib/rutas";
+
+const inicio = rutaInicio(import.meta.env.BASE_URL);
+
 // El pie es el principio de transparencia hecho navegación: desde acá se llega
 // al contenido editorial, al código que lo publica y a los criterios de marca
 // con los que se escribe.
@@ -24,10 +28,14 @@ const enlaces = [
 
 <footer class="pie">
     <div class="contenedor pie__interior">
-        <p class="pie__nota">
-            Cada historia de Mistorias enlaza sus fuentes y dice qué son. El
-            contenido y el código son públicos y tienen historial.
-        </p>
+        <div class="pie__marca">
+            <a class="pie__logo" href={inicio}>Mistorias</a>
+
+            <p class="pie__nota">
+                Cada historia de Mistorias enlaza sus fuentes y dice qué son. El
+                contenido y el código son públicos y tienen historial.
+            </p>
+        </div>
 
         <nav aria-label="Enlaces del pie">
             <ul class="pie__lista" role="list">
@@ -52,23 +60,62 @@ const enlaces = [
         background-color: var(--color-superficie);
     }
 
+    /* Columna, no fila: así `.pie__marca` y `<nav>` miden el 100% del ancho
+       del pie por el `stretch` (por defecto) del eje transversal, sin media
+       query. Sin eso, "a la derecha" y "centrado" solo tendrían sentido
+       contra el hueco que le sobra a cada bloque, no contra la página. */
     .pie__interior {
         display: flex;
-        flex-wrap: wrap;
+        flex-direction: column;
         gap: var(--esp-m);
-        justify-content: space-between;
         padding-block: var(--esp-l);
     }
 
+    /* Sin `align-items` propio: el `stretch` por defecto de flexbox iguala
+       el alto del enlace y el de la nota, cualquiera sea el más alto —así
+       "el mismo tamaño vertical" no depende de un número fijo. */
+    .pie__marca {
+        display: flex;
+        gap: var(--esp-xs);
+    }
+
+    /* El nombre de la marca, no el logotipo completo: solo texto, en el
+       mismo tratamiento que la palabra dentro de LogotipoMistorias (Lora
+       600, --color-acento). `flex` + `align-items: center` lo centra
+       verticalmente dentro del alto que le da el `stretch` del padre;
+       `min-height` es el mismo piso de blanco de toque que ya usan
+       `.pie__enlace` y `.cabecera__enlace`, para cuando la nota es corta. */
+    .pie__logo {
+        display: flex;
+        flex: none;
+        align-items: center;
+        min-height: 44px;
+        font-family: var(--fuente-narrativa);
+        font-size: var(--paso--1);
+        font-weight: 600;
+        color: var(--color-acento);
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
     .pie__nota {
+        /* El margen automático consume el espacio libre de la fila antes
+           del elemento, así su borde derecho llega al borde derecho de
+           `.pie__marca` (ya 100% del pie) en vez de quedar pegado a
+           `.pie__logo`. En viewports angostos, sin espacio libre, se
+           resuelve a 0 y el comportamiento es el de siempre. */
+        margin-inline-start: auto;
         max-width: 42ch;
         font-size: var(--paso--1);
         color: var(--color-metadato);
+        /* A la derecha, contra el nombre de marca a su izquierda. */
+        text-align: right;
     }
 
     .pie__lista {
         display: flex;
         flex-wrap: wrap;
+        justify-content: center;
         gap: var(--esp-2xs) var(--esp-m);
         padding: 0;
         list-style: none;
@@ -84,6 +131,7 @@ const enlaces = [
     }
 
     @media (hover: hover) {
+        .pie__logo:hover,
         .pie__enlace:hover {
             text-decoration: underline;
         }
