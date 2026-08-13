@@ -12,6 +12,7 @@ const VIEWBOX_PATTERN = /\bviewBox\s*=/i;
 const FIXED_COLOR_PATTERN =
   /\b(?:fill|stroke)\s*=\s*["'](?!currentColor|none|inherit)[^"']*["']/i;
 const SCRIPT_TAG_PATTERN = /<script\b/i;
+const STYLE_TAG_PATTERN = /<style\b/i;
 const EVENT_HANDLER_PATTERN = /\son[a-z]+\s*=/i;
 const FOREIGN_OBJECT_PATTERN = /<foreignObject\b/i;
 const EXTERNAL_REFERENCE_PATTERN =
@@ -35,6 +36,12 @@ export function assertBrandSymbolIsThemeReady(
   if (FIXED_COLOR_PATTERN.test(content)) {
     throw new Error(
       `${filePath} usa un color fijo en vez de currentColor. Así no hereda --color-acento y el tema oscuro deja de funcionar solo.`
+    );
+  }
+
+  if (STYLE_TAG_PATTERN.test(content)) {
+    throw new Error(
+      `${filePath} trae un <style> incrustado. Inyectado con set:html se vuelve una hoja de estilos real del documento, y un currentColor ahí adentro puede resolver contra un color que la misma hoja fija, no contra --color-acento heredado. La presentación va en atributos (fill="currentColor"), no en una hoja de estilos aparte.`
     );
   }
 

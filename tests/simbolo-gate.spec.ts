@@ -83,6 +83,18 @@ describe("assertBrandSymbolIsThemeReady", () => {
       /no permitido/
     );
   });
+
+  it("rechaza un <style> incrustado, aunque fije currentColor por dentro", () => {
+    // currentColor ahí adentro resuelve contra el color que la misma regla
+    // fija (#8B0F0F), no contra --color-acento heredado del documento: el
+    // símbolo deja de cambiar de tema aunque el atributo diga currentColor.
+    const svg =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><style>.x { color: #8B0F0F; fill: currentColor; }</style><path class="x" d="M0,0 L10,0 L10,10 L0,10 Z" /></svg>';
+
+    expect(() => assertBrandSymbolIsThemeReady(svg, "simbolo.svg")).toThrow(
+      /<style>/
+    );
+  });
 });
 
 describe("assertBrandSymbolFileIsThemeReady", () => {
@@ -108,6 +120,12 @@ describe("assertBrandSymbolFileIsThemeReady", () => {
     await expect(
       assertBrandSymbolFileIsThemeReady(fixturePath("con-script.svg"))
     ).rejects.toThrow(/no permitido/);
+  });
+
+  it("rechaza el fixture con <style> incrustado", async () => {
+    await expect(
+      assertBrandSymbolFileIsThemeReady(fixturePath("con-style.svg"))
+    ).rejects.toThrow(/<style>/);
   });
 
   it("avisa cuando el archivo no existe", async () => {
