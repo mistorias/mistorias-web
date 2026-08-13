@@ -60,11 +60,14 @@ const enlaces = [
         background-color: var(--color-superficie);
     }
 
+    /* Columna, no fila: así `.pie__marca` y `<nav>` miden el 100% del ancho
+       del pie por el `stretch` (por defecto) del eje transversal, sin media
+       query. Sin eso, "a la derecha" y "centrado" solo tendrían sentido
+       contra el hueco que le sobra a cada bloque, no contra la página. */
     .pie__interior {
         display: flex;
-        flex-wrap: wrap;
+        flex-direction: column;
         gap: var(--esp-m);
-        justify-content: space-between;
         padding-block: var(--esp-l);
     }
 
@@ -96,6 +99,12 @@ const enlaces = [
     }
 
     .pie__nota {
+        /* El margen automático consume el espacio libre de la fila antes
+           del elemento, así su borde derecho llega al borde derecho de
+           `.pie__marca` (ya 100% del pie) en vez de quedar pegado a
+           `.pie__logo`. En viewports angostos, sin espacio libre, se
+           resuelve a 0 y el comportamiento es el de siempre. */
+        margin-inline-start: auto;
         max-width: 42ch;
         font-size: var(--paso--1);
         color: var(--color-metadato);
@@ -109,6 +118,7 @@ const enlaces = [
     .pie__lista {
         display: flex;
         flex-wrap: wrap;
+        justify-content: center;
         gap: var(--esp-2xs) var(--esp-m);
         padding: 0;
         list-style: none;
