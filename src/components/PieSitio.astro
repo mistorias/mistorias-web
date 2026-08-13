@@ -1,5 +1,7 @@
 ---
-import SimboloMistorias from "./SimboloMistorias.astro";
+import { rutaInicio } from "../lib/rutas";
+
+const inicio = rutaInicio(import.meta.env.BASE_URL);
 
 // El pie es el principio de transparencia hecho navegación: desde acá se llega
 // al contenido editorial, al código que lo publica y a los criterios de marca
@@ -27,9 +29,7 @@ const enlaces = [
 <footer class="pie">
     <div class="contenedor pie__interior">
         <div class="pie__marca">
-            <span class="pie__simbolo">
-                <SimboloMistorias titulo="Logo de Mistorias" />
-            </span>
+            <a class="pie__logo" href={inicio}>Mistorias</a>
 
             <p class="pie__nota">
                 Cada historia de Mistorias enlaza sus fuentes y dice qué son. El
@@ -68,19 +68,31 @@ const enlaces = [
         padding-block: var(--esp-l);
     }
 
+    /* Sin `align-items` propio: el `stretch` por defecto de flexbox iguala
+       el alto del enlace y el de la nota, cualquiera sea el más alto —así
+       "el mismo tamaño vertical" no depende de un número fijo. */
     .pie__marca {
         display: flex;
-        align-items: flex-start;
         gap: var(--esp-xs);
     }
 
-    /* "Muy pequeño": el paso más chico de la escala tipográfica, sin un
-       clamp() propio — es la marca de agua del pie, no el logotipo. */
-    .pie__simbolo {
+    /* El nombre de la marca, no el logotipo completo: solo texto, en el
+       mismo tratamiento que la palabra dentro de LogotipoMistorias (Lora
+       600, --color-acento). `flex` + `align-items: center` lo centra
+       verticalmente dentro del alto que le da el `stretch` del padre;
+       `min-height` es el mismo piso de blanco de toque que ya usan
+       `.pie__enlace` y `.cabecera__enlace`, para cuando la nota es corta. */
+    .pie__logo {
+        display: flex;
         flex: none;
-        margin-block-start: 0.3em;
+        align-items: center;
+        min-height: 44px;
+        font-family: var(--fuente-narrativa);
         font-size: var(--paso--1);
+        font-weight: 600;
         color: var(--color-acento);
+        text-decoration: none;
+        white-space: nowrap;
     }
 
     .pie__nota {
@@ -107,6 +119,7 @@ const enlaces = [
     }
 
     @media (hover: hover) {
+        .pie__logo:hover,
         .pie__enlace:hover {
             text-decoration: underline;
         }
