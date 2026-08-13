@@ -62,18 +62,30 @@ directos:
 
 - El enlace de la cabecera tiene nombre accesible real, sin necesitar `<title>`
   ni `alt` (requisito 3 del issue).
-- El mismo componente puede mostrarse sin la palabra (el pie, ver §5) sin
-  necesitar un segundo archivo recortado.
+- El nombre de marca puede reutilizarse como texto plano en otros lugares (el
+  pie, ver §6) sin depender de ningún archivo de imagen.
 
-### 3. El símbolo se redibujó; no existe un vector original
+### 3. El símbolo se adaptó de una referencia interna; no existe un vector oficial
 
 Los seis adjuntos del issue son raster (PNG) y no eran accesibles desde el
 entorno de desarrollo (403 a través del proxy de la sesión de trabajo; el
-usuario los compartió directamente). El issue permite modificar los logos, así
-que el símbolo —tres caminos ascendentes con tres marcas de carril cada uno— se
-redibujó como geometría vectorial: un camino central recto en perspectiva y dos
-laterales con curvas Bézier simétricas, comparado visualmente contra las
-referencias hasta calzar.
+usuario los compartió directamente). La primera vuelta de este ADR redibujó el
+símbolo a mano contra esas referencias. Una segunda vuelta lo reemplazó por la
+geometría de `src/road-mark.svg` (rama `chore/imagenes-fuente` de este mismo
+repositorio), que se parece más a las imágenes originales: curvas más
+naturales en los caminos laterales y marcas de carril mejor distribuidas.
+
+Ese archivo de origen no era directamente usable: fijaba el color con un
+`<style>` incrustado (`color: #8d2c2e; fill: currentColor;`). Adentro de esa
+misma regla, `currentColor` resuelve contra el `color` que la regla acaba de
+fijar, no contra el heredado del documento que inyecta el símbolo — confirmado
+por render, en fondo oscuro el símbolo se quedaba en rojo vino en vez de
+aclarar. Se tomó solo la **geometría** (tres `<path>` con
+`fill-rule="evenodd"` para los huecos de las marcas de carril) y se descartó
+el `<style>`, la clase y el `<title>`/`<desc>`/`role`/`aria-labelledby`
+internos — esa responsabilidad ya la cumple `SimboloMistorias.astro` por
+fuera. El hallazgo del `<style>` incrustado quedó cerrado en el gate (§8), no
+solo corregido en este archivo.
 
 Las marcas de carril son **huecos**, no formas blancas (se ve en la variante
 blanca sobre fondo oscuro, donde dejan pasar el fondo). Se modelan como
@@ -96,30 +108,47 @@ color sólido de relleno no puede, a la vez, dejar pasar el fondo.
 
 ### 5. `font-size` es la única perilla de tamaño
 
-En vez de una prop de tamaño o una variable CSS dedicada, el componente usa
-`font-size: 1em` tanto para la altura del símbolo como para el tamaño de la
-palabra. Quien lo usa fija el `font-size` de su propio contenedor, y ambas
+En vez de una prop de tamaño o una variable CSS dedicada, `LogotipoMistorias`
+usa `font-size: 1em` tanto para la altura del símbolo como para el tamaño de
+la palabra. Quien lo usa fija el `font-size` de su propio contenedor, y ambas
 piezas escalan juntas:
 
 | Sitio de uso | `font-size` | Por qué |
 |---|---|---|
 | Cabecera, pantalla vertical | `var(--paso-1)` | El tamaño que ya tenía la palabra sola |
 | Cabecera, `max-height: 30rem` | `var(--paso-0)` | Un paso menos, para no exceder el blanco de toque de 44px del enlace de navegación |
-| Franja de portada | `var(--paso-3)` | Escala de un `h1`, es la pieza más prominente de la página |
-| Pie (solo símbolo) | `var(--paso--1)` | El paso más chico de la escala — "muy pequeño", marca de agua |
 
-Todos son tokens existentes de `tokens.css`, ya `clamp()` con sumando en `rem`
+Ambos son tokens existentes de `tokens.css`, ya `clamp()` con sumando en `rem`
 (ADR 0006 §6: una fórmula solo con `vw` rompe el zoom). No se inventó ningún
-valor nuevo: cada contenedor reutiliza el paso de la escala que ya describía su
-prominencia relativa.
+valor nuevo. El pie reutiliza el mismo principio con el nombre de marca en
+texto plano, no con `LogotipoMistorias` — ver §6.
 
-### 6. El pie muestra el símbolo solo
+### 6. El logo completo vive solo en la cabecera; la franja y el pie no lo repiten
 
-El símbolo sin la palabra, muy pequeño, junto a la nota de transparencia del
-pie. Ahí sí es la única pista de la marca, así que necesita nombre accesible
-explícito (`titulo="Logo de Mistorias"` → `role="img"` + `aria-label`). En la
-cabecera, en cambio, el símbolo queda `aria-hidden`: la palabra al lado ya
-nombra la marca, y anunciarla dos veces sería peor que una vez.
+La primera vuelta también puso el lockup en la franja de portada (símbolo +
+palabra, apilado) y el símbolo solo en el pie. Viendo el resultado, ambos se
+descartaron:
+
+- **La franja repetía el logo a pocos píxeles del de la cabecera**, en la
+  misma pantalla — redundante, no aporta. Vuelve a como estaba: `<h1>` +
+  promesa, sin lockup.
+- **El símbolo solo, sin la palabra, se veía raro** fuera del contexto que le
+  da sentido (junto al texto). El pie pasa a mostrar el **nombre "Mistorias"
+  como enlace a la portada**, en texto plano con el mismo tratamiento que la
+  palabra dentro de `LogotipoMistorias` (Lora 600, `--color-acento`, `--paso--1`)
+  — no el componente completo, porque acá no hay símbolo que acompañar.
+
+  El contenedor (`.pie__marca`) no fija su propio `align-items`: el `stretch`
+  por defecto de flexbox iguala el alto del enlace "Mistorias" y el de la nota
+  de transparencia de al lado, sea cual sea el más alto en cada viewport, y el
+  enlace centra su propio texto adentro con `align-items: center`. Sin número
+  fijo, sin JavaScript. `min-height: 44px` conserva el blanco de toque cuando
+  la nota es corta, igual que `.pie__enlace` y `.cabecera__enlace`.
+
+El logo completo (símbolo + palabra) queda así como una señal que aparece
+**una sola vez** en cada página, en la cabecera. `SimboloMistorias.astro`
+sigue existiendo porque `LogotipoMistorias` lo usa ahí, `aria-hidden` porque
+la palabra al lado ya nombra la marca.
 
 ### 7. Se resuelve todo lo que se puede en `mistorias-web`
 
@@ -135,10 +164,19 @@ repositorio.
 `astro.config.mjs` junto a `noRawHtml()` y `storyAssetFolders()`. Mismo patrón:
 una función pura que valida, colgada del hook `astro:config:setup` para correr
 en `astro dev` y `astro build` por igual. Rechaza cualquier `fill`/`stroke` que
-no sea `currentColor`/`none`/`inherit` (si el símbolo 4 se rompe, el build no
+no sea `currentColor`/`none`/`inherit` (si el punto 4 se rompe, el build no
 llega a producción) y cualquier `<script>`, manejador de evento,
 `foreignObject` o referencia externa — el SVG se inyecta con `set:html`, así
 que su contenido es código, no solo marcado de dibujo.
+
+También rechaza cualquier `<style>` incrustado, sin importar lo que declare
+adentro. Es la regla que la referencia de §3 hizo falta: un `currentColor`
+dentro de una hoja de estilos propia del SVG no es lo mismo que un
+`currentColor` heredado del documento que lo inyecta, y el atributo-only
+`fill="#hex"` que el gate ya vigilaba no alcanzaba a verlo. Un `<style>`
+inyectado con `set:html` además se vuelve una hoja de estilos real del
+documento, con selectores de clase que podrían chocar con cualquier otra
+clase del sitio — motivo suficiente para rechazarlo aunque no fijara color.
 
 ## Medición final
 
@@ -164,19 +202,21 @@ de los ~45px que costaba la alternativa apilada-siempre.
 
 - Ningún viewport paga el costo de ~120px que motivó el issue; el caso límite
   (celular horizontal) queda prácticamente sin cambio.
-- Un componente cubre los tres contextos (cabecera, franja, pie) en vez de dos
-  archivos de lockup a mantener sincronizados.
+- El logo completo aparece una sola vez por página, siempre en la cabecera: ni
+  la franja ni el pie lo repiten.
 - El modo oscuro es gratis: no hay una segunda versión del símbolo, por
-  `currentColor` y el gate que lo hace cumplir en build.
+  `currentColor` y el gate que lo hace cumplir en build — y el gate ahora
+  también cubre el color fijado vía `<style>`, no solo vía atributo.
 - La palabra nunca deja de ser texto real: el enlace de la cabecera tiene
-  nombre accesible en los tres estados, sin `<title>` ni `alt`.
+  nombre accesible en los tres estados, sin `<title>` ni `alt`; el enlace del
+  pie es simplemente texto.
 
 ### Costos
 
-- El símbolo es un redibujo, no el archivo original de marca: si
-  `mistorias-esencia-de-marca` publica un SVG oficial más adelante, este
-  archivo se reemplaza — es un cambio de un solo archivo, sin tocar los
-  componentes que lo consumen.
+- El símbolo es una adaptación de una referencia interna, no el archivo
+  oficial de `mistorias-esencia-de-marca`: si ese repositorio publica un SVG
+  oficial más adelante, este archivo se reemplaza — es un cambio de un solo
+  archivo, sin tocar los componentes que lo consumen.
 - Los archivos viven en `mistorias-web` en vez de en el repositorio de marca;
   promoverlos allá y documentarlos en `identidad-visual.md` queda pendiente.
 - La verificación visual de los cinco viewports es manual (Playwright fuera
@@ -184,8 +224,6 @@ de los ~45px que costaba la alternativa apilada-siempre.
 
 ## Riesgos abiertos
 
-- **El símbolo no tiene una versión simplificada para tamaños muy pequeños.**
-  A `--paso--1` (el uso del pie) las marcas de carril son unos pocos píxeles;
-  siguen siendo reconocibles pero no nítidas. Si el pie necesitara un símbolo
-  aún más chico, valdría la pena una variante con menos detalle en vez de
-  seguir reduciendo el mismo archivo.
+- **El pie no lleva el símbolo.** Si más adelante se quisiera una marca de
+  agua visual además del nombre en texto, haría falta revisar de nuevo cómo
+  se ve el símbolo solo, sin repetir el problema que motivó quitarlo.
