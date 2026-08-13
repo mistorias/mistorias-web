@@ -1,0 +1,40 @@
+---
+import simbolo from "../assets/marca/simbolo-mistorias.svg?raw";
+
+// Sin `titulo` el símbolo es decorativo (la palabra al lado ya nombra la
+// marca, como en la cabecera). Con `titulo` es la única pista de la marca
+// —como en el pie— y necesita nombre accesible.
+type Props = {
+    titulo?: string;
+};
+
+const { titulo } = Astro.props;
+---
+
+<span
+    class="simbolo-marca"
+    role={titulo ? "img" : undefined}
+    aria-label={titulo}
+    aria-hidden={titulo ? undefined : "true"}
+    set:html={simbolo}
+/>
+
+<style>
+    .simbolo-marca {
+        display: inline-flex;
+        flex: none;
+    }
+
+    /*
+     * El SVG se inyecta con `set:html`, así que Astro no lo alcanza a
+     * marcar como propio del componente: hace falta `:global()` para
+     * seguir estilándolo. `height: 1em` es la perilla de tamaño — quien
+     * envuelve este componente controla el `font-size` del contenedor y el
+     * símbolo escala con él.
+     */
+    .simbolo-marca :global(svg) {
+        display: block;
+        height: 1em;
+        width: auto;
+    }
+</style>

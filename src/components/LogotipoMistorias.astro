@@ -1,0 +1,78 @@
+---
+import SimboloMistorias from "./SimboloMistorias.astro";
+
+// "apilado": la palabra arriba, el símbolo debajo, siempre — para donde el
+// espacio vertical abunda (franja de portada).
+// "adaptable": apilado en pantalla vertical; en celular horizontal
+// (`max-height: 30rem`, ADR 0006 §6) pasa a fila con el símbolo a la
+// izquierda; si además falta ancho, la palabra se oculta visualmente sin
+// salir del DOM, para que el enlace que lo envuelve conserve su nombre
+// accesible.
+type Props = {
+    disposicion: "adaptable" | "apilado";
+};
+
+const { disposicion } = Astro.props;
+---
+
+<span class:list={["logotipo", `logotipo--${disposicion}`]}>
+    <SimboloMistorias />
+    <span class="logotipo__palabra">Mistorias</span>
+</span>
+
+<style>
+    /*
+     * Monocromático: el color se fija una sola vez acá y tanto el símbolo
+     * (por `currentColor`) como la palabra (por `color: currentColor`) lo
+     * heredan. `font-size` es la única perilla de tamaño — quien use este
+     * componente la fija con un `clamp()` propio, entre el mínimo y el
+     * máximo de su contenedor.
+     */
+    .logotipo {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3em;
+        line-height: 1;
+        color: var(--color-acento);
+    }
+
+    .logotipo__palabra {
+        font-family: var(--fuente-narrativa);
+        font-size: 1em;
+        font-weight: 600;
+        color: currentColor;
+        white-space: nowrap;
+    }
+
+    .logotipo--apilado {
+        flex-direction: column;
+        gap: 0.15em;
+    }
+
+    .logotipo--adaptable {
+        flex-direction: column;
+        gap: 0.15em;
+    }
+
+    @media (max-height: 30rem) {
+        .logotipo--adaptable {
+            flex-direction: row;
+        }
+    }
+
+    @media (max-height: 30rem) and (max-width: 26rem) {
+        /* Blanco de toque cómodo aparte: acá el punto es que el enlace siga
+           teniendo texto para el lector de pantalla aunque no se vea. */
+        .logotipo--adaptable .logotipo__palabra {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    }
+</style>
