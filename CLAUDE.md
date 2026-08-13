@@ -41,6 +41,8 @@ The gate runs via `src/lib/content/no-raw-html-integration.ts`, an Astro integra
 
 `src/lib/content/story-asset-folders.ts` is the sibling gate for the image folders nested under `stories/` (see [ADR 0005](docs/adr/0005-imagenes-en-historias.md)), registered the same way via `src/lib/content/story-asset-folders-integration.ts`. Both gates share directory-reading helpers from `src/lib/content/stories-directory.ts`.
 
+`src/lib/marca/simbolo-gate.ts` follows the same pattern for the brand symbol SVG (`src/assets/marca/simbolo-mistorias.svg`): it rejects any fixed color (must stay `currentColor` so dark mode needs no second file) and anything beyond drawing markup (`<script>`, event handlers, `foreignObject`, external references), because the symbol is injected in line with `set:html`. Registered via `src/lib/marca/simbolo-gate-integration.ts`. See [ADR 0007](docs/adr/0007-lockups-del-logo-y-alto-de-la-cabecera.md).
+
 ### Pages & Routing
 
 - `src/layouts/BaseLayout.astro` — shared HTML skeleton; the `<meta>` Content-Security-Policy lives here and nowhere else. Also carries the header, the footer and the skip link, so every page shares them
@@ -60,6 +62,7 @@ Derived from [Mistorias Esencia de Marca](https://github.com/mistorias/mistorias
 - Typefaces are self-hosted via `@fontsource-variable` and served same-origin, so they fall under `default-src 'self'` and required no CSP change.
 - Contrast ratios are annotated next to each token. Both themes clear WCAG AA; `--color-vivo` is restricted to non-text use because it does not.
 - Story pages style prose uniformly and **do not** key off section titles: `storySchema` validates frontmatter only, so section names are editorial convention and a design that depends on them would break silently.
+- The Mistorias logotype (`src/components/LogotipoMistorias.astro` + `SimboloMistorias.astro`) composes a `currentColor` SVG symbol with the word "Mistorias" in `--fuente-narrativa` (Lora 600) — the word is live text, never traced into the SVG, so `--fuente-narrativa` now also dresses the brand mark, not just narrative prose. It renders in three layouts (stacked, row, symbol-only) that respond to `max-height: 30rem`, the same short-viewport criterion ADR 0006 §6 already uses. `font-size` on the wrapping element is the only sizing knob; every call site reuses an existing `--paso-*` token rather than inventing a value. See [ADR 0007](docs/adr/0007-lockups-del-logo-y-alto-de-la-cabecera.md).
 
 ### Build Variants (DEPLOY_TARGET)
 
@@ -88,6 +91,8 @@ Both check out with `--recursive` (initializes submodules) and run `pnpm install
 ## Security & Validation
 
 Stories reject raw HTML (`assertStoriesHaveNoRawHtml` in `raw-html-gate.ts`) to prevent injection attacks. This is enforced on every `astro dev` and `astro build` through the integration registered in `astro.config.mjs` — the check only holds as long as that registration stays in place, so don't remove it.
+
+The brand symbol SVG goes through the same kind of gate (`assertBrandSymbolIsThemeReady` in `simbolo-gate.ts`), because it's injected in line with `set:html` and its content is therefore executable markup, not just an image. It rejects fixed colors, `<script>`, event handlers, `foreignObject`, and external references — also registered in `astro.config.mjs`.
 
 Pages ship a strict Content-Security-Policy from `src/layouts/BaseLayout.astro`. `script-src` is `'none'` because the site sends no JavaScript; adding an Astro island or view transitions requires relaxing it to `'self'` in both the layout and `public/_headers`, which would otherwise break in the browser without failing the build.
 
