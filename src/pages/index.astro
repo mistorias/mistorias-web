@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import LogotipoMistorias from "../components/LogotipoMistorias.astro";
 import TarjetaHistoria from "../components/TarjetaHistoria.astro";
 import { ordenarPorFechaDescendente } from "../lib/historias";
 import { rutaEtiquetas } from "../lib/rutas";
@@ -20,6 +21,10 @@ const hayEtiquetas = historias.some((historia) => historia.data.tags.length > 0)
 >
     <section class="franja">
         <div class="columna">
+            <div class="franja__logotipo" aria-hidden="true">
+                <LogotipoMistorias disposicion="apilado" />
+            </div>
+
             <h1>Historias para transformar la educación</h1>
 
             <p class="franja__promesa">
@@ -87,6 +92,11 @@ const hayEtiquetas = historias.some((historia) => historia.data.tags.length > 0)
         padding-block: var(--esp-2xl) var(--esp-xl);
         border-block-end: 1px solid var(--color-borde);
         background-color: var(--color-realce);
+    }
+
+    .franja__logotipo {
+        margin-block-end: var(--esp-m);
+        font-size: var(--paso-3);
     }
 
     .franja__promesa {
