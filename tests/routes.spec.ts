@@ -1,8 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
   aboutRoute,
+  brandRoute,
   buildRoute,
+  editorialContentRoute,
   homeRoute,
+  reportRoute,
+  siteCodeRoute,
   storyRoute,
   tagRoute,
   tagsRoute
@@ -77,5 +81,22 @@ describe("rutas con nombre", () => {
   it("expone el índice de etiquetas y la página Acerca de", () => {
     expect(tagsRoute(BASE_NETLIFY)).toBe("/etiquetas/");
     expect(aboutRoute(BASE_NETLIFY)).toBe("/acerca/");
+  });
+
+  // Las cuatro páginas del pie reemplazan enlaces que antes salían a GitHub
+  // (issue #28). Como todo enlace interno, tienen que respetar la base del
+  // despliegue: escritas a mano acertarían en Netlify y romperían en Pages.
+  it("expone las páginas de transparencia que enlaza el pie", () => {
+    expect(editorialContentRoute(BASE_NETLIFY)).toBe("/contenido/");
+    expect(siteCodeRoute(BASE_NETLIFY)).toBe("/codigo/");
+    expect(brandRoute(BASE_NETLIFY)).toBe("/marca/");
+    expect(reportRoute(BASE_NETLIFY)).toBe("/reportar/");
+  });
+
+  it("publica las páginas del pie bajo la base del despliegue", () => {
+    expect(editorialContentRoute(BASE_PAGES)).toBe("/mistorias-web/contenido/");
+    expect(siteCodeRoute(BASE_PAGES)).toBe("/mistorias-web/codigo/");
+    expect(brandRoute(BASE_PAGES)).toBe("/mistorias-web/marca/");
+    expect(reportRoute(BASE_PAGES)).toBe("/mistorias-web/reportar/");
   });
 });
