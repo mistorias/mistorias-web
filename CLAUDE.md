@@ -61,7 +61,7 @@ The gate runs via `src/lib/content/no-raw-html-integration.ts`, an Astro integra
 - `src/pages/etiquetas/index.astro` and `src/pages/etiquetas/[etiqueta].astro` — tag index and per-tag listings
 - `src/pages/acerca.astro`, `src/pages/404.astro`
 
-Public URLs are in Spanish (`/historias/`, `/etiquetas/`), matching the project's ubiquitous language. **Never hardcode an internal `href`**: `base` differs per deploy target, so a hand-written path silently breaks on GitHub Pages without failing the build. Build every internal link with the helpers in `src/lib/rutas.ts`, which also own the section names.
+Public URLs are in Spanish (`/historias/`, `/etiquetas/`), matching the project's ubiquitous language. **Never hardcode an internal `href`**: `base` differs per deploy target, so a hand-written path silently breaks on GitHub Pages without failing the build. Build every internal link with the helpers in `src/lib/routes.ts`, which also own the section names.
 
 ### Design System
 

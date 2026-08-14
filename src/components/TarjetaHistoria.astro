@@ -2,7 +2,7 @@
 import type { CollectionEntry } from "astro:content";
 import ListaEtiquetas from "./ListaEtiquetas.astro";
 import { dateForAttribute, readableDate } from "../lib/dates";
-import { rutaHistoria } from "../lib/rutas";
+import { storyRoute } from "../lib/routes";
 
 type Props = {
     historia: CollectionEntry<"stories">;
@@ -12,7 +12,7 @@ type Props = {
 
 const { historia, destacada = false, nivelTitulo = 2 } = Astro.props;
 const { title, summary, date, author, tags } = historia.data;
-const enlace = rutaHistoria(import.meta.env.BASE_URL, historia.id);
+const enlace = storyRoute(import.meta.env.BASE_URL, historia.id);
 
 // El nivel se recibe en vez de fijarse: una tarjeta que cuelga de un encabezado
 // de sección debe ser h3, y saltarse un nivel rompe la navegación por

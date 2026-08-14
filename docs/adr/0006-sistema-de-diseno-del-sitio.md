@@ -79,7 +79,7 @@ ninguna directiva de la CSP**.
 
 ### 4. Toda ruta interna se construye en código
 
-`src/lib/rutas.ts` centraliza la base del despliegue (R2) y los nombres de
+`src/lib/routes.ts` centraliza la base del despliegue (R2) y los nombres de
 sección. Un `href` escrito a mano acierta en un destino y falla en el otro sin
 romper el build: el fallo aparece recién en producción de GitHub Pages. Al ser
 funciones puras, se prueban.

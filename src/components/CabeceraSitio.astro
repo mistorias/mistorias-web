@@ -1,10 +1,10 @@
 ---
 import LogotipoMistorias from "./LogotipoMistorias.astro";
-import { rutaAcerca, rutaInicio } from "../lib/rutas";
+import { aboutRoute, homeRoute } from "../lib/routes";
 
 const base = import.meta.env.BASE_URL;
-const inicio = rutaInicio(base);
-const acerca = rutaAcerca(base);
+const inicio = homeRoute(base);
+const acerca = aboutRoute(base);
 
 // La navegación tiene un solo destino, así que entra en línea desde 320px. Que
 // no haga falta un menú desplegable es afortunado: exigiría JavaScript y la CSP
