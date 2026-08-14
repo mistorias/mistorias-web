@@ -15,6 +15,10 @@ Esto se traduce en código **centrado en las personas**, **transparente**, **que
 
 ## Estándares de Código
 
+El idioma en que se escribe cada cosa —código en inglés, comentarios y
+documentación en castellano peruano, con sus excepciones— está definido en
+[CONTRIBUTING.md](../CONTRIBUTING.md#idioma).
+
 ### Principios Fundamentales
 
 El código de Mistorias sigue:

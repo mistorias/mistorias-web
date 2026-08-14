@@ -11,6 +11,10 @@ Before writing code, commits, or PRs, consult:
 
 Claude Code must commit atomically while working on this repo, so each commit is a safe checkpoint to revert to if needed. See [docs/STANDARDS.md](docs/STANDARDS.md#atomic-commits) for details.
 
+### Language
+
+Code is written in English — identifiers, filenames, frontmatter keys, build error messages. Astro component names may stay in Spanish when they name a brand or editorial concept (`LogotipoMistorias.astro`, `TarjetaHistoria.astro`), and so do public routes and reader-facing text. Comments, docstrings, commit messages, PR descriptions and docs are written in Peruvian Spanish. Modules that predate this convention are not renamed in bulk; translate one only when touching it for another reason, in its own commit. Full rules in [CONTRIBUTING.md](CONTRIBUTING.md#idioma).
+
 ## Quick Start
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for full setup instructions.

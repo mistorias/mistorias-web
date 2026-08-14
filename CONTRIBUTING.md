@@ -9,6 +9,52 @@ Lee estos documentos para alinear tu trabajo con los principios del proyecto:
 - **[docs/STANDARDS.md](docs/STANDARDS.md)** — Estándares de código (SOLID, clean code, TDD), convenciones de commits (conventional commits, atomic, preemptive), y estándares de PRs.
 - **[Mistorias Esencia de Marca](https://github.com/mistorias/mistorias-esencia-de-marca)** — Principios de marca (empatía, transparencia, empoderamiento, claridad) que guían todo el trabajo.
 
+## Idioma
+
+El proyecto escribe en dos idiomas y cada uno tiene su lugar. La regla corta:
+**el código se lee en inglés; todo lo que explica el código se lee en
+castellano peruano.**
+
+### Código: inglés
+
+Se escriben en inglés los identificadores (variables, funciones, tipos,
+constantes), los nombres de archivos y módulos, las claves de frontmatter
+(`title`, `summary`, `date`, `author`, `tags`) y los mensajes de error de las
+validaciones del build.
+
+No se mezclan idiomas dentro de un mismo identificador: `getStories` sí,
+`getHistorias` no.
+
+### Excepción: nombres de componentes de Astro
+
+Los componentes en `src/components/` y los layouts pueden nombrarse en
+castellano cuando nombran un elemento de la marca o del dominio editorial:
+`LogotipoMistorias.astro`, `TarjetaHistoria.astro`, `CabeceraSitio.astro`. Son
+el borde del sistema que da la cara al lector, y ahí el nombre del dominio
+comunica mejor que su traducción.
+
+### Excepción: lenguaje de cara al lector
+
+Las rutas públicas (`/historias/`, `/etiquetas/`) y todo el texto que ve
+quien lee el sitio siguen en castellano. Son parte del lenguaje ubicuo del
+proyecto, no del código — ver [CONTEXT.md](CONTEXT.md).
+
+### Comentarios y documentación: castellano peruano
+
+Los comentarios, los docstrings, los mensajes de commit, las descripciones de
+PR y los documentos del repositorio se escriben en castellano peruano. Los
+comentarios explican el *por qué*, no el *qué* (ver
+[docs/STANDARDS.md](docs/STANDARDS.md#principios-fundamentales)).
+
+### Código ya escrito en castellano
+
+Varios módulos anteriores a esta convención usan nombres en castellano
+(`src/lib/rutas.ts`, `etiquetas.ts`, `fechas.ts`, `historias.ts`,
+`despliegue.ts`). No se renombran en masa: un cambio de nombre masivo
+ensucia el historial sin mejorar nada. Se traducen cuando el módulo se toque
+por otra razón, y siempre en un commit aparte del cambio funcional, para que
+el renombrado se pueda revisar y revertir solo.
+
 ## Requisitos Previos
 
 ### Node.js y nvm
