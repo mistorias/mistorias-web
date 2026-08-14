@@ -124,6 +124,10 @@ pnpm test       # Ejecuta todos los tests
 pnpm test tests/content-flow.spec.ts  # Ejecuta un test específico
 ```
 
+`pnpm test` mide además la cobertura y falla si no supera el 85%, igual que en
+CI: la tabla al final de la corrida dice en cuánto quedó y qué archivo la está
+bajando. Ver [Control de cobertura](docs/STANDARDS.md#control-de-cobertura).
+
 ## Desarrollo en Docker
 
 Para desarrollar en un contenedor que replica el entorno de despliegue:
@@ -196,7 +200,7 @@ git submodule update --init --recursive
    - `pnpm astro check` no reporta errores de tipo
 4. Haz commits atómicos siguiendo [convenciones de commits en docs/STANDARDS.md](docs/STANDARDS.md#estándares-de-commits)
 5. Abre un PR contra `main` con descripción siguiendo [estándares de PR en docs/STANDARDS.md](docs/STANDARDS.md#estándares-de-pull-requests)
-6. El workflow de Verificación (`.github/workflows/ci.yml`) corre en tu PR: tests, type check, build y `pnpm audit --prod`. El paso de audit es bloqueante a propósito, así que una advisory nueva en una dependencia pone el PR en rojo aunque no la hayas introducido tú
+6. El workflow de Verificación (`.github/workflows/ci.yml`) corre en tu PR: tests con cobertura, type check, build y `pnpm audit --prod`. El paso de tests es bloqueante si la cobertura no supera el 85%, y el resumen del job muestra en cuánto quedó. El paso de audit también es bloqueante a propósito, así que una advisory nueva en una dependencia pone el PR en rojo aunque no la hayas introducido tú
 7. Una vez disponibles los cambios en `main`, el sitio se despliega a GitHub Pages (desarrollo). La Publicación a producción ocurre solo al empujar una etiqueta de versión — ver [CONTEXT.md](CONTEXT.md)
 
 ## Decisiones Técnicas
