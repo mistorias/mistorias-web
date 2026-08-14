@@ -1,0 +1,171 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import NotaDeFuente from "../components/NotaDeFuente.astro";
+
+// De la referencia de marca se publica lo que le fija expectativas a quien lee:
+// los principios y los límites que el proyecto se pone. La identidad visual
+// queda fuera a propósito —el sitio ya es su demostración— y los criterios de
+// escritura viven en la página de contenido editorial (issue #28).
+const principios = [
+    {
+        nombre: "Empatía",
+        lema: "Personas antes que datos",
+        descripcion:
+            "Ninguna cifra abre una historia. Primero hay alguien a quien le está pasando."
+    },
+    {
+        nombre: "Transparencia",
+        lema: "Contexto claro, fuentes visibles",
+        descripcion:
+            "Cada fuente se enlaza, se dice qué es y se admite qué no responde."
+    },
+    {
+        nombre: "Empoderamiento",
+        lema: "Comprensión que habilita acción",
+        descripcion:
+            "Entender sin poder hacer nada es frustración. Toda historia cierra con algo concreto."
+    },
+    {
+        nombre: "Claridad",
+        lema: "Lo complejo se vuelve entendible",
+        descripcion:
+            "Sin jerga académica ni simplificaciones que engañen. Explicar bien es respeto."
+    }
+] as const;
+
+const territorio = [
+    {
+        noEs: "Un medio de noticias",
+        sino: "No competimos por la primicia. Publicamos cuando podemos explicar lo que pasó."
+    },
+    {
+        noEs: "Un repositorio de datos",
+        sino: "Los datos entran cuando ayudan a entender una historia, nunca solos."
+    },
+    {
+        noEs: "Un espacio académico",
+        sino: "No hay distancia de experto. Es un proyecto personal de blogging, y se nota."
+    }
+] as const;
+---
+
+<BaseLayout
+    title="Esencia de marca — Mistorias"
+    description="Los principios con los que se escribe cada historia de Mistorias, para quién es el proyecto y los límites que se pone a sí mismo."
+>
+    <div class="columna marca prosa">
+        <h1>Esencia de marca</h1>
+
+        <p class="marca__entrada">
+            Mistorias conecta historias individuales con la historia más grande
+            que las explica, para generar conciencia y mover a la acción.
+        </p>
+
+        <h2>La promesa</h2>
+
+        <p>
+            En pocos minutos, una persona entiende un problema educativo real y
+            siente el impulso de hacer algo al respecto. Eso es lo que cada
+            edición intenta cumplir, y con eso se la puede medir.
+        </p>
+
+        <p>
+            Detrás hay una convicción: <strong
+                >la educación no falla por falta de datos, sino por falta de
+                comprensión humana de esos datos</strong
+            >.
+        </p>
+
+        <h2>Cuatro principios</h2>
+
+        <dl class="marca__lista">
+            {
+                principios.map((principio) => (
+                    <div class="marca__item">
+                        <dt>
+                            {principio.nombre}
+                            <span class="marca__lema">{principio.lema}</span>
+                        </dt>
+                        <dd>{principio.descripcion}</dd>
+                    </div>
+                ))
+            }
+        </dl>
+
+        <h2>Para quién es</h2>
+
+        <p>
+            Sobre todo, para quien puede mover algo en educación: docentes,
+            líderes de su comunidad, gente que trabaja en gestión pública o
+            social. Y para cualquiera que quiera entender mejor lo que pasa en
+            las aulas del país.
+        </p>
+
+        <p>
+            La prioridad es de quien busca comprender, reflexionar y actuar —en
+            ese orden.
+        </p>
+
+        <h2>Qué no es Mistorias</h2>
+
+        <p>
+            Decir qué no somos también es una forma de transparencia: así sabes
+            qué esperar y qué no.
+        </p>
+
+        <dl class="marca__lista">
+            {
+                territorio.map((limite) => (
+                    <div class="marca__item">
+                        <dt>{limite.noEs}</dt>
+                        <dd>{limite.sino}</dd>
+                    </div>
+                ))
+            }
+        </dl>
+
+        <NotaDeFuente
+            fuente="la guía editorial del repositorio de marca"
+            href="https://github.com/mistorias/mistorias-esencia-de-marca/blob/main/guia-editorial.md"
+        />
+    </div>
+</BaseLayout>
+
+<style>
+    .marca {
+        padding-block-start: var(--esp-xl);
+    }
+
+    .marca__entrada {
+        font-size: var(--paso-1);
+        color: var(--color-analitico);
+    }
+
+    .marca__lista {
+        display: grid;
+        gap: var(--esp-m);
+    }
+
+    .marca__item dt {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: var(--esp-2xs);
+        font-family: var(--fuente-info);
+        font-weight: 600;
+        color: var(--color-acento);
+    }
+
+    /* El lema acompaña al principio en la misma línea cuando entra, y baja
+       solo si no cabe: es su definición corta, no un segundo título. */
+    .marca__lema {
+        font-size: var(--paso--1);
+        font-weight: 400;
+        color: var(--color-metadato);
+    }
+
+    .marca__item dd {
+        margin-inline-start: 0;
+        margin-block-start: var(--esp-3xs);
+    }
+</style>
