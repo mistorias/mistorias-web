@@ -7,15 +7,15 @@
  * publicaría el día anterior al que escribió la redacción.
  */
 
-const FORMATO_LEGIBLE = new Intl.DateTimeFormat("es-PE", {
+const READABLE_FORMAT = new Intl.DateTimeFormat("es-PE", {
   day: "numeric",
   month: "long",
   year: "numeric",
   timeZone: "UTC"
 });
 
-export const fechaLegible = (fecha: Date): string =>
-  FORMATO_LEGIBLE.format(fecha);
+export const readableDate = (date: Date): string =>
+  READABLE_FORMAT.format(date);
 
-export const fechaParaAtributo = (fecha: Date): string =>
-  fecha.toISOString().slice(0, 10);
+export const dateForAttribute = (date: Date): string =>
+  date.toISOString().slice(0, 10);

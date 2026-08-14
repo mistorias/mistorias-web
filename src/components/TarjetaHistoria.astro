@@ -1,7 +1,7 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import ListaEtiquetas from "./ListaEtiquetas.astro";
-import { fechaLegible, fechaParaAtributo } from "../lib/fechas";
+import { dateForAttribute, readableDate } from "../lib/dates";
 import { rutaHistoria } from "../lib/rutas";
 
 type Props = {
@@ -26,7 +26,7 @@ const Titulo = `h${nivelTitulo}` as const;
     </Titulo>
 
     <p class="tarjeta__metadatos">
-        <time datetime={fechaParaAtributo(date)}>{fechaLegible(date)}</time>
+        <time datetime={dateForAttribute(date)}>{readableDate(date)}</time>
         <span aria-hidden="true">·</span>
         {author}
     </p>
