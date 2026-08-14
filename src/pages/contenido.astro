@@ -1,0 +1,166 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import NotaDeFuente from "../components/NotaDeFuente.astro";
+
+// La página Acerca de explica qué es Mistorias y con qué criterios se escribe.
+// Esta responde otra pregunta: cómo se produce cada edición, paso por paso.
+// Si alguna vez las dos dicen lo mismo, sobra una.
+const secuencia = [
+    {
+        titulo: "La historia",
+        momento: "Siente",
+        descripcion:
+            "Narrativa humana, anclada en una persona concreta con nombre y lugar."
+    },
+    {
+        titulo: "Noticias principales",
+        momento: "Entiende",
+        descripcion:
+            "Cada hecho dice qué pasó, qué significa el dato y de dónde sale."
+    },
+    {
+        titulo: "Conectando los puntos",
+        momento: "Entiende",
+        descripcion:
+            "Cómo se relacionan los hechos, y qué preguntas no responden todavía los datos."
+    },
+    {
+        titulo: "Acción final",
+        momento: "Actúa",
+        descripcion:
+            "Pasos concretos, en imperativo, distintos según quién esté leyendo."
+    }
+] as const;
+
+const checklist = [
+    "La historia combina al menos dos de los tres pilares: narrativa humana, datos explicados, contexto y reflexión.",
+    "Cada fuente está enlazada, dice qué es, y declara sus límites y posibles sesgos.",
+    "Las etiquetas son entre tres y siete, propias de esta historia.",
+    "La acción final ofrece pasos concretos, no una invitación genérica a reflexionar."
+] as const;
+---
+
+<BaseLayout
+    title="Contenido editorial — Mistorias"
+    description="Cómo se escribe, revisa y publica cada historia de Mistorias: la estructura, el trato de las fuentes, las etiquetas y el checklist que pasa antes de salir."
+>
+    <div class="columna contenido prosa">
+        <h1>Contenido editorial</h1>
+
+        <p class="contenido__entrada">
+            Cada historia que lees acá pasó por el mismo proceso. Esta página lo
+            cuenta completo: cómo se arma, cómo se tratan las fuentes, cómo se
+            etiqueta y qué tiene que cumplir antes de publicarse.
+        </p>
+
+        <h2>Cómo se arma una historia</h2>
+
+        <p>
+            La secuencia de Mistorias es <strong
+                >siente, entiende, actúa</strong
+            >, y las secciones de cada edición existen para recorrerla entera.
+            Una historia que informa pero no conecta falla; una que conecta pero
+            no explica, también.
+        </p>
+
+        <dl class="contenido__lista">
+            {
+                secuencia.map((seccion) => (
+                    <div class="contenido__item">
+                        <dt>
+                            {seccion.titulo}
+                            <span class="contenido__momento">
+                                {seccion.momento}
+                            </span>
+                        </dt>
+                        <dd>{seccion.descripcion}</dd>
+                    </div>
+                ))
+            }
+        </dl>
+
+        <h2>Las fuentes se enlazan y se explican</h2>
+
+        <p>
+            No alcanza con citar. Junto al enlace decimos <strong
+                >qué es esa fuente</strong
+            >: un comunicado gremial es parte del conflicto que reporta, y una
+            nota de divulgación no es el informe original.
+        </p>
+
+        <p>
+            Además decimos quién la firma, qué interés tiene en el asunto y qué
+            preguntas deja sin responder. Un dato correcto, presentado sin ese
+            contexto, puede seguir siendo engañoso.
+        </p>
+
+        <h2>Las etiquetas sirven para encontrar, no para describir</h2>
+
+        <p>
+            Entre tres y siete por historia. Una etiqueta que aplica a todo el
+            sitio no separa nada: ocupa un espacio sin darte una ruta nueva. Por
+            eso no verás <em>educación</em>, <em>Arequipa</em>, <em>Perú</em> ni
+            <em>datos</em> — son la identidad del proyecto, están en todas.
+        </p>
+
+        <p>
+            Otras se permiten solo cuando nombran el eje de esa historia en
+            particular. Si un profesor aparece como personaje pero su condición
+            laboral no es el tema, la historia no lleva <em>docentes</em>.
+        </p>
+
+        <h2>Qué se revisa antes de publicar</h2>
+
+        <p>Ninguna edición sale sin pasar por esta lista.</p>
+
+        <ul>
+            {checklist.map((punto) => <li>{punto}</li>)}
+        </ul>
+
+        <NotaDeFuente
+            fuente="la guía de contribución del repositorio de contenido"
+            href="https://github.com/mistorias/mistorias-contenido/blob/main/CONTRIBUTING.md"
+        />
+    </div>
+</BaseLayout>
+
+<style>
+    .contenido {
+        padding-block-start: var(--esp-xl);
+    }
+
+    .contenido__entrada {
+        font-size: var(--paso-1);
+        color: var(--color-analitico);
+    }
+
+    .contenido__lista {
+        display: grid;
+        gap: var(--esp-m);
+    }
+
+    .contenido__item dt {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: var(--esp-2xs);
+        font-family: var(--fuente-info);
+        font-weight: 600;
+        color: var(--color-acento);
+    }
+
+    /* El momento de la secuencia es metadato de la sección, no su nombre: se
+       lee después del título y con el tratamiento de dato, no de encabezado. */
+    .contenido__momento {
+        font-size: var(--paso--1);
+        font-weight: 400;
+        color: var(--color-metadato);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+
+    .contenido__item dd {
+        margin-inline-start: 0;
+        margin-block-start: var(--esp-3xs);
+    }
+</style>
