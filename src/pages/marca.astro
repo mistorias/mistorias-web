@@ -1,6 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import NotaDeFuente from "../components/NotaDeFuente.astro";
+import { editorialContentRoute, homeRoute } from "../lib/routes";
+
+const base = import.meta.env.BASE_URL;
 
 // De la referencia de marca se publica lo que le fija expectativas a quien lee:
 // los principios y los límites que el proyecto se pone. La identidad visual
@@ -11,7 +14,7 @@ const principios = [
         nombre: "Empatía",
         lema: "Personas antes que datos",
         descripcion:
-            "Ninguna cifra abre una historia. Primero hay alguien a quien le está pasando."
+            "Ninguna cifra abre una historia. Primero está la persona a la que le ocurre."
     },
     {
         nombre: "Transparencia",
@@ -44,7 +47,7 @@ const territorio = [
     },
     {
         noEs: "Un espacio académico",
-        sino: "No hay distancia de experto. Es un proyecto personal de blogging, y se nota."
+        sino: "No hay distancia de experto. Es un blog personal, y se nota."
     }
 ] as const;
 ---
@@ -123,6 +126,15 @@ const territorio = [
                 ))
             }
         </dl>
+
+        <p>
+            Un principio que no se practica no es un principio. Estos se
+            traducen en un proceso concreto para cada edición, que puedes
+            revisar en <a href={editorialContentRoute(base)}
+                >contenido editorial</a
+            >, y en las <a href={homeRoute(base)}>historias publicadas</a>, que
+            son donde se comprueban de verdad.
+        </p>
 
         <NotaDeFuente
             fuente="la guía editorial del repositorio de marca"

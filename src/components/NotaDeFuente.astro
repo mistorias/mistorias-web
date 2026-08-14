@@ -1,7 +1,7 @@
 ---
 // Cada página del pie resume un documento que vive en un repositorio público
 // (issue #28). La nota declara cuál es ese documento y lo enlaza, para que el
-// resumen no reemplace a su fuente: si el texto de acá quedó viejo, quien lee
+// resumen no reemplace a su fuente: si el texto de aquí quedó viejo, quien lee
 // tiene cómo darse cuenta sin depender de nuestra palabra.
 type Props = {
     fuente: string;
@@ -13,7 +13,7 @@ const { fuente, href } = Astro.props;
 
 <p class="nota-fuente">
     Esta página resume <a href={href}>{fuente}</a>, que es la versión completa y
-    la que manda. Está abierta a cualquiera, con el historial de cada cambio.
+    la que manda. Cualquiera puede leerla, con el historial de cada cambio.
 </p>
 
 <style>
