@@ -61,6 +61,31 @@ El código de Mistorias sigue:
    - Si se quiere agregar más código o funcionalidad, primero se debe crear un test que lo cubra
    - Ciclo Rojo → Verde → Refactor
    - El coverage debe ser mayor a 90%
+   - Esto último no depende de que alguien lo recuerde: `pnpm test` mide la
+     cobertura en cada corrida y falla si no supera el 85%, de modo que el
+     pipeline bloquea el PR. El umbral es el piso que no se cruza; el 90% sigue
+     siendo la meta. El número vive en `vitest.config.ts` y en ningún otro lado
+     (ver [Control de cobertura](#control-de-cobertura))
+
+### Control de cobertura
+
+La cobertura no es un lineamiento a recordar: es un control del pipeline.
+
+- **Dónde vive el umbral.** En `vitest.config.ts`. Es el único lugar donde se
+  define ese número; el workflow de CI no lo repite, solo corre `pnpm test`.
+- **Qué se mide.** El TypeScript de `src/`, en líneas, sentencias, funciones y
+  ramas — las cuatro métricas contra el mismo umbral. Los componentes `.astro`
+  quedan fuera porque no se prueban con Vitest, y contarlos como cero apagaría
+  el umbral sin decir nada sobre la lógica.
+- **Cuándo corre.** En cada `pnpm test`, no solo en CI, para que un PR no se
+  abra creyendo que pasa.
+- **Dónde se ve.** La tabla por archivo sale en la salida de la corrida; en CI
+  el resumen se publica además en la pestaña del job, también cuando el umbral
+  falla, que es cuando más hace falta leerlo.
+
+Bajar el umbral es una decisión del equipo, no un arreglo para desatorar un PR:
+si un cambio no llega, lo que falta son tests. `tests/cobertura.spec.ts` cuida
+que el control no se apague en silencio.
 
 ### Específico de TypeScript
 
