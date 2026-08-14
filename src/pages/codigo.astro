@@ -1,0 +1,116 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import NotaDeFuente from "../components/NotaDeFuente.astro";
+
+// El README del repositorio le habla a quien va a programar: instalación,
+// Docker, decisiones de arquitectura. Lo relevante para quien lee el sitio es
+// otra cosa —qué le garantizan esas decisiones—, así que esta página traduce
+// las que se pueden verificar desde afuera y deja el repositorio al final,
+// para quien sí quiera el detalle técnico (issue #28).
+const garantias = [
+    {
+        titulo: "No te rastreamos",
+        descripcion:
+            "No hay analítica, ni cookies, ni píxeles de terceros. Nadie está contando qué historias abres."
+    },
+    {
+        titulo: "No se ejecuta JavaScript",
+        descripcion:
+            "El sitio declara una política que lo prohíbe por completo. Lo que llega a tu navegador es texto y estilos."
+    },
+    {
+        titulo: "Todo viene del mismo lugar",
+        descripcion:
+            "Tipografías, imágenes y estilos se sirven desde este dominio. No hay pedidos a servidores ajenos."
+    },
+    {
+        titulo: "Pesa poco a propósito",
+        descripcion:
+            "Son páginas ya construidas, sin aplicación que arrancar. Pensadas para conexiones lentas y equipos viejos."
+    }
+] as const;
+---
+
+<BaseLayout
+    title="Código del sitio — Mistorias"
+    description="El sitio que estás leyendo es código abierto. Qué te garantiza eso: sin rastreo, sin JavaScript, liviano y auditable por cualquiera."
+>
+    <div class="columna codigo prosa">
+        <h1>Código del sitio</h1>
+
+        <p class="codigo__entrada">
+            El programa que arma estas páginas es público y cualquiera puede
+            revisarlo. Eso no es un detalle para programadores: es lo que te
+            permite comprobar por tu cuenta lo que decimos acá abajo, en vez de
+            confiar en que es cierto.
+        </p>
+
+        <dl class="codigo__lista">
+            {
+                garantias.map((garantia) => (
+                    <div class="codigo__item">
+                        <dt>{garantia.titulo}</dt>
+                        <dd>{garantia.descripcion}</dd>
+                    </div>
+                ))
+            }
+        </dl>
+
+        <h2>El contenido se valida antes de publicarse</h2>
+
+        <p>
+            Las historias se escriben en texto plano, y el sitio <strong
+                >rechaza cualquier código incrustado en ellas</strong
+            >. Si una edición trajera algo ejecutable, la publicación falla y no
+            llega a salir. Es una barrera automática, no una revisión que alguien
+            podría olvidarse de hacer.
+        </p>
+
+        <h2>Cómo comprobarlo</h2>
+
+        <p>
+            Nada de lo anterior te pide creernos. En cualquier navegador puedes
+            desactivar JavaScript y el sitio sigue funcionando igual, porque
+            nunca lo usó. Y en el repositorio está el historial completo: quién
+            cambió qué, cuándo y por qué.
+        </p>
+
+        <p>
+            Si programas y quieres ver cómo está hecho —o proponer una mejora—,
+            el proyecto usa Astro y las decisiones técnicas están documentadas
+            una por una.
+        </p>
+
+        <NotaDeFuente
+            fuente="el README del repositorio del sitio"
+            href="https://github.com/mistorias/mistorias-web/blob/main/README.md"
+        />
+    </div>
+</BaseLayout>
+
+<style>
+    .codigo {
+        padding-block-start: var(--esp-xl);
+    }
+
+    .codigo__entrada {
+        font-size: var(--paso-1);
+        color: var(--color-analitico);
+    }
+
+    .codigo__lista {
+        display: grid;
+        gap: var(--esp-m);
+    }
+
+    .codigo__item dt {
+        font-family: var(--fuente-info);
+        font-weight: 600;
+        color: var(--color-acento);
+    }
+
+    .codigo__item dd {
+        margin-inline-start: 0;
+        margin-block-start: var(--esp-3xs);
+    }
+</style>
