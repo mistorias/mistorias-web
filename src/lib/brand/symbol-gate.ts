@@ -3,7 +3,7 @@ import path from "node:path";
 
 export const defaultSymbolPath = path.resolve(
   process.cwd(),
-  "src/assets/marca/simbolo-mistorias.svg"
+  "src/assets/brand/symbol-mistorias.svg"
 );
 
 const VIEWBOX_PATTERN = /\bviewBox\s*=/i;

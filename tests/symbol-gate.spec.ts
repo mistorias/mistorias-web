@@ -13,7 +13,7 @@ type ConfigSetupHook = NonNullable<
 type ConfigSetupOptions = Parameters<ConfigSetupHook>[0];
 
 const fixturePath = (name: string): string =>
-  path.resolve(process.cwd(), "tests/fixtures/simbolo", name);
+  path.resolve(process.cwd(), "tests/fixtures/symbol", name);
 
 async function runConfigSetupHook(filePath: string): Promise<void> {
   const hook = brandSymbol(filePath).hooks["astro:config:setup"];
@@ -26,7 +26,7 @@ describe("assertBrandSymbolIsThemeReady", () => {
       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" fill="currentColor"><path d="M0,0 L10,0 L10,10 L0,10 Z" /></svg>';
 
     expect(() =>
-      assertBrandSymbolIsThemeReady(svg, "simbolo.svg")
+      assertBrandSymbolIsThemeReady(svg, "symbol.svg")
     ).not.toThrow();
   });
 
@@ -35,7 +35,7 @@ describe("assertBrandSymbolIsThemeReady", () => {
       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" fill="currentColor"><path fill-rule="evenodd" d="M0,0 L10,0 L10,10 L0,10 Z" /></svg>';
 
     expect(() =>
-      assertBrandSymbolIsThemeReady(svg, "simbolo.svg")
+      assertBrandSymbolIsThemeReady(svg, "symbol.svg")
     ).not.toThrow();
   });
 
@@ -43,7 +43,7 @@ describe("assertBrandSymbolIsThemeReady", () => {
     const svg =
       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path fill="#8B0F0F" d="M0,0 L10,0 L10,10 L0,10 Z" /></svg>';
 
-    expect(() => assertBrandSymbolIsThemeReady(svg, "simbolo.svg")).toThrow(
+    expect(() => assertBrandSymbolIsThemeReady(svg, "symbol.svg")).toThrow(
       /currentColor/
     );
   });
@@ -52,7 +52,7 @@ describe("assertBrandSymbolIsThemeReady", () => {
     const svg =
       '<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M0,0 L10,0 L10,10 L0,10 Z" /></svg>';
 
-    expect(() => assertBrandSymbolIsThemeReady(svg, "simbolo.svg")).toThrow(
+    expect(() => assertBrandSymbolIsThemeReady(svg, "symbol.svg")).toThrow(
       /viewBox/
     );
   });
@@ -61,7 +61,7 @@ describe("assertBrandSymbolIsThemeReady", () => {
     const svg =
       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" fill="currentColor"><script>alert(1)</script><path d="M0,0 L10,0 L10,10 L0,10 Z" /></svg>';
 
-    expect(() => assertBrandSymbolIsThemeReady(svg, "simbolo.svg")).toThrow(
+    expect(() => assertBrandSymbolIsThemeReady(svg, "symbol.svg")).toThrow(
       /no permitido/
     );
   });
@@ -70,7 +70,7 @@ describe("assertBrandSymbolIsThemeReady", () => {
     const svg =
       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" fill="currentColor"><path onclick="alert(1)" d="M0,0 L10,0 L10,10 L0,10 Z" /></svg>';
 
-    expect(() => assertBrandSymbolIsThemeReady(svg, "simbolo.svg")).toThrow(
+    expect(() => assertBrandSymbolIsThemeReady(svg, "symbol.svg")).toThrow(
       /no permitido/
     );
   });
@@ -79,7 +79,7 @@ describe("assertBrandSymbolIsThemeReady", () => {
     const svg =
       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" fill="currentColor"><image href="https://evil.example/x.png" /></svg>';
 
-    expect(() => assertBrandSymbolIsThemeReady(svg, "simbolo.svg")).toThrow(
+    expect(() => assertBrandSymbolIsThemeReady(svg, "symbol.svg")).toThrow(
       /no permitido/
     );
   });
@@ -91,7 +91,7 @@ describe("assertBrandSymbolIsThemeReady", () => {
     const svg =
       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><style>.x { color: #8B0F0F; fill: currentColor; }</style><path class="x" d="M0,0 L10,0 L10,10 L0,10 Z" /></svg>';
 
-    expect(() => assertBrandSymbolIsThemeReady(svg, "simbolo.svg")).toThrow(
+    expect(() => assertBrandSymbolIsThemeReady(svg, "symbol.svg")).toThrow(
       /<style>/
     );
   });
@@ -100,37 +100,37 @@ describe("assertBrandSymbolIsThemeReady", () => {
 describe("assertBrandSymbolFileIsThemeReady", () => {
   it("acepta el fixture válido", async () => {
     await expect(
-      assertBrandSymbolFileIsThemeReady(fixturePath("valido.svg"))
+      assertBrandSymbolFileIsThemeReady(fixturePath("valid.svg"))
     ).resolves.toBeUndefined();
   });
 
   it("rechaza el fixture con color fijo", async () => {
     await expect(
-      assertBrandSymbolFileIsThemeReady(fixturePath("con-hex.svg"))
+      assertBrandSymbolFileIsThemeReady(fixturePath("fixed-color.svg"))
     ).rejects.toThrow(/currentColor/);
   });
 
   it("rechaza el fixture sin viewBox", async () => {
     await expect(
-      assertBrandSymbolFileIsThemeReady(fixturePath("sin-viewbox.svg"))
+      assertBrandSymbolFileIsThemeReady(fixturePath("missing-viewbox.svg"))
     ).rejects.toThrow(/viewBox/);
   });
 
   it("rechaza el fixture con <script>", async () => {
     await expect(
-      assertBrandSymbolFileIsThemeReady(fixturePath("con-script.svg"))
+      assertBrandSymbolFileIsThemeReady(fixturePath("script-tag.svg"))
     ).rejects.toThrow(/no permitido/);
   });
 
   it("rechaza el fixture con <style> incrustado", async () => {
     await expect(
-      assertBrandSymbolFileIsThemeReady(fixturePath("con-style.svg"))
+      assertBrandSymbolFileIsThemeReady(fixturePath("style-tag.svg"))
     ).rejects.toThrow(/<style>/);
   });
 
   it("avisa cuando el archivo no existe", async () => {
     await expect(
-      assertBrandSymbolFileIsThemeReady(fixturePath("no-existe.svg"))
+      assertBrandSymbolFileIsThemeReady(fixturePath("missing.svg"))
     ).rejects.toThrow();
   });
 });
@@ -138,13 +138,13 @@ describe("assertBrandSymbolFileIsThemeReady", () => {
 describe("integración brandSymbol", () => {
   it("deja compilar cuando el símbolo es válido", async () => {
     await expect(
-      runConfigSetupHook(fixturePath("valido.svg"))
+      runConfigSetupHook(fixturePath("valid.svg"))
     ).resolves.toBeUndefined();
   });
 
   it("detiene la compilación cuando el símbolo trae un color fijo", async () => {
-    await expect(runConfigSetupHook(fixturePath("con-hex.svg"))).rejects.toThrow(
-      /currentColor/
-    );
+    await expect(
+      runConfigSetupHook(fixturePath("fixed-color.svg"))
+    ).rejects.toThrow(/currentColor/);
   });
 });
