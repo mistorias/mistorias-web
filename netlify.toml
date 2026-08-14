@@ -1,0 +1,18 @@
+# Configuración del build que corre en Netlify.
+#
+# La publicación la dispara `.github/workflows/deploy-netlify.yml`, pero
+# `netlify deploy` reconstruye el sitio por su cuenta salvo que se le pida lo
+# contrario, y esa reconstrucción no hereda las variables del workflow. Sin
+# este archivo tomaba el comando configurado en el panel de Netlify, construía
+# sin `DEPLOY_TARGET` y publicaba mistorias.pe con la base de GitHub Pages
+# (issue #29). Declarar el destino acá deja que cualquier build de Netlify
+# —el del CLI o uno lanzado desde el panel— apunte al sitio correcto.
+#
+# La versión de Node la sigue mandando `.nvmrc`, que Netlify respeta.
+
+[build]
+  command = "pnpm build"
+  publish = "dist"
+
+[build.environment]
+  DEPLOY_TARGET = "netlify"

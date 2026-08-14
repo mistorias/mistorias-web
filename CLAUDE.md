@@ -66,12 +66,14 @@ Derived from [Mistorias Esencia de Marca](https://github.com/mistorias/mistorias
 
 ### Build Variants (DEPLOY_TARGET)
 
-The build behaves differently based on the `DEPLOY_TARGET` environment variable (checked in `astro.config.mjs`):
+The build behaves differently based on the `DEPLOY_TARGET` environment variable. `src/lib/despliegue.ts` resolves it into `site` and `base`, and `astro.config.mjs` does nothing else with it:
 
 - **GitHub Pages** (default / `development`): `site: https://mistorias.github.io`, `base: /mistorias-web`
 - **Netlify** (`netlify`): `site: https://mistorias.pe`, `base: /`
 
-This allows the same codebase to deploy to either platform with correct base paths. CI workflows set this env var when building.
+This allows the same codebase to deploy to either platform with correct base paths. CI workflows set this env var when building. An unrecognized value stops the build instead of falling back to the default target: a wrong-but-successful build publishes a site whose stylesheet and every link point at the other deploy's base, and nothing fails (issue #29).
+
+`netlify.toml` declares the same target for whatever build Netlify runs on its side. `netlify deploy` rebuilds the site unless it is given `--no-build`, and that rebuild does not inherit the workflow's env — which is exactly how production ended up serving `/mistorias-web/…` links from mistorias.pe. The deploy workflow now passes `--no-build` and, before uploading, fails if the artifact still carries the GitHub Pages base.
 
 
 

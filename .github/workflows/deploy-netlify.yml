@@ -41,11 +41,26 @@ jobs:
         env:
           DEPLOY_TARGET: netlify
 
+      # El sitio de producción vive en la raíz de mistorias.pe. Si el artefacto
+      # conserva la base de GitHub Pages, la hoja de estilos y cada enlace
+      # apuntan a /mistorias-web y el sitio queda roto sin que nada falle
+      # (issue #29): mejor detener la publicación acá.
+      - name: Check the artifact is not built for GitHub Pages
+        run: |
+          if grep -rl '"/mistorias-web/' dist; then
+            echo "::error::El artefacto conserva la base de GitHub Pages y no se publica en mistorias.pe."
+            exit 1
+          fi
+
+      # --no-build publica exactamente el artefacto que este workflow construyó
+      # y verificó; sin esa bandera el CLI lo reconstruye con su propia
+      # configuración y descarta el destino declarado arriba.
       - name: Deploy production site to Netlify
         run: >
           pnpm --package=netlify-cli dlx netlify
           deploy
           --dir=dist
+          --no-build
           --prod
           --site="$NETLIFY_SITE_ID"
           --message="Release $GITHUB_REF_NAME"
