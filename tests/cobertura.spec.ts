@@ -20,9 +20,9 @@ describe("control de cobertura", () => {
     expect(coverage?.enabled).toBe(true);
   });
 
-  it("exige más de 85% en cada métrica", () => {
+  it("exige más de 90% en cada métrica", () => {
     for (const metrica of metricas) {
-      expect(thresholds?.[metrica]).toBeGreaterThan(85);
+      expect(thresholds?.[metrica]).toBeGreaterThan(90);
     }
   });
 
