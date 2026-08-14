@@ -13,6 +13,10 @@
 const STORIES_SECTION = "historias";
 const TAGS_SECTION = "etiquetas";
 const ABOUT_SECTION = "acerca";
+const EDITORIAL_CONTENT_SECTION = "contenido";
+const SITE_CODE_SECTION = "codigo";
+const BRAND_SECTION = "marca";
+const REPORT_SECTION = "reportar";
 
 const splitIntoSegments = (value: string): readonly string[] =>
   value.split("/").filter((segment) => segment.length > 0);
@@ -39,3 +43,15 @@ export const tagRoute = (base: string, tag: string): string =>
 
 export const aboutRoute = (base: string): string =>
   buildRoute(base, ABOUT_SECTION);
+
+export const editorialContentRoute = (base: string): string =>
+  buildRoute(base, EDITORIAL_CONTENT_SECTION);
+
+export const siteCodeRoute = (base: string): string =>
+  buildRoute(base, SITE_CODE_SECTION);
+
+export const brandRoute = (base: string): string =>
+  buildRoute(base, BRAND_SECTION);
+
+export const reportRoute = (base: string): string =>
+  buildRoute(base, REPORT_SECTION);
