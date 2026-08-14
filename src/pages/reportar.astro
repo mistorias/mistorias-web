@@ -1,0 +1,88 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import NotaDeFuente from "../components/NotaDeFuente.astro";
+
+// El enlace del pie decía "Reportar un problema" pero llevaba a SECURITY.md,
+// que solo cubre vulnerabilidades: quien encontraba un dato mal citado no
+// tenía a dónde ir. Esta página bifurca los dos casos y deja el reporte de
+// vulnerabilidades donde debe estar, en el canal privado de GitHub (issue #28).
+const correo = "support@mistorias.pe";
+---
+
+<BaseLayout
+    title="Reportar un problema — Mistorias"
+    description="Encontraste un error en una historia o una falla en el sitio: acá está a dónde escribir según el caso."
+>
+    <div class="columna reportar prosa">
+        <h1>Reportar un problema</h1>
+
+        <p class="reportar__entrada">
+            Si encontraste algo mal, queremos saberlo. Publicar con fuentes
+            visibles solo sirve si además corregimos cuando nos equivocamos.
+        </p>
+
+        <h2>Un error en una historia</h2>
+
+        <p>
+            Un dato mal citado, una fuente que no dice lo que le atribuimos, un
+            nombre escrito mal, algo que quedó injusto con alguien. Escríbenos a
+            <a href={`mailto:${correo}`}>{correo}</a> contándonos qué historia es
+            y qué parte está mal.
+        </p>
+
+        <p>
+            Ayuda mucho si incluyes el enlace de la historia y, cuando lo tengas,
+            la fuente que muestra el error. No hace falta que sea formal.
+        </p>
+
+        <h2>Algo que no funciona en el sitio</h2>
+
+        <p>
+            Una página que no carga, un enlace roto, texto que no se lee bien en
+            tu pantalla o algo que tu lector de pantalla no anuncia. Va al mismo
+            correo: <a href={`mailto:${correo}`}>{correo}</a>.
+        </p>
+
+        <p>
+            Cuéntanos qué equipo y qué navegador usas. Con eso lo reproducimos
+            mucho más rápido.
+        </p>
+
+        <h2>Una vulnerabilidad de seguridad</h2>
+
+        <p>
+            Este caso va por otro camino. <strong
+                >No lo reportes en un espacio público</strong
+            >: eso expondría el hallazgo antes de que exista una corrección. Usa
+            el <a
+                href="https://github.com/mistorias/mistorias-web/security/advisories/new"
+                >reporte privado de GitHub</a
+            >, que llega directo a quienes mantienen el sitio.
+        </p>
+
+        <h2>Qué pasa después</h2>
+
+        <p>
+            Leemos todo lo que llega y respondemos. Si el reporte corrige una
+            historia publicada, la corrección queda registrada: el contenido
+            tiene historial público, así que se puede ver qué decía antes, qué
+            dice ahora y por qué cambió. No editamos en silencio.
+        </p>
+
+        <NotaDeFuente
+            fuente="la política de seguridad del repositorio del sitio"
+            href="https://github.com/mistorias/mistorias-web/blob/main/SECURITY.md"
+        />
+    </div>
+</BaseLayout>
+
+<style>
+    .reportar {
+        padding-block-start: var(--esp-xl);
+    }
+
+    .reportar__entrada {
+        font-size: var(--paso-1);
+        color: var(--color-analitico);
+    }
+</style>
