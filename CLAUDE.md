@@ -76,7 +76,7 @@ Derived from [Mistorias Esencia de Marca](https://github.com/mistorias/mistorias
 
 ### Build Variants (DEPLOY_TARGET)
 
-The build behaves differently based on the `DEPLOY_TARGET` environment variable. `src/lib/despliegue.ts` resolves it into `site` and `base`, and `astro.config.mjs` does nothing else with it:
+The build behaves differently based on the `DEPLOY_TARGET` environment variable. `src/lib/deployment.ts` resolves it into `site` and `base`, and `astro.config.mjs` does nothing else with it:
 
 - **GitHub Pages** (default / `development`): `site: https://mistorias.github.io`, `base: /mistorias-web`
 - **Netlify** (`netlify`): `site: https://mistorias.pe`, `base: /`

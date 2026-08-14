@@ -12,32 +12,32 @@
  * preferible un despliegue que falla a uno que se publica mal.
  */
 
-export type ConfiguracionDeDespliegue = {
+export type DeploymentConfig = {
   readonly site: string;
   readonly base: string;
 };
 
 /** El destino que asume quien construye sin declarar ninguno (`astro dev`). */
-export const DESTINO_POR_DEFECTO = "development";
+export const DEFAULT_TARGET = "development";
 
-const DESTINOS: Readonly<Record<string, ConfiguracionDeDespliegue>> = {
+const TARGETS: Readonly<Record<string, DeploymentConfig>> = {
   development: { site: "https://mistorias.github.io", base: "/mistorias-web" },
   netlify: { site: "https://mistorias.pe", base: "/" }
 };
 
-export const configuracionDeDespliegue = (
-  destino: string | undefined
-): ConfiguracionDeDespliegue => {
-  const nombre = destino ?? DESTINO_POR_DEFECTO;
-  const configuracion = DESTINOS[nombre];
+export const resolveDeploymentConfig = (
+  target: string | undefined
+): DeploymentConfig => {
+  const name = target ?? DEFAULT_TARGET;
+  const config = TARGETS[name];
 
-  if (!configuracion) {
-    const validos = Object.keys(DESTINOS).join(", ");
+  if (!config) {
+    const valid = Object.keys(TARGETS).join(", ");
 
     throw new Error(
-      `DEPLOY_TARGET desconocido: "${nombre}". Destinos válidos: ${validos}.`
+      `DEPLOY_TARGET desconocido: "${name}". Destinos válidos: ${valid}.`
     );
   }
 
-  return configuracion;
+  return config;
 };
