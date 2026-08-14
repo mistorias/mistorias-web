@@ -6,10 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Before writing code, commits, or PRs, consult:
 
-- **[STANDARDS.md](STANDARDS.md)** — Code principles (SOLID, clean code, TDD), commit conventions (conventional commits, atomic, preemptive), and PR standards.
+- **[docs/STANDARDS.md](docs/STANDARDS.md)** — Code principles (SOLID, clean code, TDD), commit conventions (conventional commits, atomic, preemptive), and PR standards.
 - **[Mistorias Esencia de Marca](https://github.com/mistorias/mistorias-esencia-de-marca)** — Brand principles (empatía, transparencia, empoderamiento, claridad) that guide all work. These principles translate to code that is human-first, transparent to contributors, and clear.
 
-Claude Code must commit atomically while working on this repo, so each commit is a safe checkpoint to revert to if needed. See [STANDARDS.md](STANDARDS.md#atomic-commits) for details.
+Claude Code must commit atomically while working on this repo, so each commit is a safe checkpoint to revert to if needed. See [docs/STANDARDS.md](docs/STANDARDS.md#atomic-commits) for details.
 
 ## Quick Start
 

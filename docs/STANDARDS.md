@@ -182,7 +182,7 @@ Debe seguir el formato de Conventional Commits, y además redactarse en estilo p
 ```
 feat: el usuario puede filtrar historias por tema (issue #XX)
 fix: la fecha se valida correctamente en el formulario (issue #YY)
-docs: STANDARDS.md es disponible íntegramente en castellano
+docs: docs/STANDARDS.md es disponible íntegramente en castellano
 ```
 
 ---
@@ -190,6 +190,6 @@ docs: STANDARDS.md es disponible íntegramente en castellano
 ## Referencias
 
 - [Mistorias Esencia de Marca](https://github.com/mistorias/mistorias-esencia-de-marca) — principios de marca, lineamientos editoriales
-- [CLAUDE.md](CLAUDE.md) — resumen de arquitectura
-- [CONTRIBUTING.md](CONTRIBUTING.md) — configuración y flujo de desarrollo
-- [docs/adr/](docs/adr/) — decisiones arquitectónicas
+- [CLAUDE.md](../CLAUDE.md) — resumen de arquitectura
+- [CONTRIBUTING.md](../CONTRIBUTING.md) — configuración y flujo de desarrollo
+- [adr/](adr/) — decisiones arquitectónicas

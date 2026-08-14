@@ -6,7 +6,7 @@ Este documento explica cómo configurar tu entorno de desarrollo y las estándar
 
 Lee estos documentos para alinear tu trabajo con los principios del proyecto:
 
-- **[STANDARDS.md](STANDARDS.md)** — Estándares de código (SOLID, clean code, TDD), convenciones de commits (conventional commits, atomic, preemptive), y estándares de PRs.
+- **[docs/STANDARDS.md](docs/STANDARDS.md)** — Estándares de código (SOLID, clean code, TDD), convenciones de commits (conventional commits, atomic, preemptive), y estándares de PRs.
 - **[Mistorias Esencia de Marca](https://github.com/mistorias/mistorias-esencia-de-marca)** — Principios de marca (empatía, transparencia, empoderamiento, claridad) que guían todo el trabajo.
 
 ## Requisitos Previos
@@ -143,13 +143,13 @@ git submodule update --init --recursive
 ## Flujo de Contribución de Código
 
 1. Crea una rama descriptiva: `git checkout -b feat/descripcion-breve` o `fix/descripcion-breve`
-2. Realiza tus cambios siguiendo los estándares de código en [STANDARDS.md](STANDARDS.md)
+2. Realiza tus cambios siguiendo los estándares de código en [docs/STANDARDS.md](docs/STANDARDS.md)
 3. Asegúrate de que:
    - `pnpm build` pasa sin errores
    - `pnpm test` pasa
    - `pnpm astro check` no reporta errores de tipo
-4. Haz commits atómicos siguiendo [convenciones de commits en STANDARDS.md](STANDARDS.md#commit-standards)
-5. Abre un PR contra `main` con descripción siguiendo [estándares de PR en STANDARDS.md](STANDARDS.md#pull-request-standards)
+4. Haz commits atómicos siguiendo [convenciones de commits en docs/STANDARDS.md](docs/STANDARDS.md#estándares-de-commits)
+5. Abre un PR contra `main` con descripción siguiendo [estándares de PR en docs/STANDARDS.md](docs/STANDARDS.md#estándares-de-pull-requests)
 6. El workflow de Verificación (`.github/workflows/ci.yml`) corre en tu PR: tests, type check, build y `pnpm audit --prod`. El paso de audit es bloqueante a propósito, así que una advisory nueva en una dependencia pone el PR en rojo aunque no la hayas introducido tú
 7. Una vez disponibles los cambios en `main`, el sitio se despliega a GitHub Pages (desarrollo). La Publicación a producción ocurre solo al empujar una etiqueta de versión — ver [CONTEXT.md](CONTEXT.md)
 
@@ -161,6 +161,6 @@ Este proyecto usa Astro con las siguientes restricciones de seguridad y de marca
 - **Content Collections tipadas:** Todos los posts deben cumplir el esquema definido en `src/lib/content/schema.ts`.
 - **Transparencia de versionado:** Todo cambio de contenido o código queda registrado en Git.
 
-Todo el trabajo se alinea con los [principios de marca](https://github.com/mistorias/mistorias-esencia-de-marca) (empatía, transparencia, empoderamiento, claridad), reflejados en [STANDARDS.md](STANDARDS.md).
+Todo el trabajo se alinea con los [principios de marca](https://github.com/mistorias/mistorias-esencia-de-marca) (empatía, transparencia, empoderamiento, claridad), reflejados en [docs/STANDARDS.md](docs/STANDARDS.md).
 
 Para más contexto arquitectónico, ver `CLAUDE.md` y `docs/adr/`.

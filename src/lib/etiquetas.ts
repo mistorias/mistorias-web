@@ -3,7 +3,8 @@
  *
  * Se mantiene independiente de las colecciones de Astro —recibe cómo leer las
  * etiquetas de cada historia— para que la lógica se pruebe sin levantar el
- * framework, tal como pide la separación de responsabilidades de STANDARDS.md.
+ * framework, tal como pide la separación de responsabilidades de
+ * docs/STANDARDS.md.
  */
 
 export type GrupoDeEtiqueta<T> = {
