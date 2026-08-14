@@ -2,7 +2,7 @@
 import { getCollection, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import TarjetaHistoria from "../../components/TarjetaHistoria.astro";
-import { agruparPorEtiqueta } from "../../lib/etiquetas";
+import { groupByTag } from "../../lib/tags";
 import { sortByDateDescending } from "../../lib/stories";
 import { rutaEtiquetas } from "../../lib/rutas";
 
@@ -12,10 +12,10 @@ export async function getStaticPaths() {
         (historia) => historia.data.date
     );
 
-    return agruparPorEtiqueta(historias, (historia) => historia.data.tags).map(
+    return groupByTag(historias, (historia) => historia.data.tags).map(
         (grupo) => ({
-            params: { etiqueta: grupo.etiqueta },
-            props: { historias: grupo.historias }
+            params: { etiqueta: grupo.tag },
+            props: { historias: grupo.stories }
         })
     );
 }
