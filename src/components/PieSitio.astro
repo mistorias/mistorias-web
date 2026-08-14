@@ -1,28 +1,27 @@
 ---
-import { homeRoute } from "../lib/routes";
+import {
+    brandRoute,
+    editorialContentRoute,
+    homeRoute,
+    reportRoute,
+    siteCodeRoute
+} from "../lib/routes";
 
-const inicio = homeRoute(import.meta.env.BASE_URL);
+const base = import.meta.env.BASE_URL;
+const inicio = homeRoute(base);
 
 // El pie es el principio de transparencia hecho navegación: desde acá se llega
 // al contenido editorial, al código que lo publica y a los criterios de marca
 // con los que se escribe.
+//
+// Estos destinos son páginas del sitio y ya no repositorios de GitHub: la
+// transparencia se explica en el idioma de quien lee, y quien quiera la fuente
+// completa la encuentra enlazada al pie de cada una (issue #28).
 const enlaces = [
-    {
-        texto: "Contenido editorial",
-        href: "https://github.com/mistorias/mistorias-contenido"
-    },
-    {
-        texto: "Código del sitio",
-        href: "https://github.com/mistorias/mistorias-web"
-    },
-    {
-        texto: "Esencia de marca",
-        href: "https://github.com/mistorias/mistorias-esencia-de-marca"
-    },
-    {
-        texto: "Reportar un problema",
-        href: "https://github.com/mistorias/mistorias-web/blob/main/SECURITY.md"
-    }
+    { texto: "Contenido editorial", href: editorialContentRoute(base) },
+    { texto: "Código del sitio", href: siteCodeRoute(base) },
+    { texto: "Esencia de marca", href: brandRoute(base) },
+    { texto: "Reportar un problema", href: reportRoute(base) }
 ] as const;
 ---
 
