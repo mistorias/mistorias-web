@@ -1,9 +1,10 @@
 import { defineConfig } from "vitest/config";
 
-// El issue #23 pide que el build falle cuando la cobertura sea menor o igual a
-// 85%. Vitest falla cuando la cobertura queda *por debajo* del umbral, así que
-// el umbral se fija apenas encima de 85 para que un 85% exacto también dé rojo.
-const COBERTURA_MINIMA = 85.01;
+// El estándar del equipo es una cobertura mayor a 90% (docs/STANDARDS.md), y
+// este es el número que lo hace cumplir: acá vive el umbral y en ningún otro
+// lado. Se fija apenas encima de 90 porque Vitest falla cuando la cobertura
+// queda *por debajo* del umbral, y un 90% exacto no es "mayor a 90%".
+const COBERTURA_MINIMA = 90.01;
 
 export default defineConfig({
   test: {
