@@ -51,7 +51,7 @@ The gate runs via `src/lib/content/no-raw-html-integration.ts`, an Astro integra
 
 `src/lib/content/story-asset-folders.ts` is the sibling gate for the image folders nested under `stories/` (see [ADR 0005](docs/adr/0005-imagenes-en-historias.md)), registered the same way via `src/lib/content/story-asset-folders-integration.ts`. Both gates share directory-reading helpers from `src/lib/content/stories-directory.ts`.
 
-`src/lib/marca/simbolo-gate.ts` follows the same pattern for the brand symbol SVG (`src/assets/marca/simbolo-mistorias.svg`): it rejects any fixed color (must stay `currentColor` so dark mode needs no second file) and anything beyond drawing markup (`<script>`, event handlers, `foreignObject`, external references), because the symbol is injected in line with `set:html`. Registered via `src/lib/marca/simbolo-gate-integration.ts`. See [ADR 0007](docs/adr/0007-lockups-del-logo-y-alto-de-la-cabecera.md).
+`src/lib/brand/symbol-gate.ts` follows the same pattern for the brand symbol SVG (`src/assets/marca/simbolo-mistorias.svg`): it rejects any fixed color (must stay `currentColor` so dark mode needs no second file) and anything beyond drawing markup (`<script>`, event handlers, `foreignObject`, external references), because the symbol is injected in line with `set:html`. Registered via `src/lib/brand/symbol-gate-integration.ts`. See [ADR 0007](docs/adr/0007-lockups-del-logo-y-alto-de-la-cabecera.md).
 
 ### Pages & Routing
 
@@ -104,7 +104,7 @@ Both check out with `--recursive` (initializes submodules) and run `pnpm install
 
 Stories reject raw HTML (`assertStoriesHaveNoRawHtml` in `raw-html-gate.ts`) to prevent injection attacks. This is enforced on every `astro dev` and `astro build` through the integration registered in `astro.config.mjs` — the check only holds as long as that registration stays in place, so don't remove it.
 
-The brand symbol SVG goes through the same kind of gate (`assertBrandSymbolIsThemeReady` in `simbolo-gate.ts`), because it's injected in line with `set:html` and its content is therefore executable markup, not just an image. It rejects fixed colors, `<script>`, event handlers, `foreignObject`, and external references — also registered in `astro.config.mjs`.
+The brand symbol SVG goes through the same kind of gate (`assertBrandSymbolIsThemeReady` in `symbol-gate.ts`), because it's injected in line with `set:html` and its content is therefore executable markup, not just an image. It rejects fixed colors, `<script>`, event handlers, `foreignObject`, and external references — also registered in `astro.config.mjs`.
 
 Pages ship a strict Content-Security-Policy from `src/layouts/BaseLayout.astro`. `script-src` is `'none'` because the site sends no JavaScript; adding an Astro island or view transitions requires relaxing it to `'self'` in both the layout and `public/_headers`, which would otherwise break in the browser without failing the build.
 
