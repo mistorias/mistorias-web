@@ -2,9 +2,9 @@
 import { getCollection, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import TarjetaHistoria from "../../components/TarjetaHistoria.astro";
-import { groupByTag } from "../../lib/tags";
+import { tagsRoute } from "../../lib/routes";
 import { sortByDateDescending } from "../../lib/stories";
-import { rutaEtiquetas } from "../../lib/rutas";
+import { groupByTag } from "../../lib/tags";
 
 export async function getStaticPaths() {
     const historias = sortByDateDescending(
@@ -51,7 +51,7 @@ const { historias } = Astro.props;
         </div>
 
         <p class="etiqueta__volver">
-            <a href={rutaEtiquetas(import.meta.env.BASE_URL)}>
+            <a href={tagsRoute(import.meta.env.BASE_URL)}>
                 Ver todas las etiquetas
             </a>
         </p>

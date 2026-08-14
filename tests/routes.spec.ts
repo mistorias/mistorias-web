@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
-  construirRuta,
-  rutaAcerca,
-  rutaEtiqueta,
-  rutaEtiquetas,
-  rutaHistoria,
-  rutaInicio
-} from "../src/lib/rutas";
+  aboutRoute,
+  buildRoute,
+  homeRoute,
+  storyRoute,
+  tagRoute,
+  tagsRoute
+} from "../src/lib/routes";
 
 // El sitio se despliega en dos destinos con base distinta: GitHub Pages sirve
 // bajo /mistorias-web y Netlify bajo la raíz. Un enlace escrito a mano se rompe
@@ -14,43 +14,43 @@ import {
 const BASE_PAGES = "/mistorias-web/";
 const BASE_NETLIFY = "/";
 
-describe("construirRuta", () => {
+describe("buildRoute", () => {
   it("devuelve la raíz cuando no recibe segmentos", () => {
-    expect(construirRuta(BASE_NETLIFY)).toBe("/");
+    expect(buildRoute(BASE_NETLIFY)).toBe("/");
   });
 
   it("conserva la base del despliegue cuando no recibe segmentos", () => {
-    expect(construirRuta(BASE_PAGES)).toBe("/mistorias-web/");
+    expect(buildRoute(BASE_PAGES)).toBe("/mistorias-web/");
   });
 
   it("tolera una base sin barra final", () => {
-    expect(construirRuta("/mistorias-web")).toBe("/mistorias-web/");
+    expect(buildRoute("/mistorias-web")).toBe("/mistorias-web/");
   });
 
   it("encadena los segmentos bajo la raíz", () => {
-    expect(construirRuta(BASE_NETLIFY, "historias", "una-historia")).toBe(
+    expect(buildRoute(BASE_NETLIFY, "historias", "una-historia")).toBe(
       "/historias/una-historia/"
     );
   });
 
   it("encadena los segmentos bajo la base del despliegue", () => {
-    expect(construirRuta(BASE_PAGES, "historias", "una-historia")).toBe(
+    expect(buildRoute(BASE_PAGES, "historias", "una-historia")).toBe(
       "/mistorias-web/historias/una-historia/"
     );
   });
 
   it("descarta segmentos vacíos en vez de generar barras dobles", () => {
-    expect(construirRuta(BASE_NETLIFY, "", "historias", "")).toBe("/historias/");
+    expect(buildRoute(BASE_NETLIFY, "", "historias", "")).toBe("/historias/");
   });
 
   it("normaliza las barras sobrantes de cada segmento", () => {
-    expect(construirRuta(BASE_NETLIFY, "/historias/", "/una-historia/")).toBe(
+    expect(buildRoute(BASE_NETLIFY, "/historias/", "/una-historia/")).toBe(
       "/historias/una-historia/"
     );
   });
 
   it("acepta un identificador de historia con subcarpetas", () => {
-    expect(construirRuta(BASE_PAGES, "historias", "2026/agosto/una")).toBe(
+    expect(buildRoute(BASE_PAGES, "historias", "2026/agosto/una")).toBe(
       "/mistorias-web/historias/2026/agosto/una/"
     );
   });
@@ -58,24 +58,24 @@ describe("construirRuta", () => {
 
 describe("rutas con nombre", () => {
   it("apunta el inicio a la base del despliegue", () => {
-    expect(rutaInicio(BASE_PAGES)).toBe("/mistorias-web/");
-    expect(rutaInicio(BASE_NETLIFY)).toBe("/");
+    expect(homeRoute(BASE_PAGES)).toBe("/mistorias-web/");
+    expect(homeRoute(BASE_NETLIFY)).toBe("/");
   });
 
   it("publica cada historia bajo /historias/", () => {
-    expect(rutaHistoria(BASE_NETLIFY, "2026-08-07-como-se-mueve")).toBe(
+    expect(storyRoute(BASE_NETLIFY, "2026-08-07-como-se-mueve")).toBe(
       "/historias/2026-08-07-como-se-mueve/"
     );
   });
 
   it("publica cada etiqueta bajo /etiquetas/", () => {
-    expect(rutaEtiqueta(BASE_PAGES, "junin")).toBe(
+    expect(tagRoute(BASE_PAGES, "junin")).toBe(
       "/mistorias-web/etiquetas/junin/"
     );
   });
 
   it("expone el índice de etiquetas y la página Acerca de", () => {
-    expect(rutaEtiquetas(BASE_NETLIFY)).toBe("/etiquetas/");
-    expect(rutaAcerca(BASE_NETLIFY)).toBe("/acerca/");
+    expect(tagsRoute(BASE_NETLIFY)).toBe("/etiquetas/");
+    expect(aboutRoute(BASE_NETLIFY)).toBe("/acerca/");
   });
 });

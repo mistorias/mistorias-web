@@ -1,5 +1,5 @@
 ---
-import { rutaEtiqueta } from "../lib/rutas";
+import { tagRoute } from "../lib/routes";
 
 type Props = {
     etiquetas: readonly string[];
@@ -14,7 +14,7 @@ const base = import.meta.env.BASE_URL;
     {
         etiquetas.map((etiqueta) => (
             <li>
-                <a class="etiquetas__ficha" href={rutaEtiqueta(base, etiqueta)}>
+                <a class="etiquetas__ficha" href={tagRoute(base, etiqueta)}>
                     {etiqueta}
                 </a>
             </li>
