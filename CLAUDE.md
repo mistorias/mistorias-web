@@ -13,7 +13,7 @@ Claude Code must commit atomically while working on this repo, so each commit is
 
 ### Language
 
-Code is written in English — identifiers, filenames, frontmatter keys, build error messages. Astro components, pages and layouts stay in Spanish when they name a brand or editorial concept (`LogotipoMistorias.astro`, `TarjetaHistoria.astro`) — filenames and the props and variables inside them alike — and so do public routes and reader-facing text. Comments, docstrings, commit messages, PR descriptions and docs are written in Peruvian Spanish. The boundary is `src/lib/`, which is fully in English: a Spanish component consumes English helpers (`storyRoute`, `groupByTag`). What still carries Spanish names against the rule are `tests/fixtures/simbolo/` and `src/assets/marca/`; those are not renamed in bulk — translate one only when touching it for another reason, in its own commit. Full rules in [CONTRIBUTING.md](CONTRIBUTING.md#idioma).
+Code is written in English — identifiers, filenames, frontmatter keys, build error messages. Astro components, pages and layouts stay in Spanish when they name a brand or editorial concept (`LogotipoMistorias.astro`, `TarjetaHistoria.astro`) — filenames and the props and variables inside them alike — and so do public routes and reader-facing text. Comments, docstrings, commit messages, PR descriptions and docs are written in Peruvian Spanish. The boundary is `src/lib/`, which is fully in English: a Spanish component consumes English helpers (`storyRoute`, `groupByTag`). Full rules in [CONTRIBUTING.md](CONTRIBUTING.md#idioma).
 
 ### Documentation
 
@@ -51,7 +51,7 @@ The gate runs via `src/lib/content/no-raw-html-integration.ts`, an Astro integra
 
 `src/lib/content/story-asset-folders.ts` is the sibling gate for the image folders nested under `stories/` (see [ADR 0005](docs/adr/0005-imagenes-en-historias.md)), registered the same way via `src/lib/content/story-asset-folders-integration.ts`. Both gates share directory-reading helpers from `src/lib/content/stories-directory.ts`.
 
-`src/lib/brand/symbol-gate.ts` follows the same pattern for the brand symbol SVG (`src/assets/marca/simbolo-mistorias.svg`): it rejects any fixed color (must stay `currentColor` so dark mode needs no second file) and anything beyond drawing markup (`<script>`, event handlers, `foreignObject`, external references), because the symbol is injected in line with `set:html`. Registered via `src/lib/brand/symbol-gate-integration.ts`. See [ADR 0007](docs/adr/0007-lockups-del-logo-y-alto-de-la-cabecera.md).
+`src/lib/brand/symbol-gate.ts` follows the same pattern for the brand symbol SVG (`src/assets/brand/symbol-mistorias.svg`): it rejects any fixed color (must stay `currentColor` so dark mode needs no second file) and anything beyond drawing markup (`<script>`, event handlers, `foreignObject`, external references), because the symbol is injected in line with `set:html`. Registered via `src/lib/brand/symbol-gate-integration.ts`. See [ADR 0007](docs/adr/0007-lockups-del-logo-y-alto-de-la-cabecera.md).
 
 ### Pages & Routing
 

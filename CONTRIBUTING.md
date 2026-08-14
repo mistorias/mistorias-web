@@ -56,18 +56,17 @@ PR y los documentos del repositorio se escriben en castellano peruano. Los
 comentarios explican el *por qué*, no el *qué* (ver
 [docs/STANDARDS.md](docs/STANDARDS.md#principios-fundamentales)).
 
-### Código ya escrito en castellano
+### Estado actual
 
-`src/lib/` ya está en inglés: ahí viven `dates.ts`, `stories.ts`, `tags.ts`,
-`routes.ts`, `deployment.ts` y los gates de `content/` y `brand/`.
+`src/lib/` está íntegramente en inglés: ahí viven `dates.ts`, `stories.ts`,
+`tags.ts`, `routes.ts`, `deployment.ts` y los gates de `content/` y `brand/`.
+Los componentes, las páginas y los layouts siguen en castellano por la
+excepción de arriba, y eso no es deuda pendiente: no se traducen.
 
-Los componentes, las páginas y los layouts siguen en castellano por la excepción
-de arriba: no son deuda pendiente y no se traducen.
-
-Lo que sí queda pendiente son los fixtures de `tests/fixtures/simbolo/` y la
-carpeta `src/assets/marca/`. No se renombran en masa: un cambio de nombre masivo
-ensucia el historial sin mejorar nada. Se traducen cuando el archivo se toque por
-otra razón, y siempre en un commit aparte del cambio funcional, para que el
+Si en el futuro aparece código fuera de esa excepción con nombres en
+castellano, no se renombra en masa: un cambio de nombre masivo ensucia el
+historial sin mejorar nada. Se traduce cuando el archivo se toque por otra
+razón, y siempre en un commit aparte del cambio funcional, para que el
 renombrado se pueda revisar y revertir solo.
 
 ## Requisitos Previos

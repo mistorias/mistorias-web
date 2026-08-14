@@ -93,7 +93,7 @@ sustracciones con `fill-rule="evenodd"` dentro del mismo `<path>`.
 
 ### 4. Un solo archivo, monocromático, `currentColor`
 
-`src/assets/marca/simbolo-mistorias.svg` no lleva ningún color fijo: todo el
+`src/assets/brand/symbol-mistorias.svg` no lleva ningún color fijo: todo el
 dibujo usa `fill="currentColor"` en la raíz, sin rectángulo de fondo. El
 símbolo se inyecta **en línea** (`?raw` + `set:html`), no como `<img>`, porque
 `currentColor` solo hereda del CSS circundante dentro del documento.
