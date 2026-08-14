@@ -34,8 +34,28 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # `pnpm test` falla si la cobertura no supera el umbral definido en
+      # vitest.config.ts, así que este paso es el control de cobertura del
+      # pipeline (issue #23).
       - name: Run tests
         run: pnpm test
+
+      # Se publica siempre, sobre todo cuando el paso anterior falló: ahí es
+      # cuando hace falta saber en cuánto quedó la cobertura y qué archivo la
+      # bajó, sin tener que abrir el log completo.
+      - name: Report coverage
+        if: always()
+        run: |
+          if [ ! -f coverage/cobertura.txt ]; then
+            echo "No se generó el reporte de cobertura." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          {
+            echo "## Cobertura"
+            echo '```'
+            cat coverage/cobertura.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Type check and build
         run: pnpm build
