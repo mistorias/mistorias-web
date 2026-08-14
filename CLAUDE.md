@@ -15,6 +15,12 @@ Claude Code must commit atomically while working on this repo, so each commit is
 
 Code is written in English — identifiers, filenames, frontmatter keys, build error messages. Astro component names may stay in Spanish when they name a brand or editorial concept (`LogotipoMistorias.astro`, `TarjetaHistoria.astro`), and so do public routes and reader-facing text. Comments, docstrings, commit messages, PR descriptions and docs are written in Peruvian Spanish. Modules that predate this convention are not renamed in bulk; translate one only when touching it for another reason, in its own commit. Full rules in [CONTRIBUTING.md](CONTRIBUTING.md#idioma).
 
+### Documentation
+
+New documents go in `docs/`. The repository root is reserved for files GitHub or tooling expects to find there (`README.md`, `LICENSE`, `CONTRIBUTING.md`, `SECURITY.md`, `CLAUDE.md`, `CONTEXT.md`); anything else needs a reason stated in the PR. ADRs go in `docs/adr/` as `NNNN-titulo-en-kebab-case.md`.
+
+A document is large past **300 lines**. At that point don't keep appending: extract a whole, self-contained topic into a new document under `docs/`, link to it instead of copying it, and leave a pointer where the section was. ADRs are exempt — one ADR is one decision; an oversized one usually means a second ADR is due. Full rules in [docs/STANDARDS.md](docs/STANDARDS.md#estándares-de-documentación).
+
 ## Quick Start
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for full setup instructions.
