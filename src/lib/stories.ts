@@ -6,10 +6,10 @@
  * muta, y la colección que entrega Astro se reutiliza entre páginas.
  */
 
-export const ordenarPorFechaDescendente = <T>(
-  historias: readonly T[],
-  obtenerFecha: (historia: T) => Date
+export const sortByDateDescending = <T>(
+  stories: readonly T[],
+  getDate: (story: T) => Date
 ): readonly T[] =>
-  [...historias].sort(
-    (una, otra) => obtenerFecha(otra).getTime() - obtenerFecha(una).getTime()
+  [...stories].sort(
+    (one, other) => getDate(other).getTime() - getDate(one).getTime()
   );

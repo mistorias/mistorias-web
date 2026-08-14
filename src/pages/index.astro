@@ -2,10 +2,10 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import TarjetaHistoria from "../components/TarjetaHistoria.astro";
-import { ordenarPorFechaDescendente } from "../lib/historias";
+import { sortByDateDescending } from "../lib/stories";
 import { rutaEtiquetas } from "../lib/rutas";
 
-const historias = ordenarPorFechaDescendente(
+const historias = sortByDateDescending(
     await getCollection("stories"),
     (historia) => historia.data.date
 );
