@@ -63,11 +63,10 @@ comentarios explican el *por qué*, no el *qué* (ver
 Los componentes, las páginas y los layouts siguen en castellano por la
 excepción de arriba, y eso no es deuda pendiente: no se traducen.
 
-Si en el futuro aparece código fuera de esa excepción con nombres en
-castellano, no se renombra en masa: un cambio de nombre masivo ensucia el
-historial sin mejorar nada. Se traduce cuando el archivo se toque por otra
-razón, y siempre en un commit aparte del cambio funcional, para que el
-renombrado se pueda revisar y revertir solo.
+Si aparece un nombre en castellano fuera de esa excepción, se corrige antes de
+que se acumule: no se espera a que el archivo se toque por otra razón. El
+renombrado va en un commit aparte del cambio funcional, para que se pueda
+revisar y revertir solo.
 
 ## Requisitos Previos
 
