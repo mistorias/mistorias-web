@@ -28,6 +28,7 @@ Para desarrollar en un contenedor que replica el entorno de despliegue, ver secc
 Para entender la arquitectura, decisiones de diseño y guía de desarrollo, ver:
 - [CLAUDE.md](CLAUDE.md) — Guía rápida de arquitectura y comandos para Claude Code
 - [CONTRIBUTING.md](CONTRIBUTING.md) — Guía de contribución y configuración del entorno
+- [`docs/STANDARDS.md`](docs/STANDARDS.md) — Estándares de código, commits, PRs y documentación
 - [`docs/adr/`](docs/adr/) — Architectural Decision Records (decisiones técnicas documentadas)
 
 ## Contenido
