@@ -1,7 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { agruparPorEtiqueta } from "../../lib/etiquetas";
+import { groupByTag } from "../../lib/tags";
 import { sortByDateDescending } from "../../lib/stories";
 import { rutaEtiqueta } from "../../lib/rutas";
 
@@ -10,7 +10,7 @@ const historias = sortByDateDescending(
     (historia) => historia.data.date
 );
 
-const grupos = agruparPorEtiqueta(historias, (historia) => historia.data.tags);
+const grupos = groupByTag(historias, (historia) => historia.data.tags);
 const base = import.meta.env.BASE_URL;
 
 const cuentaHistorias = (cantidad: number) =>
@@ -36,13 +36,13 @@ const cuentaHistorias = (cantidad: number) =>
                         <li>
                             <a
                                 class="etiquetas-indice__enlace"
-                                href={rutaEtiqueta(base, grupo.etiqueta)}
+                                href={rutaEtiqueta(base, grupo.tag)}
                             >
                                 <span class="etiquetas-indice__nombre">
-                                    {grupo.etiqueta}
+                                    {grupo.tag}
                                 </span>
                                 <span class="etiquetas-indice__cuenta">
-                                    {cuentaHistorias(grupo.historias.length)}
+                                    {cuentaHistorias(grupo.stories.length)}
                                 </span>
                             </a>
                         </li>
