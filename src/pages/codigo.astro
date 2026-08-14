@@ -1,6 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import NotaDeFuente from "../components/NotaDeFuente.astro";
+import { editorialContentRoute } from "../lib/routes";
+
+const base = import.meta.env.BASE_URL;
 
 // El README del repositorio le habla a quien va a programar: instalación,
 // Docker, decisiones de arquitectura. Lo relevante para quien lee el sitio es
@@ -11,7 +14,7 @@ const garantias = [
     {
         titulo: "No te rastreamos",
         descripcion:
-            "No hay analítica, ni cookies, ni píxeles de terceros. Nadie está contando qué historias abres."
+            "Nadie mide tu visita: no hay estadísticas, ni rastreadores, ni nada que se guarde en tu navegador."
     },
     {
         titulo: "No se ejecuta JavaScript",
@@ -41,7 +44,7 @@ const garantias = [
         <p class="codigo__entrada">
             El programa que arma estas páginas es público y cualquiera puede
             revisarlo. Eso no es un detalle para programadores: es lo que te
-            permite comprobar por tu cuenta lo que decimos acá abajo, en vez de
+            permite comprobar por tu cuenta lo que dice esta página, en vez de
             confiar en que es cierto.
         </p>
 
@@ -64,6 +67,12 @@ const garantias = [
             >. Si una edición trajera algo ejecutable, la publicación falla y no
             llega a salir. Es una barrera automática, no una revisión que alguien
             podría olvidarse de hacer.
+        </p>
+
+        <p>
+            Esa validación es la mitad técnica de un proceso editorial más
+            amplio, que está contado
+            en <a href={editorialContentRoute(base)}>contenido editorial</a>.
         </p>
 
         <h2>Cómo comprobarlo</h2>
