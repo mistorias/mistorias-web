@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { fechaLegible, fechaParaAtributo } from "../src/lib/fechas";
+import { dateForAttribute, readableDate } from "../src/lib/dates";
 
-describe("fechaLegible", () => {
+describe("readableDate", () => {
   it("escribe la fecha en castellano, con el mes en palabras", () => {
-    expect(fechaLegible(new Date("2026-08-07"))).toBe("7 de agosto de 2026");
+    expect(readableDate(new Date("2026-08-07"))).toBe("7 de agosto de 2026");
   });
 
   /*
@@ -14,17 +14,17 @@ describe("fechaLegible", () => {
    */
   it("mantiene el día publicado sin importar la zona horaria del build", () => {
     const process = globalThis.process;
-    const zonaOriginal = process.env.TZ;
+    const originalTimeZone = process.env.TZ;
 
     process.env.TZ = "America/Lima";
-    expect(fechaLegible(new Date("2026-08-07"))).toBe("7 de agosto de 2026");
+    expect(readableDate(new Date("2026-08-07"))).toBe("7 de agosto de 2026");
 
-    process.env.TZ = zonaOriginal;
+    process.env.TZ = originalTimeZone;
   });
 });
 
-describe("fechaParaAtributo", () => {
+describe("dateForAttribute", () => {
   it("entrega el formato que espera el atributo datetime", () => {
-    expect(fechaParaAtributo(new Date("2026-08-07"))).toBe("2026-08-07");
+    expect(dateForAttribute(new Date("2026-08-07"))).toBe("2026-08-07");
   });
 });

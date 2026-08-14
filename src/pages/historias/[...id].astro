@@ -6,7 +6,7 @@ import {
 } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ListaEtiquetas from "../../components/ListaEtiquetas.astro";
-import { fechaLegible, fechaParaAtributo } from "../../lib/fechas";
+import { dateForAttribute, readableDate } from "../../lib/dates";
 
 export async function getStaticPaths() {
     const stories = await getCollection("stories");
@@ -36,8 +36,8 @@ const { Content } = await render(story);
             <p class="historia__metadatos">
                 Por {story.data.author}
                 <span aria-hidden="true">·</span>
-                <time datetime={fechaParaAtributo(story.data.date)}>
-                    {fechaLegible(story.data.date)}
+                <time datetime={dateForAttribute(story.data.date)}>
+                    {readableDate(story.data.date)}
                 </time>
             </p>
 
