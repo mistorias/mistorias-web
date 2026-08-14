@@ -160,7 +160,7 @@ repositorio.
 
 ### 8. Gate de build para el símbolo
 
-`src/lib/marca/simbolo-gate.ts` + `simbolo-gate-integration.ts`, registrado en
+`src/lib/brand/symbol-gate.ts` + `symbol-gate-integration.ts`, registrado en
 `astro.config.mjs` junto a `noRawHtml()` y `storyAssetFolders()`. Mismo patrón:
 una función pura que valida, colgada del hook `astro:config:setup` para correr
 en `astro dev` y `astro build` por igual. Rechaza cualquier `fill`/`stroke` que

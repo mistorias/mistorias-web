@@ -4,8 +4,8 @@ import { describe, expect, it } from "vitest";
 import {
   assertBrandSymbolFileIsThemeReady,
   assertBrandSymbolIsThemeReady
-} from "../src/lib/marca/simbolo-gate";
-import { simboloDeMarca } from "../src/lib/marca/simbolo-gate-integration";
+} from "../src/lib/brand/symbol-gate";
+import { brandSymbol } from "../src/lib/brand/symbol-gate-integration";
 
 type ConfigSetupHook = NonNullable<
   AstroIntegration["hooks"]["astro:config:setup"]
@@ -16,7 +16,7 @@ const fixturePath = (name: string): string =>
   path.resolve(process.cwd(), "tests/fixtures/simbolo", name);
 
 async function runConfigSetupHook(filePath: string): Promise<void> {
-  const hook = simboloDeMarca(filePath).hooks["astro:config:setup"];
+  const hook = brandSymbol(filePath).hooks["astro:config:setup"];
   await hook?.({} as ConfigSetupOptions);
 }
 
@@ -135,7 +135,7 @@ describe("assertBrandSymbolFileIsThemeReady", () => {
   });
 });
 
-describe("integración simboloDeMarca", () => {
+describe("integración brandSymbol", () => {
   it("deja compilar cuando el símbolo es válido", async () => {
     await expect(
       runConfigSetupHook(fixturePath("valido.svg"))
