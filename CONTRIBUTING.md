@@ -48,12 +48,19 @@ comentarios explican el *por qué*, no el *qué* (ver
 
 ### Código ya escrito en castellano
 
-Varios módulos anteriores a esta convención usan nombres en castellano
-(`src/lib/rutas.ts`, `etiquetas.ts`, `fechas.ts`, `historias.ts`,
-`despliegue.ts`). No se renombran en masa: un cambio de nombre masivo
-ensucia el historial sin mejorar nada. Se traducen cuando el módulo se toque
-por otra razón, y siempre en un commit aparte del cambio funcional, para que
-el renombrado se pueda revisar y revertir solo.
+`src/lib/` ya está en inglés: ahí viven `dates.ts`, `stories.ts`, `tags.ts`,
+`routes.ts`, `deployment.ts` y los gates de `content/` y `brand/`.
+
+Lo que todavía está en castellano son los identificadores internos de los
+componentes, las páginas y los layouts (`historias`, `grupos`, `enlace`, props
+como `etiquetaTextual`), los fixtures que los acompañan en `tests/fixtures/` y
+la carpeta `src/assets/marca/`. No se refiere a los nombres de archivo de los
+componentes, que siguen la excepción de arriba.
+
+Eso no se renombra en masa: un cambio de nombre masivo ensucia el historial sin
+mejorar nada. Se traduce cuando el archivo se toque por otra razón, y siempre en
+un commit aparte del cambio funcional, para que el renombrado se pueda revisar y
+revertir solo.
 
 ## Requisitos Previos
 
