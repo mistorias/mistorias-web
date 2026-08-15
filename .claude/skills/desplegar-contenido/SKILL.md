@@ -8,11 +8,9 @@ description: >
   muestren las historias y los conteos correctos, confirmar el DEPLOY_TARGET
   correcto para el destino (GitHub Pages o Netlify/mistorias.pe), y evitar
   los incidentes de despliegue ya conocidos en este repo (issue #29: base
-  incorrecta publicada en silencio). Usar este skill siempre que se pida
-  desplegar, publicar, sacar, subir historias nuevas, actualizar el
-  contenido del sitio, o revisar que el conteo de etiquetas o el listado de
-  historias esté correcto antes de un release — incluso si no se menciona la
-  palabra "skill" o "despliegue" explícitamente.
+  incorrecta publicada en silencio). Solo se invoca explícitamente (por
+  nombre o con `/desplegar-contenido`) — no se debe activar por inferencia a
+  partir de menciones sueltas de "desplegar", "publicar" o "contenido".
 ---
 
 # Desplegar contenido nuevo en Mistorias
