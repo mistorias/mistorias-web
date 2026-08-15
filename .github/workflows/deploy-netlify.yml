@@ -44,13 +44,11 @@ jobs:
       # El sitio de producción vive en la raíz de mistorias.pe. Si el artefacto
       # conserva la base de GitHub Pages, la hoja de estilos y cada enlace
       # apuntan a /mistorias-web y el sitio queda roto sin que nada falle
-      # (issue #29): mejor detener la publicación acá.
+      # (issue #29): mejor detener la publicación acá. scripts/check_build_base.sh
+      # es el único lugar donde vive este chequeo — también se puede correr en
+      # local antes de un despliegue manual.
       - name: Check the artifact is not built for GitHub Pages
-        run: |
-          if grep -rl '"/mistorias-web/' dist; then
-            echo "::error::El artefacto conserva la base de GitHub Pages y no se publica en mistorias.pe."
-            exit 1
-          fi
+        run: scripts/check_build_base.sh dist
 
       # --no-build publica exactamente el artefacto que este workflow construyó
       # y verificó; sin esa bandera el CLI lo reconstruye con su propia
