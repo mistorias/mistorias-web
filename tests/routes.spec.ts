@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   aboutRoute,
+  assetRoute,
   brandRoute,
   buildRoute,
   editorialContentRoute,
@@ -56,6 +57,39 @@ describe("buildRoute", () => {
   it("acepta un identificador de historia con subcarpetas", () => {
     expect(buildRoute(BASE_PAGES, "historias", "2026/agosto/una")).toBe(
       "/mistorias-web/historias/2026/agosto/una/"
+    );
+  });
+});
+
+// Los iconos y el manifiesto viven en `public/` y se sirven tal cual. Son
+// archivos, no páginas: llevan la base del despliegue igual que un enlace, pero
+// sin la barra final que `buildRoute` agrega (`favicon.ico/` no existe).
+describe("assetRoute", () => {
+  it("sirve el archivo desde la raíz cuando la base es la raíz", () => {
+    expect(assetRoute(BASE_NETLIFY, "favicon.ico")).toBe("/favicon.ico");
+  });
+
+  it("antepone la base del despliegue al archivo", () => {
+    expect(assetRoute(BASE_PAGES, "favicon.ico")).toBe(
+      "/mistorias-web/favicon.ico"
+    );
+  });
+
+  // Una base sin barra final concatenada a mano da `/mistorias-webfavicon.ico`:
+  // un 404 silencioso que ningún build reporta.
+  it("tolera una base sin barra final", () => {
+    expect(assetRoute("/mistorias-web", "favicon.ico")).toBe(
+      "/mistorias-web/favicon.ico"
+    );
+  });
+
+  it("no agrega barra final al archivo", () => {
+    expect(assetRoute(BASE_PAGES, "site.webmanifest")).not.toMatch(/\/$/);
+  });
+
+  it("encadena segmentos cuando el archivo vive en una subcarpeta", () => {
+    expect(assetRoute(BASE_NETLIFY, "iconos", "favicon-32x32.png")).toBe(
+      "/iconos/favicon-32x32.png"
     );
   });
 });
