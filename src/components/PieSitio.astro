@@ -10,13 +10,17 @@ import {
 const base = import.meta.env.BASE_URL;
 const inicio = homeRoute(base);
 
-// El pie es el principio de transparencia hecho navegación: desde acá se llega
-// al contenido editorial, al código que lo publica y a los criterios de marca
-// con los que se escribe.
+// El pie es el principio de transparencia hecho navegación: desde aquí se
+// llega al contenido editorial, al código que lo publica y a los criterios de
+// marca con los que se escribe.
 //
 // Estos destinos son páginas del sitio y ya no repositorios de GitHub: la
 // transparencia se explica en el idioma de quien lee, y quien quiera la fuente
 // completa la encuentra enlazada al pie de cada una (issue #28).
+//
+// La nota junto al nombre de la marca ya no habla de fuentes ni de historial
+// —eso quedó cubierto por los enlaces de abajo— sino que cierra la visita con
+// la misión del proyecto (issue #32).
 const enlaces = [
     { texto: "Contenido editorial", href: editorialContentRoute(base) },
     { texto: "Código del sitio", href: siteCodeRoute(base) },
@@ -31,8 +35,8 @@ const enlaces = [
             <a class="pie__logo" href={inicio}>Mistorias</a>
 
             <p class="pie__nota">
-                Cada historia de Mistorias enlaza sus fuentes y dice qué son. El
-                contenido y el código son públicos y tienen historial.
+                No queremos solo informarte. Queremos que veas, entiendas y
+                quieras transformar la educación.
             </p>
         </div>
 
