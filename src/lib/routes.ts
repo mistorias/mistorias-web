@@ -21,14 +21,31 @@ const REPORT_SECTION = "reportar";
 const splitIntoSegments = (value: string): readonly string[] =>
   value.split("/").filter((segment) => segment.length > 0);
 
+const joinSegments = (values: readonly string[]): readonly string[] =>
+  values.flatMap(splitIntoSegments);
+
 export const buildRoute = (
   base: string,
   ...segments: readonly string[]
 ): string => {
-  const parts = [base, ...segments].flatMap(splitIntoSegments);
+  const parts = joinSegments([base, ...segments]);
 
   return parts.length === 0 ? "/" : `/${parts.join("/")}/`;
 };
+
+/**
+ * Ruta de un archivo que se sirve tal cual desde `public/`: iconos, manifiesto,
+ * `robots.txt`.
+ *
+ * Lleva la base del despliegue como cualquier enlace, pero termina en el nombre
+ * del archivo: `favicon.ico/` no existe. Pasa por acá y no por interpolación de
+ * cadenas porque `BASE_URL` puede llegar sin barra final, y `${base}favicon.ico`
+ * daría `/mistorias-webfavicon.ico` —un 404 que el build no reporta.
+ */
+export const assetRoute = (
+  base: string,
+  ...segments: readonly string[]
+): string => `/${joinSegments([base, ...segments]).join("/")}`;
 
 export const homeRoute = (base: string): string => buildRoute(base);
 
