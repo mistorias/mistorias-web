@@ -51,6 +51,11 @@ const { Content } = await render(story);
             <Content />
         </div>
 
+        <p class="columna historia__aviso">
+            Los personajes de esta historia son ficticios; cualquier parecido
+            con personas reales es pura coincidencia.
+        </p>
+
         {
             story.data.tags.length > 0 && (
                 <footer class="columna historia__pie">
@@ -93,6 +98,15 @@ const { Content } = await render(story);
         font-size: var(--paso-1);
         font-style: italic;
         color: var(--color-analitico);
+    }
+
+    .historia__aviso {
+        padding-block-start: var(--esp-m);
+        margin-block-start: var(--esp-l);
+        border-block-start: 1px solid var(--color-borde);
+        font-size: var(--paso--1);
+        font-style: italic;
+        color: var(--color-metadato);
     }
 
     .historia__pie {
