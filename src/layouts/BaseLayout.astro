@@ -7,6 +7,7 @@ import loraLatino from "@fontsource-variable/lora/files/lora-latin-wght-normal.w
 
 import CabeceraSitio from "../components/CabeceraSitio.astro";
 import PieSitio from "../components/PieSitio.astro";
+import { assetRoute } from "../lib/routes";
 
 // GitHub Pages no permite configurar cabeceras HTTP, así que la CSP viaja en
 // un <meta>. Es la única barrera disponible en el entorno de desarrollo; en
@@ -31,6 +32,22 @@ type Props = {
 };
 
 const { title, description } = Astro.props;
+
+// Los iconos viven en `public/` y se sirven tal cual, así que su ruta depende
+// de la base del despliegue igual que cualquier enlace interno. El navegador
+// solo busca `/favicon.ico` en la raíz del dominio por su cuenta: en GitHub
+// Pages, donde el sitio cuelga de `/mistorias-web`, sin estas etiquetas no
+// encuentra ninguno.
+const base = import.meta.env.BASE_URL;
+const iconos = {
+    ico: assetRoute(base, "favicon.ico"),
+    png16: assetRoute(base, "favicon-16x16.png"),
+    png32: assetRoute(base, "favicon-32x32.png"),
+    png48: assetRoute(base, "favicon-48x48.png"),
+    apple: assetRoute(base, "apple-touch-icon.png"),
+    manifiesto: assetRoute(base, "site.webmanifest")
+};
+
 const urlCanonica = Astro.site
     ? new URL(Astro.url.pathname, Astro.site)
     : undefined;
@@ -46,6 +63,16 @@ const urlCanonica = Astro.site
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
     {urlCanonica && <link rel="canonical" href={urlCanonica} />}
+
+    <!-- El .ico trae 16, 32 y 48 para los navegadores que solo leen ese
+         formato; los PNG son para los que prefieren mapa de bits. El
+         manifiesto declara los iconos de Android y el color de la marca. -->
+    <link rel="icon" href={iconos.ico} sizes="any" />
+    <link rel="icon" type="image/png" sizes="16x16" href={iconos.png16} />
+    <link rel="icon" type="image/png" sizes="32x32" href={iconos.png32} />
+    <link rel="icon" type="image/png" sizes="48x48" href={iconos.png48} />
+    <link rel="apple-touch-icon" sizes="180x180" href={iconos.apple} />
+    <link rel="manifest" href={iconos.manifiesto} />
 
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="es_PE" />
