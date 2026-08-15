@@ -155,15 +155,22 @@ si se va a correr `pnpm build` o `netlify deploy` a mano.
 
 Si por alguna razón se va a correr `netlify deploy` fuera del workflow (no
 es el flujo normal — el workflow ya usa `--no-build` para publicar
-exactamente lo que él mismo construyó y validó), replicar el chequeo que
+exactamente lo que él mismo construyó y validó), correr el mismo chequeo que
 corre en CI antes de subir nada:
 
 ```bash
 DEPLOY_TARGET=netlify pnpm build
-.claude/skills/desplegar-contenido/scripts/check_build_base.sh dist
+scripts/check_build_base.sh dist
 ```
 
-Este script falla si el `dist/` generado todavía contiene referencias a
+`scripts/check_build_base.sh` (en la raíz del repo, no dentro de este
+skill) es el único lugar donde vive esta lógica: el paso "Check the artifact
+is not built for GitHub Pages" de `.github/workflows/deploy-netlify.yml`
+llama al mismo script en vez de tener el chequeo duplicado inline. Si el
+chequeo necesita cambiar, se edita ahí una sola vez y tanto CI como
+cualquier corrida local quedan al día.
+
+Falla si el `dist/` generado todavía contiene referencias a
 `/mistorias-web/` — la señal exacta del incidente del issue #29. Un build
 para Netlify nunca debe contener esa cadena.
 
