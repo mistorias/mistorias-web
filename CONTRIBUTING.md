@@ -145,9 +145,17 @@ bajando. Ver [Control de cobertura](docs/STANDARDS.md#control-de-cobertura).
 
 Para desarrollar en un contenedor que replica el entorno de despliegue:
 
+### Construir la imagen
+
 ```bash
 docker build -t mistorias-web-dev .
+```
 
+### Ejecutar en modo interactivo (desarrollo activo)
+
+Si necesitas ver los logs en tiempo real y control sobre el contenedor:
+
+```bash
 docker run --rm -it \
   -p 4321:4321 \
   -v "$(pwd):/workspace" \
@@ -156,9 +164,31 @@ docker run --rm -it \
   mistorias-web-dev
 ```
 
-El contenedor monta tu código como bind mount, permitiendo editar en tu editor local y ver los cambios en tiempo real dentro del contenedor.
+El servidor estará disponible en `http://localhost:4321/mistorias-web` (nota el base path `/mistorias-web` por la configuración de GitHub Pages).
 
-### Otros comandos dentro del contenedor
+Presiona `Ctrl+C` para detener el contenedor.
+
+### Ejecutar en background (desarrollo pasivo)
+
+Si prefieres que el contenedor corra en segundo plano:
+
+```bash
+docker run -d --name mistorias-web-dev \
+  -p 4321:4321 \
+  -v "$(pwd):/workspace" \
+  -v mistorias-web-node-modules:/workspace/node_modules \
+  -v mistorias-web-astro-cache:/workspace/.astro \
+  mistorias-web-dev
+```
+
+Ver logs: `docker logs -f mistorias-web-dev`  
+Detener: `docker stop mistorias-web-dev`  
+Reanudar: `docker start mistorias-web-dev`  
+Eliminar: `docker rm mistorias-web-dev`
+
+### Otros comandos
+
+Para ejecutar `build` o `test` dentro del contenedor:
 
 ```bash
 # Build
