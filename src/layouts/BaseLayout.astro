@@ -42,6 +42,12 @@ const tituloMostrado = isDevelopmentTarget(process.env.DEPLOY_TARGET)
     ? `WIP: ${title}`
     : title;
 
+// El build de desarrollo antepone "WIP: " para que no se confunda con el
+// sitio real (issue #28).
+const tituloMostrado = isDevelopmentTarget(process.env.DEPLOY_TARGET)
+    ? `WIP: ${title}`
+    : title;
+
 // Los iconos viven en `public/` y se sirven tal cual, así que su ruta depende
 // de la base del despliegue igual que cualquier enlace interno. El navegador
 // solo busca `/favicon.ico` en la raíz del dominio por su cuenta: en GitHub
