@@ -25,13 +25,10 @@ const TARGETS: Readonly<Record<string, DeploymentConfig>> = {
   netlify: { site: "https://mistorias.pe", base: "/" }
 };
 
-export const resolveDeploymentConfig = (
-  target: string | undefined
-): DeploymentConfig => {
+const resolveTargetName = (target: string | undefined): string => {
   const name = target ?? DEFAULT_TARGET;
-  const config = TARGETS[name];
 
-  if (!config) {
+  if (!TARGETS[name]) {
     const valid = Object.keys(TARGETS).join(", ");
 
     throw new Error(
@@ -39,5 +36,18 @@ export const resolveDeploymentConfig = (
     );
   }
 
-  return config;
+  return name;
 };
+
+export const resolveDeploymentConfig = (
+  target: string | undefined
+): DeploymentConfig => TARGETS[resolveTargetName(target)];
+
+/**
+ * `development` es el único destino que no es de cara al público: GitHub
+ * Pages sirve el build de trabajo en progreso, mientras que `netlify` es
+ * mistorias.pe. Se usa para decidir marcadores visuales (issue #28) que no
+ * deben aparecer nunca en producción.
+ */
+export const isDevelopmentTarget = (target: string | undefined): boolean =>
+  resolveTargetName(target) === "development";

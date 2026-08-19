@@ -8,6 +8,7 @@ import loraLatino from "@fontsource-variable/lora/files/lora-latin-wght-normal.w
 import CabeceraSitio from "../components/CabeceraSitio.astro";
 import PieSitio from "../components/PieSitio.astro";
 import { assetRoute } from "../lib/routes";
+import { isDevelopmentTarget } from "../lib/deployment";
 
 // GitHub Pages no permite configurar cabeceras HTTP, así que la CSP viaja en
 // un <meta>. Es la única barrera disponible en el entorno de desarrollo; en
@@ -32,6 +33,12 @@ type Props = {
 };
 
 const { title, description } = Astro.props;
+
+// El build de desarrollo antepone "WIP: " para que no se confunda con el
+// sitio real (issue #28).
+const tituloMostrado = isDevelopmentTarget(process.env.DEPLOY_TARGET)
+    ? `WIP: ${title}`
+    : title;
 
 // Los iconos viven en `public/` y se sirven tal cual, así que su ruta depende
 // de la base del despliegue igual que cualquier enlace interno. El navegador
@@ -60,7 +67,7 @@ const urlCanonica = Astro.site
     <meta http-equiv="Content-Security-Policy" content={contentSecurityPolicy} />
     <meta name="color-scheme" content="light dark" />
 
-    <title>{title}</title>
+    <title>{tituloMostrado}</title>
     {description && <meta name="description" content={description} />}
     {urlCanonica && <link rel="canonical" href={urlCanonica} />}
 
@@ -77,7 +84,7 @@ const urlCanonica = Astro.site
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="es_PE" />
     <meta property="og:site_name" content="Mistorias" />
-    <meta property="og:title" content={title} />
+    <meta property="og:title" content={tituloMostrado} />
     {description && <meta property="og:description" content={description} />}
     {urlCanonica && <meta property="og:url" content={urlCanonica} />}
 
