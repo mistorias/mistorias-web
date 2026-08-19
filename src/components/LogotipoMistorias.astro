@@ -1,5 +1,6 @@
 ---
 import SimboloMistorias from "./SimboloMistorias.astro";
+import { resolveWordmark } from "../lib/brand/wordmark";
 
 // "apilado": la palabra arriba, el símbolo debajo, siempre — para donde el
 // espacio vertical abunda (franja de portada).
@@ -13,11 +14,14 @@ type Props = {
 };
 
 const { disposicion } = Astro.props;
+
+// En el build de desarrollo esta palabra no es "Mistorias" (issue #28).
+const palabra = resolveWordmark(process.env.DEPLOY_TARGET);
 ---
 
 <span class:list={["logotipo", `logotipo--${disposicion}`]}>
     <SimboloMistorias />
-    <span class="logotipo__palabra">Mistorias</span>
+    <span class="logotipo__palabra">{palabra}</span>
 </span>
 
 <style>

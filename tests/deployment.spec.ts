@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { resolveDeploymentConfig } from "../src/lib/deployment";
+import {
+  isDevelopmentTarget,
+  resolveDeploymentConfig
+} from "../src/lib/deployment";
 
 // El destino decide el origen y la base con que se construye el sitio. Cuando
 // un destino desconocido caía en silencio al de por defecto, mistorias.pe se
@@ -38,5 +41,25 @@ describe("resolveDeploymentConfig", () => {
 
   it("trata un destino vacío como desconocido en vez de adivinarlo", () => {
     expect(() => resolveDeploymentConfig("")).toThrowError();
+  });
+});
+
+// El marcador de "en desarrollo" (issue #28) solo debe encenderse para
+// GitHub Pages, nunca para el destino que sirve mistorias.pe.
+describe("isDevelopmentTarget", () => {
+  it("es desarrollo cuando el destino es development", () => {
+    expect(isDevelopmentTarget("development")).toBe(true);
+  });
+
+  it("es desarrollo cuando no se declara ningún destino", () => {
+    expect(isDevelopmentTarget(undefined)).toBe(true);
+  });
+
+  it("no es desarrollo cuando el destino es netlify", () => {
+    expect(isDevelopmentTarget("netlify")).toBe(false);
+  });
+
+  it("detiene el build ante un destino desconocido, igual que resolveDeploymentConfig", () => {
+    expect(() => isDevelopmentTarget("produccion")).toThrowError(/produccion/);
   });
 });
