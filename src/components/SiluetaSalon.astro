@@ -1,0 +1,53 @@
+---
+import { assetRoute } from "../lib/routes";
+
+const base = import.meta.env.BASE_URL;
+const imagen = assetRoute(base, "silueta-salon.png");
+---
+
+<div
+    class="silueta-salon"
+    style={`--silueta-salon-imagen: url(${imagen})`}
+    aria-hidden="true"
+></div>
+<div class="silueta-salon__relleno" aria-hidden="true"></div>
+
+<style>
+    /*
+     * No es un <img>: es una máscara CSS sobre un color de fondo, para poder
+     * recolorear el PNG según el tema sin necesitar un SVG con currentColor.
+     * mask-image cae bajo img-src en la CSP, ya permitido ('self').
+     */
+    .silueta-salon {
+        position: fixed;
+        inset-block-end: 0;
+        inset-inline-end: 0;
+        pointer-events: none;
+
+        aspect-ratio: 2172 / 724; /* proporción real del PNG */
+        height: var(--alto-silueta-salon);
+        width: auto;
+
+        background-color: var(--color-texto);
+        -webkit-mask-image: var(--silueta-salon-imagen);
+        mask-image: var(--silueta-salon-imagen);
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: right bottom;
+        mask-position: right bottom;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+    }
+
+    /*
+     * El overlay es `fixed` y no reserva espacio propio en el flujo: este
+     * bloque va al final de la página para que el pie de sitio no quede
+     * tapado al hacer scroll hasta el final. Mismo color que PieSitio.astro
+     * (`--color-superficie`) — la paleta no tiene un matiz propio de ese
+     * tono, así que el relleno extiende el pie en vez de inventar uno.
+     */
+    .silueta-salon__relleno {
+        height: var(--alto-relleno-silueta-salon);
+        background-color: var(--color-superficie);
+    }
+</style>

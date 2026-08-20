@@ -7,6 +7,7 @@ import loraLatino from "@fontsource-variable/lora/files/lora-latin-wght-normal.w
 
 import CabeceraSitio from "../components/CabeceraSitio.astro";
 import PieSitio from "../components/PieSitio.astro";
+import SiluetaSalon from "../components/SiluetaSalon.astro";
 import { assetRoute } from "../lib/routes";
 import { isDevelopmentTarget } from "../lib/deployment";
 
@@ -30,9 +31,16 @@ const contentSecurityPolicy = [
 type Props = {
     title: string;
     description?: string;
+    ocultarSilueta?: boolean;
 };
 
-const { title, description } = Astro.props;
+const { title, description, ocultarSilueta = false } = Astro.props;
+
+// El build de desarrollo antepone "WIP: " para que no se confunda con el
+// sitio real (issue #28).
+const tituloMostrado = isDevelopmentTarget(process.env.DEPLOY_TARGET)
+    ? `WIP: ${title}`
+    : title;
 
 // El build de desarrollo antepone "WIP: " para que no se confunda con el
 // sitio real (issue #28).
@@ -109,5 +117,6 @@ const urlCanonica = Astro.site
 </main>
 
 <PieSitio />
+{!ocultarSilueta && <SiluetaSalon />}
 </body>
 </html>
