@@ -57,6 +57,23 @@
   --ancho-sitio: 64rem; /* tope de cabecera, pie y rejillas */
   --radio: 0.375rem;
   --grosor-foco: 3px;
+
+  /*
+   * Alto de la silueta decorativa (SiluetaSalon.astro): el mayor valor
+   * posible sin pasar de 25% del alto de ventana, un tope absoluto de 16rem
+   * en monitores grandes, ni el ancho disponible — la silueta es 3 veces más
+   * ancha que alta (2172×724 px), así que en pantalla vertical el ancho
+   * (100vw / 3) es la restricción real y el alto cede para no desbordar.
+   */
+  --alto-silueta-salon: min(16rem, 25dvh, 100vw / 3);
+
+  /*
+   * Alto del relleno que reserva, al final de la página, el espacio que la
+   * silueta —`position: fixed`— no ocupa en el flujo del documento. Es un
+   * tope fijo aparte del alto de la silueta: sin él, al hacer scroll hasta
+   * el final el overlay tapa el contenido.
+   */
+  --alto-relleno-silueta-salon: 4.375rem; /* 70px */
 }
 
 /*
