@@ -8,7 +8,7 @@ type: Bug
 
 ---
 
-## Describe el problema
+## Descripción del problema
 
 Una descripción clara y breve respecto de lo que es el problema.
 
@@ -23,7 +23,7 @@ Algo así como
 
 ## ¿Qué esperarias que sucediera?
 
-Dinos con claridad y brevedad lo que esperarías que pase.
+Dinos con claridad y brevedad lo que esperarías que pase en vez de ver/recibir el error.
 
 ## Pantallazos
 
