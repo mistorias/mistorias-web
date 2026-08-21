@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { COBERTURA_MINIMA, coverageConfig } from "../coverage.config";
+import { coverageConfig } from "../coverage.config";
 
 // El control de cobertura vive en la configuración de Vitest, así que estos
 // tests cuidan que siga ahí: si alguien apaga la cobertura o baja el umbral,
