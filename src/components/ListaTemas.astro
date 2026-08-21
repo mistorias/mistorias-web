@@ -2,20 +2,20 @@
 import { themeRoute } from "../lib/routes";
 
 type Props = {
-    etiquetas: readonly string[];
-    etiquetaTextual: string;
+    temas: readonly string[];
+    temaTextual: string;
 };
 
-const { etiquetas, etiquetaTextual } = Astro.props;
+const { temas, temaTextual } = Astro.props;
 const base = import.meta.env.BASE_URL;
 ---
 
-<ul class="etiquetas" role="list" aria-label={etiquetaTextual}>
+<ul class="temas" role="list" aria-label={temaTextual}>
     {
-        etiquetas.map((etiqueta) => (
+        temas.map((tema) => (
             <li>
-                <a class="etiquetas__ficha" href={themeRoute(base, etiqueta)}>
-                    {etiqueta}
+                <a class="temas__ficha" href={themeRoute(base, tema)}>
+                    {tema}
                 </a>
             </li>
         ))
@@ -23,7 +23,7 @@ const base = import.meta.env.BASE_URL;
 </ul>
 
 <style>
-    .etiquetas {
+    .temas {
         display: flex;
         flex-wrap: wrap;
         gap: var(--esp-2xs);
@@ -31,7 +31,7 @@ const base = import.meta.env.BASE_URL;
         list-style: none;
     }
 
-    .etiquetas__ficha {
+    .temas__ficha {
         /* 44px de blanco de toque: en celular vertical las fichas son lo más
            difícil de acertar con el pulgar. */
         display: inline-flex;
@@ -48,7 +48,7 @@ const base = import.meta.env.BASE_URL;
     }
 
     @media (hover: hover) {
-        .etiquetas__ficha:hover {
+        .temas__ficha:hover {
             border-color: var(--color-vivo);
             color: var(--color-acento);
         }
