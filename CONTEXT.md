@@ -19,6 +19,10 @@ Cuando la versión actual del sitio es accesible desde uno de los proveedores de
 Poner en producción la versión actual del sitio en Netlify. Solo ocurre cuando se empuja una etiqueta de versión al repositorio — no automáticamente al fusionar en `main`.
 *Avoid*: Deploy, release (como verbo genérico), go-live
 
+**Tema**:
+El eje editorial que distingue una historia de las demás y que agrupa a las que lo comparten. Entre tres y siete por historia; el sitio los publica en `/temas/`. En el código se llama `theme` — ver [CONTRIBUTING.md](CONTRIBUTING.md#idioma).
+*Avoid*: Etiqueta (reservada para la Etiqueta de versión), tag, categoría.
+
 **Etiqueta de versión**:
 Marcador semver en git (p. ej. `v1.2.0`) que autoriza una Publicación. Crear y empujar la etiqueta es el acto de aprobación para publicar.
 *Avoid*: Tag (en documentación de dominio), release tag
