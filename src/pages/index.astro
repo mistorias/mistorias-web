@@ -11,7 +11,7 @@ const historias = sortByDateDescending(
 );
 
 const [destacada, ...anteriores] = historias;
-const hayEtiquetas = historias.some((historia) => historia.data.tags.length > 0);
+const hayEtiquetas = historias.some((historia) => historia.data.themes.length > 0);
 ---
 
 <BaseLayout

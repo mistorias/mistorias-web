@@ -11,7 +11,7 @@ type Props = {
 };
 
 const { historia, destacada = false, nivelTitulo = 2 } = Astro.props;
-const { title, summary, date, author, tags } = historia.data;
+const { title, summary, date, author, themes } = historia.data;
 const enlace = storyRoute(import.meta.env.BASE_URL, historia.id);
 
 // El nivel se recibe en vez de fijarse: una tarjeta que cuelga de un encabezado
@@ -34,9 +34,9 @@ const Titulo = `h${nivelTitulo}` as const;
     <p class="tarjeta__resumen">{summary}</p>
 
     {
-        tags.length > 0 && (
+        themes.length > 0 && (
             <ListaEtiquetas
-                etiquetas={tags}
+                etiquetas={themes}
                 etiquetaTextual={`Etiquetas de ${title}`}
             />
         )
