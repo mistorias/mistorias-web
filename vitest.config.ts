@@ -1,5 +1,5 @@
 import { getViteConfig } from "astro/config";
-import { COBERTURA_MINIMA, coverageConfig } from "./coverage.config";
+import { coverageConfig } from "./coverage.config";
 
 export default getViteConfig({
   test: {
