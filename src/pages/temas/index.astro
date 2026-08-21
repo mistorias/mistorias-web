@@ -1,7 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { tagRoute } from "../../lib/routes";
+import { themeRoute } from "../../lib/routes";
 import { sortByDateDescending } from "../../lib/stories";
 import { groupByTheme } from "../../lib/themes";
 
@@ -36,7 +36,7 @@ const cuentaHistorias = (cantidad: number) =>
                         <li>
                             <a
                                 class="etiquetas-indice__enlace"
-                                href={tagRoute(base, grupo.theme)}
+                                href={themeRoute(base, grupo.theme)}
                             >
                                 <span class="etiquetas-indice__nombre">
                                     {grupo.theme}

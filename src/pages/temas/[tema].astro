@@ -2,7 +2,7 @@
 import { getCollection, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import TarjetaHistoria from "../../components/TarjetaHistoria.astro";
-import { tagsRoute } from "../../lib/routes";
+import { themesRoute } from "../../lib/routes";
 import { sortByDateDescending } from "../../lib/stories";
 import { groupByTheme } from "../../lib/themes";
 
@@ -14,7 +14,7 @@ export async function getStaticPaths() {
 
     return groupByTheme(historias, (historia) => historia.data.themes).map(
         (grupo) => ({
-            params: { etiqueta: grupo.theme },
+            params: { tema: grupo.theme },
             props: { historias: grupo.stories }
         })
     );
@@ -24,17 +24,17 @@ type Props = {
     historias: readonly CollectionEntry<"stories">[];
 };
 
-const { etiqueta } = Astro.params;
+const { tema } = Astro.params;
 const { historias } = Astro.props;
 ---
 
 <BaseLayout
-    title={`Historias sobre ${etiqueta} | Mistorias`}
-    description={`Historias de Mistorias etiquetadas como ${etiqueta}.`}
+    title={`Historias sobre ${tema} | Mistorias`}
+    description={`Historias de Mistorias etiquetadas como ${tema}.`}
 >
     <div class="contenedor etiqueta">
         <p class="etiqueta__rotulo">Etiqueta</p>
-        <h1>{etiqueta}</h1>
+        <h1>{tema}</h1>
 
         <p class="etiqueta__cuenta">
             {historias.length === 1
@@ -51,7 +51,7 @@ const { historias } = Astro.props;
         </div>
 
         <p class="etiqueta__volver">
-            <a href={tagsRoute(import.meta.env.BASE_URL)}>
+            <a href={themesRoute(import.meta.env.BASE_URL)}>
                 Ver todas las etiquetas
             </a>
         </p>
