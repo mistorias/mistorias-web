@@ -52,25 +52,25 @@ describe("TarjetaHistoria", () => {
     expect(html).toContain("tarjeta--destacada");
   });
 
-  it("no renderiza ListaEtiquetas cuando la historia no tiene tags", async () => {
-    const historia = buildStoryFixture({ tags: [] });
+  it("no renderiza ListaTemas cuando la historia no tiene temas", async () => {
+    const historia = buildStoryFixture({ themes: [] });
     const html = await renderAstroComponent(TarjetaHistoria, {
       props: { historia },
     });
 
-    expect(html).not.toMatch(/class="etiquetas"/);
+    expect(html).not.toMatch(/class="temas"/);
   });
 
-  it("renderiza ListaEtiquetas con los tags y un aria-label que incluye el título", async () => {
+  it("renderiza ListaTemas con los temas y un aria-label que incluye el título", async () => {
     const historia = buildStoryFixture({
-      title: "Historia con tags",
-      tags: ["educacion", "comunidad"],
+      title: "Historia con temas",
+      themes: ["educacion", "comunidad"],
     });
     const html = await renderAstroComponent(TarjetaHistoria, {
       props: { historia },
     });
 
-    expect(html).toContain("Etiquetas de Historia con tags");
+    expect(html).toContain("Temas de Historia con temas");
     expect(html).toContain("educacion");
     expect(html).toContain("comunidad");
   });

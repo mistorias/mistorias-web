@@ -123,7 +123,7 @@ As of issue #33, `.astro` components can be tested with Vitest using the `experi
 
 **Coverage:**
 
-- `coverage.config.ts` explicitly lists only the `.astro` files under test (not `src/**/*.astro`, which would count all untested components at 0%). Currently: `BaseLayout.astro`, `LogotipoMistorias.astro`, `TarjetaHistoria.astro`, `ListaEtiquetas.astro`, `SimboloMistorias.astro`, `CabeceraSitio.astro`, `PieSitio.astro`.
+- `coverage.config.ts` explicitly lists only the `.astro` files under test (not `src/**/*.astro`, which would count all untested components at 0%). Currently: `BaseLayout.astro`, `LogotipoMistorias.astro`, `TarjetaHistoria.astro`, `ListaTemas.astro`, `SimboloMistorias.astro`, `CabeceraSitio.astro`, `PieSitio.astro`.
 - The 90% coverage threshold applies to those files (108 tests as of now pass; ~89% branches still needs work on `Astro.site`-dependent code in future iterations).
 
 **Limitations:**
