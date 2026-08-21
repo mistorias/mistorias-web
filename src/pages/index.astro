@@ -11,7 +11,7 @@ const historias = sortByDateDescending(
 );
 
 const [destacada, ...anteriores] = historias;
-const hayEtiquetas = historias.some((historia) => historia.data.themes.length > 0);
+const hayTemas = historias.some((historia) => historia.data.themes.length > 0);
 ---
 
 <BaseLayout
@@ -73,10 +73,10 @@ const hayEtiquetas = historias.some((historia) => historia.data.themes.length > 
     }
 
     {
-        hayEtiquetas && (
+        hayTemas && (
             <section class="columna explorar">
                 <a href={themesRoute(import.meta.env.BASE_URL)}>
-                    Explorar las historias por etiqueta
+                    Explorar las historias por tema
                 </a>
             </section>
         )

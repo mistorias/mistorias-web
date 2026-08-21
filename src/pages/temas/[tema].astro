@@ -30,19 +30,19 @@ const { historias } = Astro.props;
 
 <BaseLayout
     title={`Historias sobre ${tema} | Mistorias`}
-    description={`Historias de Mistorias etiquetadas como ${tema}.`}
+    description={`Historias de Mistorias sobre ${tema}.`}
 >
-    <div class="contenedor etiqueta">
-        <p class="etiqueta__rotulo">Etiqueta</p>
+    <div class="contenedor tema">
+        <p class="tema__rotulo">Tema</p>
         <h1>{tema}</h1>
 
-        <p class="etiqueta__cuenta">
+        <p class="tema__cuenta">
             {historias.length === 1
-                ? "1 historia con esta etiqueta"
-                : `${historias.length} historias con esta etiqueta`}
+                ? "1 historia con este tema"
+                : `${historias.length} historias con este tema`}
         </p>
 
-        <div class="etiqueta__rejilla">
+        <div class="tema__rejilla">
             {
                 historias.map((historia) => (
                     <TarjetaHistoria historia={historia} />
@@ -50,20 +50,20 @@ const { historias } = Astro.props;
             }
         </div>
 
-        <p class="etiqueta__volver">
+        <p class="tema__volver">
             <a href={themesRoute(import.meta.env.BASE_URL)}>
-                Ver todas las etiquetas
+                Ver todos los temas
             </a>
         </p>
     </div>
 </BaseLayout>
 
 <style>
-    .etiqueta {
+    .tema {
         padding-block-start: var(--esp-xl);
     }
 
-    .etiqueta__rotulo {
+    .tema__rotulo {
         font-family: var(--fuente-info);
         font-size: var(--paso--1);
         font-weight: 600;
@@ -72,21 +72,21 @@ const { historias } = Astro.props;
         color: var(--color-metadato);
     }
 
-    .etiqueta__cuenta {
+    .tema__cuenta {
         margin-block-start: var(--esp-2xs);
         font-family: var(--fuente-info);
         font-size: var(--paso--1);
         color: var(--color-metadato);
     }
 
-    .etiqueta__rejilla {
+    .tema__rejilla {
         display: grid;
         gap: var(--esp-m);
         margin-block-start: var(--esp-l);
         grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
     }
 
-    .etiqueta__volver {
+    .tema__volver {
         margin-block-start: var(--esp-l);
         font-family: var(--fuente-info);
         font-size: var(--paso--1);
