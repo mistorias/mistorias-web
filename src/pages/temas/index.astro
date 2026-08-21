@@ -18,30 +18,29 @@ const cuentaHistorias = (cantidad: number) =>
 ---
 
 <BaseLayout
-    title="Etiquetas | Mistorias"
+    title="Temas | Mistorias"
     description="Los temas que atraviesan las historias de Mistorias."
 >
-    <div class="columna etiquetas-indice">
-        <h1>Etiquetas</h1>
+    <div class="columna temas-indice">
+        <h1>Temas</h1>
 
-        <p class="etiquetas-indice__entrada">
-            Los temas que distinguen a una historia de las demás. Empiezan por
-            los más presentes en el sitio.
+        <p class="temas-indice__entrada">
+            Los temas que distinguen a una historia de las demás.
         </p>
 
         {
             grupos.length > 0 ? (
-                <ul class="etiquetas-indice__lista" role="list">
+                <ul class="temas-indice__lista" role="list">
                     {grupos.map((grupo) => (
                         <li>
                             <a
-                                class="etiquetas-indice__enlace"
+                                class="temas-indice__enlace"
                                 href={themeRoute(base, grupo.theme)}
                             >
-                                <span class="etiquetas-indice__nombre">
+                                <span class="temas-indice__nombre">
                                     {grupo.theme}
                                 </span>
-                                <span class="etiquetas-indice__cuenta">
+                                <span class="temas-indice__cuenta">
                                     {cuentaHistorias(grupo.stories.length)}
                                 </span>
                             </a>
@@ -49,23 +48,23 @@ const cuentaHistorias = (cantidad: number) =>
                     ))}
                 </ul>
             ) : (
-                <p>Todavía no hay etiquetas publicadas.</p>
+                <p>Todavía no hay temas publicados.</p>
             )
         }
     </div>
 </BaseLayout>
 
 <style>
-    .etiquetas-indice {
+    .temas-indice {
         padding-block-start: var(--esp-xl);
     }
 
-    .etiquetas-indice__entrada {
+    .temas-indice__entrada {
         margin-block-start: var(--esp-m);
         color: var(--color-analitico);
     }
 
-    .etiquetas-indice__lista {
+    .temas-indice__lista {
         display: grid;
         gap: var(--esp-2xs);
         margin-block-start: var(--esp-l);
@@ -74,7 +73,7 @@ const cuentaHistorias = (cantidad: number) =>
         grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
     }
 
-    .etiquetas-indice__enlace {
+    .temas-indice__enlace {
         display: flex;
         gap: var(--esp-s);
         align-items: baseline;
@@ -87,19 +86,19 @@ const cuentaHistorias = (cantidad: number) =>
         text-decoration: none;
     }
 
-    .etiquetas-indice__nombre {
+    .temas-indice__nombre {
         font-family: var(--fuente-info);
         font-weight: 600;
     }
 
-    .etiquetas-indice__cuenta {
+    .temas-indice__cuenta {
         font-family: var(--fuente-info);
         font-size: var(--paso--1);
         color: var(--color-metadato);
     }
 
     @media (hover: hover) {
-        .etiquetas-indice__enlace:hover {
+        .temas-indice__enlace:hover {
             border-color: var(--color-vivo);
         }
     }

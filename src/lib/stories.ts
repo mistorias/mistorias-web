@@ -1,7 +1,7 @@
 /**
  * Orden de publicación de las historias.
  *
- * La portada, el índice de etiquetas y cada página de etiqueta muestran lo más
+ * La portada, el índice de temas y cada página de tema muestran lo más
  * reciente primero. Se copia antes de ordenar porque `Array.prototype.sort`
  * muta, y la colección que entrega Astro se reutiliza entre páginas.
  */

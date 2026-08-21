@@ -7,6 +7,7 @@ import {
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ListaTemas from "../../components/ListaTemas.astro";
 import { dateForAttribute, readableDate } from "../../lib/dates";
+import { themesRoute } from "../../lib/routes";
 
 export async function getStaticPaths() {
     const stories = await getCollection("stories");
@@ -23,6 +24,7 @@ type Props = {
 
 const { story } = Astro.props;
 const { Content } = await render(story);
+const base = import.meta.env.BASE_URL;
 ---
 
 <BaseLayout
@@ -60,11 +62,14 @@ const { Content } = await render(story);
         {
             story.data.themes.length > 0 && (
                 <footer class="columna historia__pie">
-                    <h2 class="historia__pie-titulo">Etiquetas</h2>
+                    <h2 class="historia__pie-titulo">Temas relacionados</h2>
                     <ListaTemas
                         temas={story.data.themes}
                         temaTextual="Temas de esta historia"
                     />
+                    <p class="historia__explorar">
+                        <a href={themesRoute(base)}>Explorar otros temas</a>
+                    </p>
                 </footer>
             )
         }
@@ -114,6 +119,14 @@ const { Content } = await render(story);
         padding-block-start: var(--esp-l);
         margin-block-start: var(--esp-xl);
         border-block-start: 1px solid var(--color-borde);
+    }
+
+    /* Quien termina de leer no necesariamente quiere otro texto sobre lo
+       mismo: el enlace abre el índice completo, no solo estos temas. */
+    .historia__explorar {
+        margin-block-start: var(--esp-m);
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
     }
 
     .historia__pie-titulo {
