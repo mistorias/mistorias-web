@@ -3,14 +3,14 @@ import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { tagRoute } from "../../lib/routes";
 import { sortByDateDescending } from "../../lib/stories";
-import { groupByTag } from "../../lib/tags";
+import { groupByTheme } from "../../lib/themes";
 
 const historias = sortByDateDescending(
     await getCollection("stories"),
     (historia) => historia.data.date
 );
 
-const grupos = groupByTag(historias, (historia) => historia.data.tags);
+const grupos = groupByTheme(historias, (historia) => historia.data.tags);
 const base = import.meta.env.BASE_URL;
 
 const cuentaHistorias = (cantidad: number) =>
@@ -36,10 +36,10 @@ const cuentaHistorias = (cantidad: number) =>
                         <li>
                             <a
                                 class="etiquetas-indice__enlace"
-                                href={tagRoute(base, grupo.tag)}
+                                href={tagRoute(base, grupo.theme)}
                             >
                                 <span class="etiquetas-indice__nombre">
-                                    {grupo.tag}
+                                    {grupo.theme}
                                 </span>
                                 <span class="etiquetas-indice__cuenta">
                                     {cuentaHistorias(grupo.stories.length)}

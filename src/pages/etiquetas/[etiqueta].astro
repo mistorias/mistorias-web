@@ -4,7 +4,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import TarjetaHistoria from "../../components/TarjetaHistoria.astro";
 import { tagsRoute } from "../../lib/routes";
 import { sortByDateDescending } from "../../lib/stories";
-import { groupByTag } from "../../lib/tags";
+import { groupByTheme } from "../../lib/themes";
 
 export async function getStaticPaths() {
     const historias = sortByDateDescending(
@@ -12,9 +12,9 @@ export async function getStaticPaths() {
         (historia) => historia.data.date
     );
 
-    return groupByTag(historias, (historia) => historia.data.tags).map(
+    return groupByTheme(historias, (historia) => historia.data.tags).map(
         (grupo) => ({
-            params: { etiqueta: grupo.tag },
+            params: { etiqueta: grupo.theme },
             props: { historias: grupo.stories }
         })
     );
