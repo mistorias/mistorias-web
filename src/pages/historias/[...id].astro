@@ -58,11 +58,11 @@ const { Content } = await render(story);
         </p>
 
         {
-            story.data.tags.length > 0 && (
+            story.data.themes.length > 0 && (
                 <footer class="columna historia__pie">
                     <h2 class="historia__pie-titulo">Etiquetas</h2>
                     <ListaEtiquetas
-                        etiquetas={story.data.tags}
+                        etiquetas={story.data.themes}
                         etiquetaTextual="Etiquetas de esta historia"
                     />
                 </footer>
