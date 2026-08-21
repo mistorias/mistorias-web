@@ -4,7 +4,7 @@ description: >
   Guía paso a paso para publicar contenido editorial nuevo (historias) en
   mistorias-web: actualizar el submódulo de contenido, validar que las
   historias pasan los gates de seguridad y el schema, verificar que el
-  listado de la portada y las páginas de etiquetas (índice y detalle)
+  listado de la portada y las páginas de temas (índice y detalle)
   muestren las historias y los conteos correctos, confirmar el DEPLOY_TARGET
   correcto para el destino (GitHub Pages o Netlify/mistorias.pe), y evitar
   los incidentes de despliegue ya conocidos en este repo (issue #29: base
@@ -35,9 +35,9 @@ símbolo de marca. Todos fallan el build si algo no cumple — así que un
 Pero un build limpio no garantiza que el sitio se *vea* bien: la portada
 decide sola cuál historia es la "destacada" (la más reciente, vía
 `sortByDateDescending`) y cuáles van a "Historias anteriores"; las páginas
-de etiquetas (`/etiquetas` y `/etiquetas/<etiqueta>`) agrupan y cuentan
-historias con `groupByTag` (`src/lib/tags.ts`). Si una historia nueva no
-trae `tags`, o los trae mal escritos, el conteo cambia sin que ningún test
+de temas (`/temas` y `/temas/<tema>`) agrupan y cuentan
+historias con `groupByTheme` (`src/lib/themes.ts`). Si una historia nueva no
+trae `themes`, o los trae mal escritos, el conteo cambia sin que ningún test
 lo detecte solo. Por eso este skill pide revisar esas páginas
 específicamente, no solo confiar en que el build pasó.
 
@@ -79,7 +79,7 @@ pnpm build                       # astro check && astro build
 Si falla, el error dice cuál gate lo detuvo:
 
 - **Frontmatter inválido** → no cumple `storySchema` (falta `title`,
-  `summary`, `date`, `author`, o `tags` no es una lista). Corregir en el
+  `summary`, `date`, `author`, o `themes` no es una lista). Corregir en el
   archivo de la historia, dentro del submódulo de contenido.
 - **HTML crudo detectado** → `assertStoriesHaveNoRawHtml` encontró una
   etiqueta HTML real en el Markdown. El contenido editorial no debe traer
@@ -100,36 +100,40 @@ revisar `/`:
 - Si solo hay una historia, "Historias anteriores" no debe aparecer (el
   layout ya maneja ese caso, pero confirmarlo si acaba de publicarse la
   primera historia de todas).
-- El enlace "Explorar las historias por etiqueta" solo aparece si *alguna*
-  historia tiene al menos una etiqueta no vacía — si el contenido nuevo trae
-  la primera historia con tags del sitio, confirmar que el enlace aparezca.
+- El enlace "Explorar las historias por tema" solo aparece si *alguna*
+  historia tiene al menos un tema no vacío — si el contenido nuevo trae la
+  primera historia con temas del sitio, confirmar que el enlace aparezca.
 
-### 4. Verificar el conteo de etiquetas
+### 4. Verificar el conteo de temas
 
-Esto es lo más fácil de romper en silencio: una etiqueta mal tipeada (con
+Esto es lo más fácil de romper en silencio: un tema mal tipeado (con
 mayúscula distinta, un espacio de más, plural vs. singular) no falla el
-build — simplemente crea una etiqueta nueva con una sola historia en vez de
-sumarse a la existente.
+build — simplemente crea un tema nuevo con una sola historia en vez de
+sumarse al existente.
 
 Correr el script de verificación antes de mirar el navegador — genera la
-tabla de "cuántas historias debería tener cada etiqueta" leyendo el
-contenido directamente:
+tabla de "cuántas historias debería tener cada tema" leyendo el contenido
+directamente:
 
 ```bash
-node .claude/skills/desplegar-contenido/scripts/check_tag_counts.mjs
+node .claude/skills/desplegar-contenido/scripts/check_theme_counts.mjs
 ```
 
 Comparar esa tabla contra lo que renderiza el sitio:
 
-- `/etiquetas` — cada etiqueta debe mostrar "N historia(s)" igual al script,
-  y debe listarlas ordenadas de más a menos historias (empate → alfabético).
-- `/etiquetas/<etiqueta>` — el conteo del encabezado y la cantidad de
-  tarjetas mostradas deben coincidir con el número del script.
+- `/temas` — cada tema debe mostrar "N historia(s)" igual al script, y debe
+  listarlos ordenados de más a menos historias (empate → alfabético).
+- `/temas/<tema>` — el conteo del encabezado y la cantidad de tarjetas
+  mostradas deben coincidir con el número del script.
+
+- En cada `/historias/<slug>`, el pie "Temas relacionados" debe listar los
+  mismos temas del frontmatter y el enlace "Explorar otros temas" debe
+  llevar a `/temas`.
 
 Si algo no coincide, el problema casi siempre está en el frontmatter
-(`tags:`) de la historia nueva, no en el código del sitio — `groupByTag`
-normaliza a minúsculas y recorta espacios, pero no corrige errores de
-tipeo ni singular/plural.
+(`themes:`, o `tags:` si la historia todavía no migró) de la historia nueva,
+no en el código del sitio — `groupByTheme` normaliza a minúsculas y recorta
+espacios, pero no corrige errores de tipeo ni singular/plural.
 
 ### 5. Confirmar el destino de despliegue
 
@@ -189,7 +193,7 @@ manual salvo emergencia — y en ese caso, seguir el paso 6 primero.
 
 - Nunca hardcodear un `href` interno: todo enlace usa los helpers de
   `src/lib/routes.ts`, porque `base` cambia según el destino.
-- Un build exitoso no es lo mismo que un listado o un conteo de etiquetas
+- Un build exitoso no es lo mismo que un listado o un conteo de temas
   correcto — son chequeos independientes, hacer los dos.
 - Un `DEPLOY_TARGET` desconocido detiene el build a propósito (no hay
   fallback silencioso) — si un build para producción falla ahí, es una señal
