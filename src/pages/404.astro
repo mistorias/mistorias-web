@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { homeRoute, tagsRoute } from "../lib/routes";
+import { homeRoute, themesRoute } from "../lib/routes";
 
 const base = import.meta.env.BASE_URL;
 ---
@@ -22,7 +22,7 @@ const base = import.meta.env.BASE_URL;
         <ul class="no-encontrada__salidas" role="list">
             <li><a href={homeRoute(base)}>Ir a la portada</a></li>
             <li>
-                <a href={tagsRoute(base)}>Explorar las historias por etiqueta</a>
+                <a href={themesRoute(base)}>Explorar las historias por etiqueta</a>
             </li>
         </ul>
     </div>

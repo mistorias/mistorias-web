@@ -9,8 +9,8 @@ import {
   reportRoute,
   siteCodeRoute,
   storyRoute,
-  tagRoute,
-  tagsRoute
+  themeRoute,
+  themesRoute
 } from "../src/lib/routes";
 
 // El sitio se despliega en dos destinos con base distinta: GitHub Pages sirve
@@ -106,14 +106,12 @@ describe("rutas con nombre", () => {
     );
   });
 
-  it("publica cada etiqueta bajo /etiquetas/", () => {
-    expect(tagRoute(BASE_PAGES, "junin")).toBe(
-      "/mistorias-web/etiquetas/junin/"
-    );
+  it("publica cada tema bajo /temas/", () => {
+    expect(themeRoute(BASE_PAGES, "junin")).toBe("/mistorias-web/temas/junin/");
   });
 
-  it("expone el índice de etiquetas y la página Acerca de", () => {
-    expect(tagsRoute(BASE_NETLIFY)).toBe("/etiquetas/");
+  it("expone el índice de temas y la página Acerca de", () => {
+    expect(themesRoute(BASE_NETLIFY)).toBe("/temas/");
     expect(aboutRoute(BASE_NETLIFY)).toBe("/acerca/");
   });
 

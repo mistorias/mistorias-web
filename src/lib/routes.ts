@@ -11,7 +11,7 @@
  */
 
 const STORIES_SECTION = "historias";
-const TAGS_SECTION = "etiquetas";
+const THEMES_SECTION = "temas";
 const ABOUT_SECTION = "acerca";
 const EDITORIAL_CONTENT_SECTION = "contenido";
 const SITE_CODE_SECTION = "codigo";
@@ -52,11 +52,11 @@ export const homeRoute = (base: string): string => buildRoute(base);
 export const storyRoute = (base: string, id: string): string =>
   buildRoute(base, STORIES_SECTION, id);
 
-export const tagsRoute = (base: string): string =>
-  buildRoute(base, TAGS_SECTION);
+export const themesRoute = (base: string): string =>
+  buildRoute(base, THEMES_SECTION);
 
-export const tagRoute = (base: string, tag: string): string =>
-  buildRoute(base, TAGS_SECTION, tag);
+export const themeRoute = (base: string, theme: string): string =>
+  buildRoute(base, THEMES_SECTION, theme);
 
 export const aboutRoute = (base: string): string =>
   buildRoute(base, ABOUT_SECTION);
