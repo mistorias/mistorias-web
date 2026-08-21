@@ -109,3 +109,24 @@ The brand symbol SVG goes through the same kind of gate (`assertBrandSymbolIsThe
 Pages ship a strict Content-Security-Policy from `src/layouts/BaseLayout.astro`. `script-src` is `'none'` because the site sends no JavaScript; adding an Astro island or view transitions requires relaxing it to `'self'` in both the layout and `public/_headers`, which would otherwise break in the browser without failing the build.
 
 See [ADR 0004](docs/adr/0004-triaje-reportes-seguridad-github-pages.md) for the full security triage and [SECURITY.md](SECURITY.md) for how to report vulnerabilities.
+
+## Testing Astro Components
+
+As of issue #33, `.astro` components can be tested with Vitest using the `experimental_AstroContainer` API from `astro/container`. Tests live in `tests/` alongside TS tests (e.g. `tests/logotipo-mistorias.spec.ts` for `src/components/LogotipoMistorias.astro`).
+
+**Patterns:**
+
+- Import and render a component via `renderAstroComponent(Component, { props: {...}, slots: {...} })` (defined in `tests/support/render-astro-component.ts`).
+- Assert on the HTML string it produces (no DOM API in Node tests, so use `.toContain()` for substrings).
+- For data fixtures (e.g. `CollectionEntry<"stories">`), use `buildStoryFixture(overrides?)` from `tests/support/story-fixture.ts`.
+- Stub environment variables with `vi.stubEnv("DEPLOY_TARGET", "netlify")` and clean up in `afterEach(() => vi.unstubAllEnvs())`.
+
+**Coverage:**
+
+- `coverage.config.ts` explicitly lists only the `.astro` files under test (not `src/**/*.astro`, which would count all untested components at 0%). Currently: `BaseLayout.astro`, `LogotipoMistorias.astro`, `TarjetaHistoria.astro`, `ListaEtiquetas.astro`, `SimboloMistorias.astro`, `CabeceraSitio.astro`, `PieSitio.astro`.
+- The 90% coverage threshold applies to those files (108 tests as of now pass; ~89% branches still needs work on `Astro.site`-dependent code in future iterations).
+
+**Limitations:**
+
+- The Container API renders in a Node environment without a browser, so CSS media queries, viewport-dependent layouts, and DOM interactions can't be asserted. Test the *markup structure* (classes, attributes, text content) that these depend on instead.
+- `Astro.site` and `Astro.url` are not available (or undefined) in tests; features that need canonical URLs or depend on full site config should be deferred or tested differently.

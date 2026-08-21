@@ -74,10 +74,15 @@ La cobertura no es un lineamiento a recordar: es un control del pipeline.
   estándar de TDD. Es el único lugar donde se define ese número; el workflow de
   CI no lo repite, solo corre `pnpm test`.
 - **Qué se mide.** El TypeScript de `src/`, en líneas, sentencias, funciones y
-  ramas — las cuatro métricas contra el mismo umbral. Los componentes `.astro`
-  quedan fuera porque no se prueban con Vitest, y contarlos como cero apagaría
-  el umbral sin decir nada sobre la lógica. Cubrirlos es trabajo pendiente
-  (issue #33).
+  ramas — las cuatro métricas contra el mismo umbral. Desde issue #33,
+  `src/**/*.astro` también entra en `coverage.include`, pero Vitest solo cuenta
+  un archivo cuando algún test lo importa o renderiza de verdad: hoy eso alcanza
+  a los componentes con lógica propia probados vía la Container API de Astro
+  (`LogotipoMistorias`, `TarjetaHistoria`, `ListaEtiquetas`, `BaseLayout`, y los
+  hijos que arrastran al renderizarse) — no a todo `.astro` del proyecto. La
+  mayoría de `src/pages/` y otros componentes de puro maquetado siguen sin red
+  de tests; ampliarla es trabajo pendiente, componente por componente, no una
+  meta de "100% de `.astro`".
 - **Cuándo corre.** En cada `pnpm test`, no solo en CI, para que un PR no se
   abra creyendo que pasa.
 - **Dónde se ve.** La tabla por archivo sale en la salida de la corrida; en CI
