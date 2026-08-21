@@ -13,7 +13,7 @@ Claude Code must commit atomically while working on this repo, so each commit is
 
 ### Language
 
-Code is written in English — identifiers, filenames, frontmatter keys, build error messages. Astro components, pages and layouts stay in Spanish when they name a brand or editorial concept (`LogotipoMistorias.astro`, `TarjetaHistoria.astro`) — filenames and the props and variables inside them alike — and so do public routes and reader-facing text. Comments, docstrings, commit messages, PR descriptions and docs are written in Peruvian Spanish. The boundary is `src/lib/`, which is fully in English: a Spanish component consumes English helpers (`storyRoute`, `groupByTag`). Full rules in [CONTRIBUTING.md](CONTRIBUTING.md#idioma).
+Code is written in English — identifiers, filenames, frontmatter keys, build error messages. Astro components, pages and layouts stay in Spanish when they name a brand or editorial concept (`LogotipoMistorias.astro`, `TarjetaHistoria.astro`) — filenames and the props and variables inside them alike — and so do public routes and reader-facing text. Comments, docstrings, commit messages, PR descriptions and docs are written in Peruvian Spanish. The boundary is `src/lib/`, which is fully in English: a Spanish component consumes English helpers (`storyRoute`, `groupByTheme`). Full rules in [CONTRIBUTING.md](CONTRIBUTING.md#idioma).
 
 ### Documentation
 
@@ -58,10 +58,10 @@ The gate runs via `src/lib/content/no-raw-html-integration.ts`, an Astro integra
 - `src/layouts/BaseLayout.astro` — shared HTML skeleton; the `<meta>` Content-Security-Policy lives here and nowhere else. Also carries the header, the footer and the skip link, so every page shares them
 - `src/pages/index.astro` — homepage: promise banner, featured story, older stories
 - `src/pages/historias/[...id].astro` — dynamic story detail pages (file-based routing)
-- `src/pages/etiquetas/index.astro` and `src/pages/etiquetas/[etiqueta].astro` — tag index and per-tag listings
+- `src/pages/temas/index.astro` and `src/pages/temas/[tema].astro` — theme index and per-theme listings
 - `src/pages/acerca.astro`, `src/pages/404.astro`
 
-Public URLs are in Spanish (`/historias/`, `/etiquetas/`), matching the project's ubiquitous language. **Never hardcode an internal `href`**: `base` differs per deploy target, so a hand-written path silently breaks on GitHub Pages without failing the build. Build every internal link with the helpers in `src/lib/routes.ts`, which also own the section names.
+Public URLs are in Spanish (`/historias/`, `/temas/`), matching the project's ubiquitous language. **Never hardcode an internal `href`**: `base` differs per deploy target, so a hand-written path silently breaks on GitHub Pages without failing the build. Build every internal link with the helpers in `src/lib/routes.ts`, which also own the section names.
 
 ### Design System
 
