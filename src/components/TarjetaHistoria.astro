@@ -1,6 +1,6 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import ListaEtiquetas from "./ListaEtiquetas.astro";
+import ListaTemas from "./ListaTemas.astro";
 import { dateForAttribute, readableDate } from "../lib/dates";
 import { storyRoute } from "../lib/routes";
 
@@ -35,10 +35,7 @@ const Titulo = `h${nivelTitulo}` as const;
 
     {
         themes.length > 0 && (
-            <ListaEtiquetas
-                etiquetas={themes}
-                etiquetaTextual={`Etiquetas de ${title}`}
-            />
+            <ListaTemas temas={themes} temaTextual={`Temas de ${title}`} />
         )
     }
 </article>

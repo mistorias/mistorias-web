@@ -5,7 +5,7 @@ import {
     type CollectionEntry
 } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import ListaEtiquetas from "../../components/ListaEtiquetas.astro";
+import ListaTemas from "../../components/ListaTemas.astro";
 import { dateForAttribute, readableDate } from "../../lib/dates";
 
 export async function getStaticPaths() {
@@ -61,9 +61,9 @@ const { Content } = await render(story);
             story.data.themes.length > 0 && (
                 <footer class="columna historia__pie">
                     <h2 class="historia__pie-titulo">Etiquetas</h2>
-                    <ListaEtiquetas
-                        etiquetas={story.data.themes}
-                        etiquetaTextual="Etiquetas de esta historia"
+                    <ListaTemas
+                        temas={story.data.themes}
+                        temaTextual="Temas de esta historia"
                     />
                 </footer>
             )
