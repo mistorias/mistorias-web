@@ -78,7 +78,7 @@ La cobertura no es un lineamiento a recordar: es un control del pipeline.
   `src/**/*.astro` también entra en `coverage.include`, pero Vitest solo cuenta
   un archivo cuando algún test lo importa o renderiza de verdad: hoy eso alcanza
   a los componentes con lógica propia probados vía la Container API de Astro
-  (`LogotipoMistorias`, `TarjetaHistoria`, `ListaEtiquetas`, `BaseLayout`, y los
+  (`LogotipoMistorias`, `TarjetaHistoria`, `ListaTemas`, `BaseLayout`, y los
   hijos que arrastran al renderizarse) — no a todo `.astro` del proyecto. La
   mayoría de `src/pages/` y otros componentes de puro maquetado siguen sin red
   de tests; ampliarla es trabajo pendiente, componente por componente, no una
