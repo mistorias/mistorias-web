@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import DatoConFuente from "../components/DatoConFuente.astro";
 import TarjetaHistoria from "../components/TarjetaHistoria.astro";
 import { themesRoute } from "../lib/routes";
 import { sortByDateDescending } from "../lib/stories";
@@ -12,6 +13,33 @@ const historias = sortByDateDescending(
 
 const [destacada, ...anteriores] = historias;
 const hayTemas = historias.some((historia) => (historia.data.themes ?? []).length > 0);
+
+// La portada abre con una disonancia antes de prometer nada (issue #37 de
+// gestión de producto): dos cifras que incomodan y que cualquiera puede
+// comprobar, porque cada una enlaza a su fuente. Prometer sin haber generado
+// esa tensión deja a quien llega sin razones para quedarse.
+//
+// MANTENIMIENTO: las dos cifras son del ciclo que nombra `CICLO_DE_LOS_DATOS`.
+// Cuando la OCDE publique el siguiente ciclo de PISA hay que revisarlas acá; es
+// el precio de usar datos duros dentro de un texto fijo.
+const CICLO_DE_LOS_DATOS = "PISA 2022";
+
+const disonancia = [
+    {
+        cifra: "Uno de cada tres",
+        resto: "jóvenes peruanos de quince años alcanza el mínimo de matemática que la OCDE considera necesario para la vida adulta.",
+        fuente: `Minedu–UMC, ${CICLO_DE_LOS_DATOS}`,
+        href: "https://www.gob.pe/institucion/minedu/noticias/877904-pisa-2022-el-peru-mantiene-sus-resultados-en-las-competencias-de-lectura-y-ciencia",
+        detalle: "34 % de estudiantes peruanos alcanzó el nivel 2 o superior en Matemática, y ese nivel 2 es el mínimo para desenvolverse en el mundo actual. Lo publica el propio Estado evaluado."
+    },
+    {
+        cifra: "Solo el 1 %",
+        resto: "llega al nivel más alto en lectura.",
+        fuente: `OCDE, ${CICLO_DE_LOS_DATOS}`,
+        href: "https://www.oecd.org/en/publications/pisa-2022-results-volume-i-and-ii-country-notes_ed6fbcc5-en/peru_3e71791c-en.html",
+        detalle: "1 % de estudiantes peruanos en nivel 5 o superior, frente al 7 % del promedio de la OCDE. Lo mide un organismo externo, sin interés en el resultado peruano."
+    }
+] as const;
 ---
 
 <BaseLayout
@@ -22,11 +50,37 @@ const hayTemas = historias.some((historia) => (historia.data.themes ?? []).lengt
         <div class="columna">
             <h1>Historias para transformar la educación</h1>
 
+            <ul class="disonancia" role="list">
+                {
+                    disonancia.map((dato) => (
+                        <li>
+                            <DatoConFuente
+                                fuente={dato.fuente}
+                                href={dato.href}
+                                detalle={dato.detalle}
+                                grupo="fuentes-portada"
+                            >
+                                <strong class="dato__cifra">{dato.cifra}</strong>{" "}
+                                {dato.resto}
+                            </DatoConFuente>
+                        </li>
+                    ))
+                }
+            </ul>
+
+            <p class="franja__giro">
+                No es un problema de escuelas lejanas: es el país que mañana te
+                atenderá, te contratará y decidirá contigo.
+            </p>
+
             <p class="franja__promesa">
-                Detrás de cada cifra sobre educación hay una persona con
-                nombre. En pocos minutos conoce su historia, entiende por qué
-                se repite en miles más y convierte esa comprensión en algo
-                concreto para mejorar nuestra educación.
+                Detrás de cada cifra hay una persona con nombre. En pocos
+                minutos te ayudamos a empatizar con ella: <strong
+                    >adéntrate</strong
+                > en una historia, <strong>entiende</strong> por qué se repite en
+                miles más y <strong>convierte</strong> esa comprensión en algo concreto
+                para mejorar nuestra educación: en tu casa, en tu colegio o frente
+                a quien tiene el poder de cambiarla.
             </p>
         </div>
     </section>
@@ -90,10 +144,55 @@ const hayTemas = historias.some((historia) => (historia.data.themes ?? []).lengt
         background-color: var(--color-realce);
     }
 
-    .franja__promesa {
+    /*
+     * Dos afirmaciones paralelas, cada una con su fuente: es una lista de
+     * verdad, aunque se lea como prosa. `role="list"` es deliberado — quitarle
+     * las viñetas con `list-style: none` también le quita las semánticas de
+     * lista a VoiceOver, y acá sí queremos que se anuncien como dos.
+     */
+    .disonancia {
+        display: grid;
+        gap: var(--esp-m);
+        margin-block-start: var(--esp-l);
+        padding: 0;
+        list-style: none;
+    }
+
+    .dato__cifra {
+        font-weight: 600;
+        color: var(--color-acento);
+    }
+
+    .franja__giro {
         max-width: 55ch;
-        margin-block-start: var(--esp-m);
+        margin-block-start: var(--esp-l);
         font-size: var(--paso-1);
+        color: var(--color-analitico);
+    }
+
+    .franja__promesa {
+        position: relative;
+        max-width: 55ch;
+        margin-block-start: var(--esp-xl);
+        padding-block-start: var(--esp-m);
+    }
+
+    /*
+     * Regla corta que marca el cambio de tono: de la cifra que incomoda a lo
+     * que se puede hacer con ella. Es decoración, así que puede usar
+     * `--color-vivo`, que no alcanza contraste para texto (ADR 0006 §2).
+     */
+    .franja__promesa::before {
+        content: "";
+        position: absolute;
+        inset-block-start: 0;
+        inset-inline-start: 0;
+        width: 3rem;
+        border-block-start: 2px solid var(--color-vivo);
+    }
+
+    .franja__promesa strong {
+        font-weight: 600;
         color: var(--color-analitico);
     }
 
