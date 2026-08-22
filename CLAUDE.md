@@ -31,19 +31,21 @@ Common commands: `pnpm dev`, `pnpm build`, `pnpm test`. For dev container setup,
 
 ## Developer Workflow & Hooks
 
-Claude Code is configured with automated hooks (`.claude/settings.json`) to catch issues early and prevent common mistakes:
+Claude Code is configured with automated hooks (`.claude/settings.json`) to catch issues early and prevent common mistakes when working **within Claude Code sessions**.
+
+⚠️ **Important:** These hooks run **only during Claude Code interactions**, not in your terminal's `git` commands. They gate Claude's own work, not manual git operations.
 
 ### Post-Commit Hook
-After each `git commit`, the hook automatically runs:
+When Claude runs `git commit` in a session, the hook automatically executes:
 ```bash
 pnpm test --coverage && pnpm build
 ```
-**What it does:** Verifies that tests pass, coverage meets the threshold, and the build succeeds. If any step fails, the commit exists but cannot be pushed — fix the issue locally before retrying.
+**What it does:** Verifies that tests pass, coverage meets the threshold, and the build succeeds. If any step fails, the commit exists but cannot be pushed — the issue must be fixed before Claude retries.
 
-**Why:** Catches broken commits before they leave your machine. Aligns with atomic-commit practices (see [docs/STANDARDS.md](docs/STANDARDS.md#atomic-commits)) — every commit should be a safe, working checkpoint.
+**Why:** Catches broken commits before Claude shares them. Aligns with atomic-commit practices (see [docs/STANDARDS.md](docs/STANDARDS.md#atomic-commits)) — every commit should be a safe, working checkpoint.
 
 ### Pre-Push Hook
-Before `git push`, the hook validates your branch:
+When Claude runs `git push` in a session, the hook validates the branch:
 ```bash
 # Prevents push to main or master
 ```
@@ -52,11 +54,11 @@ Before `git push`, the hook validates your branch:
 **Why:** Protects the mainline branch from direct commits and enforces code review via PR (related to issue #53).
 
 ### Disabling Hooks (if needed)
-If a hook times out or interferes with your workflow, you can skip it on a single commit:
+If a hook times out or interferes with Claude's work in a session, it can be skipped:
 ```bash
 git commit --no-verify  # Skips all hooks for this commit
 ```
-**Use sparingly** — hooks catch errors that CI would otherwise catch later, wasting time and tokens. If you find yourself skipping regularly, file an issue to adjust timeout or command.
+**Use sparingly** — hooks catch errors that CI would otherwise catch later, wasting time and tokens. If Claude needs to skip regularly, file an issue to adjust timeout or command.
 
 ## Architecture
 
