@@ -19,7 +19,9 @@ export const coverageConfig = {
     "src/components/CabeceraSitio.astro",
     "src/components/PieSitio.astro",
   ],
-  reporter: ["text", ["text-summary", { file: "cobertura.txt" }]] as const,
+  reporter: ["text", ["text-summary", { file: "cobertura.txt" }]] as Array<
+    "text" | ["text-summary", { file: string }]
+  >,
   thresholds: {
     lines: COBERTURA_MINIMA,
     statements: COBERTURA_MINIMA,
