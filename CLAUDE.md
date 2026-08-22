@@ -103,6 +103,13 @@ Derived from [Mistorias Esencia de Marca](https://github.com/mistorias/mistorias
 - Typefaces are self-hosted via `@fontsource-variable` and served same-origin, so they fall under `default-src 'self'` and required no CSP change.
 - Contrast ratios are annotated next to each token. Both themes clear WCAG AA; `--color-vivo` is restricted to non-text use because it does not.
 - Story pages style prose uniformly and **do not** key off section titles: `storySchema` validates frontmatter only, so section names are editorial convention and a design that depends on them would break silently.
+- The homepage opens with a data dissonance before the promise: two figures that
+  read as prose, each wrapped in `src/components/DatoConFuente.astro`. That
+  component is a native `details > summary + p` — the sentence is the `summary`
+  and the source link lives in the `p` — so the source reveals on hover over its
+  chip (pointer devices) or on tap (touch), with no JavaScript, which
+  `script-src 'none'` would forbid anyway. The panel opens **in flow**: floating
+  it covered the next statement and swallowed its taps. See [ADR 0010](docs/adr/0010-disonancia-de-datos-en-portada.md).
 - The Mistorias logotype (`src/components/LogotipoMistorias.astro` + `SimboloMistorias.astro`) composes a `currentColor` SVG symbol with the word "Mistorias" in `--fuente-narrativa` (Lora 600) — the word is live text, never traced into the SVG, so `--fuente-narrativa` now also dresses the brand mark, not just narrative prose. It renders in three layouts (stacked, row, symbol-only) that respond to `max-height: 30rem`, the same short-viewport criterion ADR 0006 §6 already uses. `font-size` on the wrapping element is the only sizing knob; every call site reuses an existing `--paso-*` token rather than inventing a value. See [ADR 0007](docs/adr/0007-lockups-del-logo-y-alto-de-la-cabecera.md).
 
 ### Build Variants (DEPLOY_TARGET)
