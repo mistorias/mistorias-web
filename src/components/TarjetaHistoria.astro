@@ -34,8 +34,8 @@ const Titulo = `h${nivelTitulo}` as const;
     <p class="tarjeta__resumen">{summary}</p>
 
     {
-        themes.length > 0 && (
-            <ListaTemas temas={themes} temaTextual={`Temas de ${title}`} />
+        (themes ?? []).length > 0 && (
+            <ListaTemas temas={themes ?? []} temaTextual={`Temas de ${title}`} />
         )
     }
 </article>

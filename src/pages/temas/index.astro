@@ -10,7 +10,7 @@ const historias = sortByDateDescending(
     (historia) => historia.data.date
 );
 
-const grupos = groupByTheme(historias, (historia) => historia.data.themes);
+const grupos = groupByTheme(historias, (historia) => historia.data.themes ?? []);
 const base = import.meta.env.BASE_URL;
 
 const cuentaHistorias = (cantidad: number) =>

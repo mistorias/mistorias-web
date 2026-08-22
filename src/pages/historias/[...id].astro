@@ -60,11 +60,11 @@ const base = import.meta.env.BASE_URL;
         </p>
 
         {
-            story.data.themes.length > 0 && (
+            (story.data.themes ?? []).length > 0 && (
                 <footer class="columna historia__pie">
                     <h2 class="historia__pie-titulo">Temas relacionados</h2>
                     <ListaTemas
-                        temas={story.data.themes}
+                        temas={story.data.themes ?? []}
                         temaTextual="Temas de esta historia"
                     />
                     <p class="historia__explorar">
