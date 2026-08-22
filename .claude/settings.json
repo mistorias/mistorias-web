@@ -1,0 +1,32 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pnpm test --coverage && pnpm build",
+            "statusMessage": "Verificando tests, cobertura y build...",
+            "timeout": 300,
+            "if": "Bash(git commit *)"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if git rev-parse --abbrev-ref HEAD 2>/dev/null | grep -qE '^(main|master)$'; then echo '{\"continue\": false, \"stopReason\": \"❌ No puedes hacer push directo a main — crea un PR en su lugar\"}' && exit 1; fi",
+            "statusMessage": "Validando rama de destino...",
+            "timeout": 5,
+            "if": "Bash(git push *)"
+          }
+        ]
+      }
+    ]
+  }
+}
