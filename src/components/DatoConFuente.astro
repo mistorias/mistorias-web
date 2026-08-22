@@ -1,0 +1,115 @@
+---
+// Una afirmación con dato duro que trae su fuente encima (issue #37 de gestión
+// de producto). La fuente no se muestra en el texto: aparece al pasar el mouse
+// y, donde no hay puntero, al tocar la frase; el segundo toque la cierra.
+//
+// Es un `details` nativo y no un componente con JavaScript porque la CSP del
+// sitio declara `script-src 'none'` (ADR 0004): el navegador ya sabe abrir y
+// cerrar esto, anunciarlo como plegable y moverse con teclado, sin que le
+// mandemos un solo byte de script.
+//
+// `grupo` va al atributo `name`: dos datos del mismo grupo se comportan como
+// acordeón exclusivo, así que abrir uno cierra el otro y nunca hay dos
+// tarjetas encimadas.
+type Props = {
+    fuente: string;
+    href: string;
+    detalle: string;
+    grupo?: string;
+};
+
+const { fuente, href, detalle, grupo } = Astro.props;
+---
+
+<details class="dato" name={grupo}>
+    <summary class="dato__frase">
+        <slot />
+        <span class="dato__pista" aria-hidden="true">fuente</span>
+    </summary>
+
+    <p class="dato__fuente">
+        <a href={href}>{fuente}</a> — {detalle}
+    </p>
+</details>
+
+<style>
+    /*
+     * Sin el triángulo del navegador: la pista de que hay algo que abrir la da
+     * `.dato__pista`, que se lee en castellano y ocupa el ancho que decidimos.
+     */
+    .dato__frase {
+        cursor: pointer;
+        list-style: none;
+        font-size: var(--paso-1);
+    }
+
+    .dato__frase::-webkit-details-marker {
+        display: none;
+    }
+
+    .dato__pista {
+        display: inline-block;
+        margin-inline-start: var(--esp-2xs);
+        padding-inline: var(--esp-2xs);
+        border: 1px solid var(--color-borde);
+        border-radius: var(--radio);
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        letter-spacing: 0.04em;
+        color: var(--color-metadato);
+        vertical-align: 0.1em;
+    }
+
+    @media (hover: hover) {
+        .dato__frase:hover .dato__pista {
+            border-color: var(--color-vivo);
+            color: var(--color-acento);
+        }
+    }
+
+    /*
+     * La tarjeta abre dentro del flujo y empuja lo que sigue. Se probó
+     * flotándola con `position: absolute` para no mover nada, y quedaba encima
+     * de la frase siguiente: tapaba su texto y se comía sus toques, así que el
+     * segundo dato dejaba de poder abrirse. Empujar es lo que hace cualquier
+     * plegable y es lo único que no rompe al vecino.
+     *
+     * Los estilos viven en este `<p>` real y no en `::details-content` para que
+     * el clic funcione igual en navegadores que todavía no soportan ese
+     * pseudoelemento.
+     */
+    .dato__fuente {
+        margin-block-start: var(--esp-2xs);
+        padding: var(--esp-s);
+        border: 1px solid var(--color-borde);
+        border-radius: var(--radio);
+        background-color: var(--color-superficie);
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        line-height: 1.5;
+        color: var(--color-metadato);
+    }
+
+    .dato__fuente a {
+        text-decoration: underline;
+    }
+
+    /*
+     * Abrir con el mouse encima, sin clic. El disparador es solo la pista y no
+     * la frase entera: si bastara con pasar por encima del texto, la fuente se
+     * abriría sola mientras se lee y el resto de la página saltaría a cada
+     * rato. Apuntar a la pista es una intención, no un accidente.
+     *
+     * Solo donde hay puntero: en táctil un hover se queda pegado después del
+     * toque (misma razón que el bloque `hover: hover` de base.css); ahí manda
+     * el toque sobre la frase, que es un blanco mucho más grande.
+     *
+     * Donde `::details-content` no exista, esta regla simplemente no aplica y
+     * la fuente se sigue abriendo con clic o con Enter.
+     */
+    @media (hover: hover) {
+        .dato:has(.dato__pista:hover)::details-content {
+            content-visibility: visible;
+        }
+    }
+</style>
