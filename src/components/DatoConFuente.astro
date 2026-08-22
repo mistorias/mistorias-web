@@ -34,10 +34,39 @@ const { fuente, href, detalle, grupo } = Astro.props;
 
 <style>
     /*
+     * `inline` para que las frases de varios `DatoConFuente` sucesivos formen
+     * un solo párrafo: el `details` que las envuelve no puede seguir siendo
+     * un bloque sin cortar el flujo.
+     */
+    .dato {
+        display: inline;
+        --dur-fuente: 0.3s; /* toque: el dedo tapa la pantalla, conviene acompañarlo */
+    }
+
+    @media (hover: hover) {
+        .dato {
+            --dur-fuente: 0.1s; /* puntero: solo quita el parpadeo */
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        /*
+         * El bloque de `base.css` neutraliza `*`, `*::before` y `*::after`,
+         * pero no alcanza a `::details-content`: por eso la duración se apaga
+         * acá también, con su propia consulta. Es un hueco de la regla global
+         * que se va a repetir con el próximo pseudoelemento animado.
+         */
+        .dato {
+            --dur-fuente: 0.01ms;
+        }
+    }
+
+    /*
      * Sin el triángulo del navegador: la pista de que hay algo que abrir la da
      * `.dato__pista`, que se lee en castellano y ocupa el ancho que decidimos.
      */
     .dato__frase {
+        display: inline;
         cursor: pointer;
         list-style: none;
         font-size: var(--paso-1);
@@ -68,30 +97,83 @@ const { fuente, href, detalle, grupo } = Astro.props;
     }
 
     /*
-     * La tarjeta abre dentro del flujo y empuja lo que sigue. Se probó
-     * flotándola con `position: absolute` para no mover nada, y quedaba encima
-     * de la frase siguiente: tapaba su texto y se comía sus toques, así que el
-     * segundo dato dejaba de poder abrirse. Empujar es lo que hace cualquier
-     * plegable y es lo único que no rompe al vecino.
+     * Primero se probó flotarla con `position: absolute` junto a la frase
+     * para no mover nada, y quedaba encima de la frase siguiente: le tapaba
+     * el texto y le interceptaba los toques, así que el segundo dato dejaba
+     * de poder abrirse. Después se dejó en el flujo, empujando lo que sigue
+     * —lo que hace cualquier plegable—, pero con varias frases seguidas eso
+     * partía el párrafo cada vez que una fuente se abría. Fija al fondo de la
+     * ventana no mueve nada y no tapa a nadie: es la que queda.
      *
      * Los estilos viven en este `<p>` real y no en `::details-content` para que
      * el clic funcione igual en navegadores que todavía no soportan ese
      * pseudoelemento.
      */
     .dato__fuente {
-        margin-block-start: var(--esp-2xs);
-        padding: var(--esp-s);
-        border: 1px solid var(--color-borde);
-        border-radius: var(--radio);
+        position: fixed;
+        inset-inline: 0;
+        inset-block-end: 0;
+        z-index: 5;
+        max-height: 40dvh;
+        overflow-y: auto;
+        padding-block: var(--esp-s);
+        /* Barra a todo el ancho, texto alineado con la columna del sitio. */
+        padding-inline: max(var(--esp-s), (100vw - var(--ancho-sitio)) / 2);
+        border-block-start: 1px solid var(--color-borde);
         background-color: var(--color-superficie);
         font-family: var(--fuente-info);
         font-size: var(--paso--1);
         line-height: 1.5;
         color: var(--color-metadato);
+
+        opacity: 0;
+        translate: 0 100%;
+        transition:
+            opacity var(--dur-fuente) linear,
+            translate var(--dur-fuente) linear;
     }
 
     .dato__fuente a {
         text-decoration: underline;
+    }
+
+    .dato[open] .dato__fuente,
+    .dato:has(.dato__pista:hover) .dato__fuente {
+        opacity: 1;
+        translate: 0 0;
+    }
+
+    /*
+     * `content-visibility: hidden` (lo que aplica el navegador a un `details`
+     * cerrado) es discreta: sin ayuda, corta la animación en seco en vez de
+     * dejarla correr. `allow-discrete` la suma a la transición y
+     * `@starting-style` le da un estado de partida para animar la entrada.
+     * Donde `::details-content` no exista, la fuente se sigue abriendo, solo
+     * que sin esta transición.
+     *
+     * `display: inline-block` es obligatorio acá y no accidental: por defecto
+     * este pseudoelemento es de bloque, y un bloque metido dentro de `.dato`
+     * (que es `inline`) parte el inline en dos cajas —"block-in-inline"— y
+     * eso es justo lo que fuerza el salto de línea entre las frases que
+     * deberían leerse como un solo párrafo corrido. No sirve ponerle
+     * `display: inline` al pseudoelemento: `content-visibility` no aplica a
+     * cajas en línea no atómicas, así que el ocultamiento dejaría de
+     * funcionar y la fuente quedaría siempre visible. `inline-block` sí es
+     * atómico, así que el ocultamiento funciona, y como su único contenido
+     * (`.dato__fuente`) está siempre fuera de flujo (`position: fixed`), esta
+     * caja no tiene nada adentro que la infle: mide 0×0 y no deja hueco en el
+     * párrafo.
+     */
+    .dato::details-content {
+        display: inline-block;
+        transition: content-visibility var(--dur-fuente) linear allow-discrete;
+    }
+
+    @starting-style {
+        .dato[open] .dato__fuente {
+            opacity: 0;
+            translate: 0 100%;
+        }
     }
 
     /*
