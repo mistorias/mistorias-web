@@ -1,7 +1,8 @@
 import { experimental_AstroContainer } from "astro/container";
+import type { AstroComponentFactory } from "astro/runtime/server/index.js";
 
 export async function renderAstroComponent(
-  component: unknown,
+  component: AstroComponentFactory,
   options?: {
     props?: Record<string, unknown>;
     slots?: Record<string, string>;
@@ -9,7 +10,7 @@ export async function renderAstroComponent(
     url?: string;
   }
 ): Promise<string> {
-  const astroConfig = options?.site ? { site: new URL(options.site) } : undefined;
+  const astroConfig = options?.site ? { site: options.site } : undefined;
   const container = await experimental_AstroContainer.create({ astroConfig });
   const renderOptions = {
     props: options?.props,
