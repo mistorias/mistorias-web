@@ -12,7 +12,7 @@ export async function getStaticPaths() {
         (historia) => historia.data.date
     );
 
-    return groupByTheme(historias, (historia) => historia.data.themes).map(
+    return groupByTheme(historias, (historia) => historia.data.themes ?? []).map(
         (grupo) => ({
             params: { tema: grupo.theme },
             props: { historias: grupo.stories }
