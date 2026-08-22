@@ -1,4 +1,4 @@
-# ADR 0010: La portada abre con una disonancia de datos verificable
+# ADR 0010: La portada abre con datos verificables
 
 ## Estado
 
@@ -12,10 +12,9 @@ vez no tenía ninguna razón para creer que el asunto le concierne: la promesa s
 enunciaba sin haber generado antes ninguna tensión.
 
 El [issue #37 de gestión de producto](https://github.com/mistorias/mistorias-gestion-de-producto/issues/37)
-pide anteponerle una **disonancia basada en datos** —la técnica que describe
-[Design with Dissonance](https://www.smashingmagazine.com/2011/10/design-with-dissonance/)—
-con tres condiciones: que los datos sean reales y actuales, que quien lee pueda
-**verificarlos mediante un enlace**, y que el golpe llegue en unos tres segundos.
+pide anteponerle una entrada basada en datos duros, con tres condiciones: que
+los datos sean reales y actuales, que quien lee pueda **verificarlos mediante
+un enlace**, y que el golpe llegue en unos tres segundos.
 
 La tercera condición choca con la segunda. Dos enlaces de fuente escritos dentro
 del texto lo ensucian y le quitan el filo justo a la frase que tiene que golpear;
@@ -28,35 +27,38 @@ JavaScript, así que el mecanismo de «a pedido» tiene que ser HTML y CSS.
 
 ## Decisión
 
-### 1. El orden es disonancia → giro → promesa
+### 1. El orden es entrada → promesa
 
-`src/pages/index.astro` abre con dos cifras que incomodan, sigue con la frase que
-las vuelve personales («es el país que mañana te atenderá») y recién ahí promete.
-Cada bloque baja un escalón de la escala tipográfica, así que la página se lee en
-diagonal sin que ninguna parte compita con otra:
+`src/pages/index.astro` abre con dos cifras que incomodan, seguidas —como parte
+del mismo párrafo corrido— de la frase que las vuelve personales («es el país
+que mañana te atenderá»), y recién ahí promete. Las dos primeras frases y la
+tercera comparten la misma clase, `.portada__entrada`, y por lo tanto el mismo
+tratamiento tipográfico: es una sola entrada, no dos bloques enfrentados.
 
 | Bloque | Tamaño | Color |
 |---|---|---|
 | `h1` | `--paso-3` | `--color-texto` |
-| Disonancia (dos afirmaciones) | `--paso-1` | `--color-texto`, cifra en `--color-acento` |
-| Giro | `--paso-1` | `--color-analitico` |
-| Promesa | `--paso-0` | `--color-texto`, los tres verbos en `--color-analitico` |
+| Entrada (`.portada__entrada`, tres frases) | `--paso-1` | `--color-texto`, cifras en `--color-acento` |
+| Promesa (`.portada__promesa`) | `--paso-0` | `--color-texto`, los tres verbos en `--color-analitico` |
 
 El `h1` **no** cede su tamaño. Es lo que nombra al sitio y lo que sostiene el
-SEO; la disonancia entra debajo y a menor escala, y aun así golpea porque es lo
+SEO; la entrada baja debajo y a menor escala, y aun así golpea porque es lo
 único con color de acento en toda la franja. Se resaltan dos cosas y nada más:
 las dos cifras, y los tres verbos de la secuencia de marca SIENTE → ENTIENDE →
 ACTÚA (`adéntrate`, `entiende`, `convierte`). Resaltar más sería no resaltar.
 
-Entre el giro y la promesa va una regla de `3rem` en `--color-vivo`. Marca el
-cambio de tono —de lo que duele a lo que se puede hacer— y puede usar ese color
-porque es decoración y no texto ([ADR 0006](0006-sistema-de-diseno-del-sitio.md) §2).
+La promesa se separa de la entrada solo con `--esp-xl`: no hay línea ni
+adorno entre ambas. La entrada es una transición hacia la promesa, no un bloque
+contrapuesto a ella, así que no necesita marcar el cambio de tono con una regla
+visual — el salto de tamaño y el `--esp-xl` ya lo hacen.
 
 ### 2. Cada afirmación es un `<details>` nativo, no un componente con estado
 
 `src/components/DatoConFuente.astro` envuelve la afirmación en
 `details > summary + p`: el `summary` es la frase completa y el `p` que le sigue
-trae el enlace a la fuente y el dato que permite comprobarla.
+trae el enlace a la fuente y el dato que permite comprobarla. Tanto el `details`
+como el `summary` son `display: inline`, así que varios `DatoConFuente`
+seguidos se leen como un solo párrafo en vez de como una lista de bloques.
 
 El navegador ya sabe hacer todo lo que esto necesita: abrir y cerrar, anunciarlo
 como plegable con su `aria-expanded`, y responder a Enter y a Espacio. No hace
@@ -79,26 +81,63 @@ anuncia como plegable: para quien usa lector de pantalla, repetirlo sería ruido
 ```
 
 El disparador del hover es **el chip y no la frase**. Si bastara con pasar por
-encima del texto, la fuente se abriría sola mientras se lee y la página saltaría
-a cada rato; apuntar al chip es una intención, no un accidente. La consulta
-`hover: hover` es la misma que ya usa `base.css`: en táctil un hover se queda
-pegado después del toque. Ahí manda el toque sobre la frase completa, que es un
-blanco mucho más grande, y el segundo toque la cierra.
+encima del texto, la fuente se abriría sola mientras se lee y la barra
+parpadearía al cruzar cada frase; apuntar al chip es una intención, no un
+accidente. La consulta `hover: hover` es la misma que ya usa `base.css`: en
+táctil un hover se queda pegado después del toque. Ahí manda el toque sobre la
+frase completa, que es un blanco mucho más grande, y el segundo toque la
+cierra.
 
 Donde `::details-content` no exista, la regla no aplica y la fuente se sigue
 abriendo con clic, con toque o con Enter. Se pierde una comodidad, nunca el
 acceso al dato.
 
-### 4. La fuente empuja el contenido; no flota por encima
+### 4. La fuente va fija al fondo de la ventana
 
-Primero se probó flotar la tarjeta con `position: absolute` para que abrirla no
-moviera nada. En celular quedaba **encima de la afirmación siguiente**: le tapaba
-el texto y le interceptaba los toques, así que el segundo dato dejaba de poder
-abrirse. Se descartó por eso.
+Se probaron tres posiciones, en este orden:
 
-Abrir dentro del flujo empuja lo que viene abajo, que es lo que hace cualquier
-plegable y lo único que no rompe al vecino. El `summary` no se mueve, así que el
-puntero nunca queda fuera de su propio disparador.
+1. **Flotante, pegada a la frase** (`position: absolute` junto al `summary`).
+   Quedaba encima de la frase siguiente: le tapaba el texto y le interceptaba
+   los toques, así que el segundo dato dejaba de poder abrirse. Descartada.
+2. **En el flujo**, empujando lo que sigue — lo que hace cualquier plegable por
+   defecto. Con las dos frases como párrafo corrido, abrir una fuente partía el
+   párrafo en dos: el resto de la portada saltaba de lugar cada vez. Descartada.
+3. **Fija al fondo de la ventana** (`position: fixed`, `inset-inline: 0`,
+   `inset-block-end: 0`). No empuja nada porque no está en el flujo, y no tapa
+   ninguna frase porque no se superpone al texto: aparece por debajo de todo el
+   contenido. Es la que queda.
+
+```css
+.dato__fuente {
+  position: fixed;
+  inset-inline: 0;
+  inset-block-end: 0;
+  z-index: 5;
+  max-height: 40dvh;
+  overflow-y: auto;
+}
+```
+
+`z-index: 5` es necesario porque `SiluetaSalon` también es `position: fixed` y
+se pinta después en el DOM: sin esto, la silueta le taparía la barra. Queda por
+debajo de `.salto-contenido` (`z-index: 10`), que debe seguir ganando el foco
+de teclado. `max-height: 40dvh` con `overflow-y: auto` es el seguro para
+celular horizontal (~390px de alto): sin él la barra puede comerse media
+pantalla; con él, el texto se desplaza dentro de la barra si no entra.
+
+La barra entra y sale con una transición lineal y corta (0.3s en táctil, 0.1s
+con puntero, apagada con `prefers-reduced-motion: reduce`), para que el cambio
+se note pero no distraiga. La duración vive en una variable propia del
+componente porque el apagado global de `base.css` no alcanza a
+`::details-content`.
+
+**Limitación conocida, aceptada a sabiendas:** sin JavaScript, un `details`
+solo lo cierra su propio `summary`. Si el lector abre una fuente y se desplaza
+página abajo, la barra se queda fija hasta que vuelve a esa frase y la cierra,
+abre la otra fuente (el acordeón exclusivo la cierra por él), o —con
+puntero— saca el mouse del chip. No hay forma de cerrarla desde otro punto de
+la página sin recurrir a JavaScript, y eso rompería `script-src 'none'`
+(ADR 0004).
 
 ## Consecuencias
 
@@ -110,7 +149,7 @@ puntero nunca queda fuera de su propio disparador.
   la vista. El propio issue lo asume como el precio de usar datos duros.
 - `DatoConFuente.astro` sirve para cualquier afirmación con dato duro, no solo
   para la portada.
-- El hover y el toque no se pueden probar con la Container API, que renderiza en
-  Node: `tests/dato-con-fuente.spec.ts` cubre la estructura del marcado y el
-  comportamiento se verificó en Chromium a 1280×900 y 390×844, en tema claro y
-  oscuro, con puntero y con toque, y con teclado.
+- El hover, el toque y la posición fija no se pueden probar con la Container
+  API, que renderiza en Node: `tests/dato-con-fuente.spec.ts` cubre la
+  estructura del marcado y el comportamiento se verificó en Chromium, en tema
+  claro, con puntero y con toque, y con teclado.
