@@ -14,7 +14,7 @@ const historias = sortByDateDescending(
 const [destacada, ...anteriores] = historias;
 const hayTemas = historias.some((historia) => (historia.data.themes ?? []).length > 0);
 
-// La portada abre con una disonancia antes de prometer nada (issue #37 de
+// La portada abre con datos verificables antes de prometer nada (issue #37 de
 // gestión de producto): dos cifras que incomodan y que cualquiera puede
 // comprobar, porque cada una enlaza a su fuente. Prometer sin haber generado
 // esa tensión deja a quien llega sin razones para quedarse.
@@ -24,7 +24,7 @@ const hayTemas = historias.some((historia) => (historia.data.themes ?? []).lengt
 // el precio de usar datos duros dentro de un texto fijo.
 const CICLO_DE_LOS_DATOS = "PISA 2022";
 
-const disonancia = [
+const datos = [
     {
         cifra: "Uno de cada tres",
         resto: "jóvenes peruanos de quince años alcanza el mínimo de matemática que la OCDE considera necesario para la vida adulta.",
@@ -46,34 +46,34 @@ const disonancia = [
     title="Mistorias | Historias para transformar la educación"
     description="En pocos minutos entiendes un problema educativo real y sales con algo concreto que hacer."
 >
-    <section class="franja">
+    <section class="portada">
         <div class="columna">
             <h1>Historias para transformar la educación</h1>
 
-            <ul class="disonancia" role="list">
+            <div class="portada__entrada">
                 {
-                    disonancia.map((dato) => (
-                        <li>
+                    datos.map((dato) => (
+                        <>
                             <DatoConFuente
                                 fuente={dato.fuente}
                                 href={dato.href}
                                 detalle={dato.detalle}
                                 grupo="fuentes-portada"
                             >
-                                <strong class="dato__cifra">{dato.cifra}</strong>{" "}
+                                <strong class="portada__cifra">{dato.cifra}</strong>{" "}
                                 {dato.resto}
-                            </DatoConFuente>
-                        </li>
+                            </DatoConFuente>{" "}
+                        </>
                     ))
                 }
-            </ul>
+            </div>
 
-            <p class="franja__giro">
+            <p class="portada__entrada">
                 No es un problema de escuelas lejanas: es el país que mañana te
                 atenderá, te contratará y decidirá contigo.
             </p>
 
-            <p class="franja__promesa">
+            <p class="portada__promesa">
                 Detrás de cada cifra hay una persona con nombre. En pocos
                 minutos te ayudamos a empatizar con ella: <strong
                     >adéntrate</strong
@@ -138,60 +138,40 @@ const disonancia = [
 </BaseLayout>
 
 <style>
-    .franja {
+    .portada {
         padding-block: var(--esp-2xl) var(--esp-xl);
         border-block-end: 1px solid var(--color-borde);
         background-color: var(--color-realce);
     }
 
     /*
-     * Dos afirmaciones paralelas, cada una con su fuente: es una lista de
-     * verdad, aunque se lea como prosa. `role="list"` es deliberado — quitarle
-     * las viñetas con `list-style: none` también le quita las semánticas de
-     * lista a VoiceOver, y acá sí queremos que se anuncien como dos.
+     * Es la entrada de la portada: dos afirmaciones con dato duro que se leen
+     * como un solo párrafo, cada una con su fuente a pedido. La tercera frase
+     * (el `<p>` siguiente, misma clase) toma el mismo tratamiento tipográfico
+     * a propósito, para que la transición hacia la promesa se lea de un tirón.
      */
-    .disonancia {
-        display: grid;
-        gap: var(--esp-m);
+    .portada__entrada {
+        max-width: 55ch;
         margin-block-start: var(--esp-l);
-        padding: 0;
-        list-style: none;
+        font-size: var(--paso-1);
+        color: var(--color-texto);
     }
 
-    .dato__cifra {
+    .portada__entrada + .portada__entrada {
+        margin-block-start: var(--esp-m);
+    }
+
+    .portada__cifra {
         font-weight: 600;
         color: var(--color-acento);
     }
 
-    .franja__giro {
-        max-width: 55ch;
-        margin-block-start: var(--esp-l);
-        font-size: var(--paso-1);
-        color: var(--color-analitico);
-    }
-
-    .franja__promesa {
-        position: relative;
+    .portada__promesa {
         max-width: 55ch;
         margin-block-start: var(--esp-xl);
-        padding-block-start: var(--esp-m);
     }
 
-    /*
-     * Regla corta que marca el cambio de tono: de la cifra que incomoda a lo
-     * que se puede hacer con ella. Es decoración, así que puede usar
-     * `--color-vivo`, que no alcanza contraste para texto (ADR 0006 §2).
-     */
-    .franja__promesa::before {
-        content: "";
-        position: absolute;
-        inset-block-start: 0;
-        inset-inline-start: 0;
-        width: 3rem;
-        border-block-start: 2px solid var(--color-vivo);
-    }
-
-    .franja__promesa strong {
+    .portada__promesa strong {
         font-weight: 600;
         color: var(--color-analitico);
     }
