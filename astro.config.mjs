@@ -7,7 +7,7 @@ import { resolveDeploymentConfig } from "./src/lib/deployment";
 const { site, base } = resolveDeploymentConfig(process.env.DEPLOY_TARGET);
 
 export default defineConfig({
-  srcDir: "anotherSrc",
+  srcDir: "src",
   integrations: [noRawHtml(), storyAssetFolders(), brandSymbol()],
   site,
   base
