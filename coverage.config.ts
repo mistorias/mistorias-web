@@ -18,6 +18,7 @@ export const coverageConfig = {
     "src/components/ListaTemas.astro",
     "src/components/CabeceraSitio.astro",
     "src/components/PieSitio.astro",
+    "src/components/DatoConFuente.astro",
   ],
   reporter: ["text", ["text-summary", { file: "cobertura.txt" }]] as Array<
     "text" | ["text-summary", { file: string }]
