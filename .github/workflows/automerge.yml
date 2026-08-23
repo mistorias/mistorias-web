@@ -20,9 +20,19 @@ jobs:
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
 
+      # Una dependencia de producción con un major upgrade puede traer
+      # breaking changes a lo que corre en el sitio, así que ahí solo se
+      # automergea minor/patch. Una devDependency como mucho rompe la build
+      # o el lint en local, nunca producción, así que ahí se automergea
+      # cualquier update-type, incluido major.
+      #
       # gh pr merge --auto no fusiona de inmediato: espera a que los checks
       # requeridos en la rama pasen antes de fusionar.
       - name: Activar auto-merge
+        if: |
+          steps.metadata.outputs.dependency-type == 'direct:development' ||
+          steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
+          steps.metadata.outputs.update-type == 'version-update:semver-minor'
         run: gh pr merge --auto --squash "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
