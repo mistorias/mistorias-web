@@ -5,7 +5,7 @@ import { renderAstroComponent } from "./support/render-astro-component";
 // El componente no tiene props ni ramas: solo arma la URL de la máscara.
 // La proporción declarada en su <style> vive en una hoja aparte que el
 // Container API no expone en renderToString (limitación documentada en
-// CLAUDE.md), así que no es observable desde acá.
+// ADR 0011), así que no es observable desde acá.
 describe("SiluetaSalon", () => {
   it("apunta la máscara al SVG, no al PNG que reemplazó", async () => {
     const html = await renderAstroComponent(SiluetaSalon);
