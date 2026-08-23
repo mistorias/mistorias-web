@@ -60,12 +60,26 @@
 
   /*
    * Alto de la silueta decorativa (SiluetaSalon.astro): el mayor valor
-   * posible sin pasar de 25% del alto de ventana, un tope absoluto de 16rem
-   * en monitores grandes, ni el ancho disponible — la silueta es 3 veces más
-   * ancha que alta (2172×724 px), así que en pantalla vertical el ancho
-   * (100vw / 3) es la restricción real y el alto cede para no desbordar.
+   * posible sin pasar de 13.79% del alto de ventana, un tope absoluto de
+   * 8.823rem en monitores grandes, ni el ancho disponible — el SVG es
+   * 5.63 veces más ancho que alto (2128×378 px, viewBox recortado al
+   * dibujo), así que en pantalla vertical el ancho (100vw / 5.63) es la
+   * restricción real y el alto cede para no desbordar. El divisor del
+   * término de ancho es la proporción del SVG, no la del PNG que
+   * reemplaza: `aspect-ratio` en SiluetaSalon.astro ahora declara la
+   * proporción real del contenido, así que `mask-size: contain` ya no
+   * letterboxea y el ancho de la caja es exactamente alto×5.63. Con
+   * cualquier otro divisor la caja desborda o deja aire a los lados.
+   *
+   * Los primeros dos términos (8.823rem, 13.785dvh) no son 16rem/25dvh:
+   * el PNG que este SVG reemplaza medía 2149×395 (proporción 5.44), no
+   * los 2172×724 (proporción 3) que el CSS anterior declaraba, así que
+   * `mask-size: contain` letterboxeaba el PNG dentro de esa caja mal
+   * proporcionada y lo dibujaba al 55.1% del alto declarado. Esos dos
+   * términos se corrigieron a la baja por ese mismo 55.1% para que la
+   * silueta se vea del mismo tamaño que antes en pantalla.
    */
-  --alto-silueta-salon: min(16rem, 25dvh, 100vw / 3);
+  --alto-silueta-salon: min(8.823rem, 13.785dvh, 100vw / 5.6296);
 
   /*
    * Alto del relleno que reserva, al final de la página, el espacio que la
