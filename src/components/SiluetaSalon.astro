@@ -2,7 +2,7 @@
 import { assetRoute } from "../lib/routes";
 
 const base = import.meta.env.BASE_URL;
-const imagen = assetRoute(base, "silueta-salon.png");
+const imagen = assetRoute(base, "silueta-salon.svg");
 ---
 
 <div
@@ -15,8 +15,8 @@ const imagen = assetRoute(base, "silueta-salon.png");
 <style>
     /*
      * No es un <img>: es una máscara CSS sobre un color de fondo, para poder
-     * recolorear el PNG según el tema sin necesitar un SVG con currentColor.
-     * mask-image cae bajo img-src en la CSP, ya permitido ('self').
+     * recolorear la silueta según el tema desde una sola fuente, sea PNG o
+     * SVG. mask-image cae bajo img-src en la CSP, ya permitido ('self').
      */
     .silueta-salon {
         position: fixed;
@@ -24,7 +24,7 @@ const imagen = assetRoute(base, "silueta-salon.png");
         inset-inline-end: 0;
         pointer-events: none;
 
-        aspect-ratio: 2172 / 724; /* proporción real del PNG */
+        aspect-ratio: 2128 / 378; /* proporción real del SVG (viewBox recortado al dibujo) */
         height: var(--alto-silueta-salon);
         width: auto;
 
