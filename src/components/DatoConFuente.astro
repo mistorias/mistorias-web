@@ -126,54 +126,39 @@ const { fuente, href, detalle, grupo } = Astro.props;
         line-height: 1.5;
         color: var(--color-metadato);
 
+        /*
+         * `visibility` acompaña a `opacity`/`translate` con el truco clásico
+         * de retrasar SOLO su propio cambio: al cerrar, se queda en `visible`
+         * hasta que el fade termina (duración 0s, demora --dur-fuente) y
+         * recién ahí pasa a `hidden` —sacando el enlace del orden de
+         * tabulación y de lectores de pantalla—, en vez de hacerlo de golpe
+         * al primer instante del cierre. Antes esto se resolvía animando
+         * `content-visibility` en `::details-content` con `allow-discrete`,
+         * pero en pruebas propias esa transición no sostenía el valor visible
+         * ni con `transition-duration` ni con `transition-delay`: el cierre
+         * saltaba a oculto casi de inmediato sin importar cuánto se
+         * configurara. `visibility` no necesita `allow-discrete` —es el
+         * mecanismo que los navegadores soportan desde siempre para este
+         * mismo truco— así que no depende de esa función tan nueva.
+         */
         opacity: 0;
         translate: 0 100%;
+        visibility: hidden;
         transition:
             opacity var(--dur-fuente) linear,
-            translate var(--dur-fuente) linear;
+            translate var(--dur-fuente) linear,
+            visibility 0s linear var(--dur-fuente);
     }
 
     .dato__fuente a {
         text-decoration: underline;
     }
 
-    .dato[open] .dato__fuente,
-    .dato:has(.dato__pista:hover) .dato__fuente {
+    .dato[open] .dato__fuente {
         opacity: 1;
         translate: 0 0;
-    }
-
-    /*
-     * `content-visibility: hidden` (lo que aplica el navegador a un `details`
-     * cerrado) es discreta: sin ayuda, corta la animación en seco en vez de
-     * dejarla correr. `allow-discrete` la suma a la transición y
-     * `@starting-style` le da un estado de partida para animar la entrada.
-     * Donde `::details-content` no exista, la fuente se sigue abriendo, solo
-     * que sin esta transición.
-     *
-     * `display: inline-block` es obligatorio acá y no accidental: por defecto
-     * este pseudoelemento es de bloque, y un bloque metido dentro de `.dato`
-     * (que es `inline`) parte el inline en dos cajas —"block-in-inline"— y
-     * eso es justo lo que fuerza el salto de línea entre las frases que
-     * deberían leerse como un solo párrafo corrido. No sirve ponerle
-     * `display: inline` al pseudoelemento: `content-visibility` no aplica a
-     * cajas en línea no atómicas, así que el ocultamiento dejaría de
-     * funcionar y la fuente quedaría siempre visible. `inline-block` sí es
-     * atómico, así que el ocultamiento funciona, y como su único contenido
-     * (`.dato__fuente`) está siempre fuera de flujo (`position: fixed`), esta
-     * caja no tiene nada adentro que la infle: mide 0×0 y no deja hueco en el
-     * párrafo.
-     */
-    .dato::details-content {
-        display: inline-block;
-        transition: content-visibility var(--dur-fuente) linear allow-discrete;
-    }
-
-    @starting-style {
-        .dato[open] .dato__fuente {
-            opacity: 0;
-            translate: 0 100%;
-        }
+        visibility: visible;
+        transition-delay: 0s;
     }
 
     /*
@@ -183,15 +168,39 @@ const { fuente, href, detalle, grupo } = Astro.props;
      * rato. Apuntar a la pista es una intención, no un accidente.
      *
      * Solo donde hay puntero: en táctil un hover se queda pegado después del
-     * toque (misma razón que el bloque `hover: hover` de base.css); ahí manda
-     * el toque sobre la frase, que es un blanco mucho más grande.
-     *
-     * Donde `::details-content` no exista, esta regla simplemente no aplica y
-     * la fuente se sigue abriendo con clic o con Enter.
+     * toque (misma razón que el bloque `hover: hover` de base.css), y como acá
+     * no hay `content-visibility` de por medio filtrando el toque pegado, el
+     * propio `@media` es lo único que lo neutraliza; ahí manda el toque sobre
+     * la frase, que es un blanco mucho más grande.
      */
     @media (hover: hover) {
-        .dato:has(.dato__pista:hover)::details-content {
-            content-visibility: visible;
+        .dato:has(.dato__pista:hover) .dato__fuente {
+            opacity: 1;
+            translate: 0 0;
+            visibility: visible;
+            transition-delay: 0s;
         }
+    }
+
+    /*
+     * `display: inline-block` es obligatorio acá y no accidental: por defecto
+     * este pseudoelemento es de bloque, y un bloque metido dentro de `.dato`
+     * (que es `inline`) parte el inline en dos cajas —"block-in-inline"— y
+     * eso es justo lo que fuerza el salto de línea entre las frases que
+     * deberían leerse como un solo párrafo corrido. `content-visibility:
+     * visible` es explícito y no el valor por defecto: sin él, el navegador
+     * oculta el contenido de un `details` cerrado con su propio
+     * `content-visibility: hidden`, que es justo el mecanismo cuya transición
+     * de cierre no fue confiable (ver el comentario de `.dato__fuente` más
+     * arriba) — acá se lo desactiva y el ocultamiento real queda en manos de
+     * `visibility`. Esto no reintroduce el salto de línea: como el único
+     * contenido de esta caja (`.dato__fuente`) está siempre fuera de flujo
+     * (`position: fixed`), no tiene nada adentro que la infle sin importar si
+     * `content-visibility` la oculta o no —mide 0×0 en cualquier caso y no
+     * deja hueco en el párrafo.
+     */
+    .dato::details-content {
+        display: inline-block;
+        content-visibility: visible;
     }
 </style>
