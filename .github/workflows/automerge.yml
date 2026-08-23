@@ -1,0 +1,29 @@
+name: Auto-merge de Dependabot
+
+on: pull_request
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  automerge:
+    runs-on: ubuntu-latest
+    # github.actor viene del sistema (Dependabot no puede ser suplantado por
+    # un contribuidor abriendo un PR normal), así que esta comparación es la
+    # verificación de identidad del bot.
+    if: github.actor == 'dependabot[bot]'
+    steps:
+      - name: Leer metadata de Dependabot
+        id: metadata
+        uses: dependabot/fetch-metadata@21025c705c08248db411dc16f3619e6b5f9ea21a # v2.5.0
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      # gh pr merge --auto no fusiona de inmediato: espera a que los checks
+      # requeridos en la rama pasen antes de fusionar.
+      - name: Activar auto-merge
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
