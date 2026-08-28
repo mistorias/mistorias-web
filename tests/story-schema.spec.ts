@@ -50,4 +50,31 @@ describe("storySchema", () => {
 
     expect(parsed.themes).toEqual(["educacion", "comunidad"]);
   });
+
+  it("no exige imageAlt/imageCredit/imageLicense cuando no hay imagen", () => {
+    const parsed = storySchema.parse(validFrontmatter);
+
+    expect(parsed.imageAlt).toBeUndefined();
+    expect(parsed.imageCredit).toBeUndefined();
+    expect(parsed.imageLicense).toBeUndefined();
+  });
+
+  it("acepta imageAlt/imageCredit/imageLicense cuando la historia los declara", () => {
+    const parsed = storySchema.parse({
+      ...validFrontmatter,
+      imageAlt: "Descripción de la imagen",
+      imageCredit: "Equipo Mistorias",
+      imageLicense: "CC BY-NC 4.0"
+    });
+
+    expect(parsed.imageAlt).toBe("Descripción de la imagen");
+    expect(parsed.imageCredit).toBe("Equipo Mistorias");
+    expect(parsed.imageLicense).toBe("CC BY-NC 4.0");
+  });
+
+  it("rechaza imageAlt vacío", () => {
+    expect(() =>
+      storySchema.parse({ ...validFrontmatter, imageAlt: "" })
+    ).toThrow();
+  });
 });

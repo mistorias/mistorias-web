@@ -15,7 +15,10 @@ export const storySchema = z
     date: z.coerce.date(),
     author: z.string().min(1),
     themes: z.array(z.string()).optional(),
-    tags: z.array(z.string()).optional()
+    tags: z.array(z.string()).optional(),
+    imageAlt: z.string().min(1).optional(),
+    imageCredit: z.string().min(1).optional(),
+    imageLicense: z.string().min(1).optional()
   })
   .transform(({ themes, tags, ...rest }) => ({
     ...rest,
