@@ -4,14 +4,15 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import DatoConFuente from "../components/DatoConFuente.astro";
 import TarjetaHistoria from "../components/TarjetaHistoria.astro";
 import { themesRoute } from "../lib/routes";
-import { sortByDateDescending } from "../lib/stories";
+import { limitPreviousStories, sortByDateDescending } from "../lib/stories";
 
 const historias = sortByDateDescending(
     await getCollection("stories"),
     (historia) => historia.data.date
 );
 
-const [destacada, ...anteriores] = historias;
+const [destacada, ...resto] = historias;
+const anteriores = limitPreviousStories(resto);
 const hayTemas = historias.some((historia) => (historia.data.themes ?? []).length > 0);
 
 // La portada abre con datos verificables antes de prometer nada (issue #37 de
