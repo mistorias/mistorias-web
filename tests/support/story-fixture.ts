@@ -7,6 +7,9 @@ interface StoryFixtureOverrides {
   date?: Date;
   author?: string;
   themes?: string[];
+  imageAlt?: string;
+  imageCredit?: string;
+  imageLicense?: string;
 }
 
 export function buildStoryFixture(
@@ -21,6 +24,9 @@ export function buildStoryFixture(
       date: overrides?.date ?? new Date("2026-04-26"),
       author: overrides?.author ?? "Equipo Mistorias",
       themes: overrides?.themes ?? ["educacion"],
+      imageAlt: overrides?.imageAlt,
+      imageCredit: overrides?.imageCredit,
+      imageLicense: overrides?.imageLicense,
     },
   } as CollectionEntry<"stories">;
 }
