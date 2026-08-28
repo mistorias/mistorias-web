@@ -89,4 +89,46 @@ describe("TarjetaHistoria", () => {
     expect(html).toContain("Autor Especial");
     expect(html).toContain("abril");
   });
+
+  it("sin imagen: muestra el símbolo de Mistorias estático y ningún <img>", async () => {
+    const historia = buildStoryFixture({ id: "historia-sin-imagen" });
+    const html = await renderAstroComponent(TarjetaHistoria, {
+      props: { historia },
+    });
+
+    expect(html).toContain("tarjeta__marcador");
+    expect(html).not.toContain("tarjeta__marcador--cargando");
+    expect(html).not.toContain("<img");
+  });
+
+  // La historia de Ximena es la única del submódulo de contenido con
+  // principal.jpg (issue mistorias-gestion-de-producto#38): se usa su slug
+  // real en vez de mockear story-images.ts, así la prueba ejercita el glob
+  // de verdad en vez de una ImageMetadata inventada.
+  it("con imagen: recorta 1:1 (width===height), carga en diferido y marca el símbolo como marcador de carga", async () => {
+    const historia = buildStoryFixture({
+      id: "2026-07-24-el-aula-de-madera-donde-ximena-aprende",
+      imageAlt: "Descripción de prueba",
+    });
+    const html = await renderAstroComponent(TarjetaHistoria, {
+      props: { historia },
+    });
+
+    expect(html).toContain("tarjeta__marcador--cargando");
+    expect(html).toMatch(/<img[^>]+loading="lazy"/);
+    expect(html).toMatch(/<img[^>]+width="480"[^>]+height="480"/);
+    expect(html).toContain('alt="Descripción de prueba"');
+  });
+
+  it("la tarjeta destacada también usa loading=\"lazy\" (ninguna tarjeta va en eager)", async () => {
+    const historia = buildStoryFixture({
+      id: "2026-07-24-el-aula-de-madera-donde-ximena-aprende",
+      imageAlt: "Descripción de prueba",
+    });
+    const html = await renderAstroComponent(TarjetaHistoria, {
+      props: { historia, destacada: true },
+    });
+
+    expect(html).toMatch(/<img[^>]+loading="lazy"/);
+  });
 });
