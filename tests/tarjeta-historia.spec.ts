@@ -1,7 +1,22 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import type { ImageMetadata } from "astro";
+import fixtureImage from "./fixtures/principal.jpg";
 import TarjetaHistoria from "../src/components/TarjetaHistoria.astro";
 import { renderAstroComponent } from "./support/render-astro-component";
 import { buildStoryFixture } from "./support/story-fixture";
+
+// El submódulo de contenido no tiene por qué traer ya la imagen de ninguna
+// historia real en el momento en que corren estos tests (su llegada es un PR
+// aparte en mistorias-contenido): se mockea story-images.ts con un fixture
+// propio del repo, real para que astro:assets lo pueda procesar, pero
+// independiente de qué historia tenga o no principal.jpg en cada momento.
+const STORY_ID_WITH_IMAGE = "historia-con-imagen";
+vi.mock("../src/lib/content/story-images", () => ({
+  getStoryImage: (storyId: string): ImageMetadata | undefined =>
+    storyId === STORY_ID_WITH_IMAGE
+      ? (fixtureImage as unknown as ImageMetadata)
+      : undefined,
+}));
 
 // Cubre el armado de enlace y metadatos, no el diseño visual (issue #33).
 describe("TarjetaHistoria", () => {
@@ -101,13 +116,9 @@ describe("TarjetaHistoria", () => {
     expect(html).not.toContain("<img");
   });
 
-  // La historia de Ximena es la única del submódulo de contenido con
-  // principal.jpg (issue mistorias-gestion-de-producto#38): se usa su slug
-  // real en vez de mockear story-images.ts, así la prueba ejercita el glob
-  // de verdad en vez de una ImageMetadata inventada.
   it("con imagen: recorta 1:1 (width===height), carga en diferido y marca el símbolo como marcador de carga", async () => {
     const historia = buildStoryFixture({
-      id: "2026-07-24-el-aula-de-madera-donde-ximena-aprende",
+      id: STORY_ID_WITH_IMAGE,
       imageAlt: "Descripción de prueba",
     });
     const html = await renderAstroComponent(TarjetaHistoria, {
@@ -122,7 +133,7 @@ describe("TarjetaHistoria", () => {
 
   it("la tarjeta destacada también usa loading=\"lazy\" (ninguna tarjeta va en eager)", async () => {
     const historia = buildStoryFixture({
-      id: "2026-07-24-el-aula-de-madera-donde-ximena-aprende",
+      id: STORY_ID_WITH_IMAGE,
       imageAlt: "Descripción de prueba",
     });
     const html = await renderAstroComponent(TarjetaHistoria, {
