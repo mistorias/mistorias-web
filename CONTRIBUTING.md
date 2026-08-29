@@ -233,6 +233,27 @@ Si al clonar el repo el submodulo no se inicializa automáticamente:
 git submodule update --init --recursive
 ```
 
+## Cache del orden cronológico de historias
+
+`data/story-order.json` es el cache versionado del orden de publicación de
+las historias, que usa la navegación anterior/siguiente de cada página de
+historia (issue #34, ver [ADR 0012](docs/adr/0012-cache-versionado-orden-cronologico-historias.md)).
+Se commitea junto con el contenido: no está en `.gitignore`.
+
+Regenéralo después de agregar, quitar, renombrar o cambiarle la fecha a una
+historia:
+
+```bash
+pnpm story-order                 # regenera solo si el orden cambió
+pnpm story-order -- --rebuild    # regenera siempre, sin importar si cambió
+```
+
+Si te olvidas de correrlo, el sitio no se rompe —`getStaticPaths` calcula el
+orden en memoria cuando el cache falta o quedó desactualizado— pero el diff
+del PR pierde el registro explícito de cuándo cambió el orden de
+publicación, así que conviene commitear el cache actualizado junto con el
+cambio de contenido.
+
 ## Flujo de Contribución de Código
 
 1. Crea una rama descriptiva: `git checkout -b feat/descripcion-breve` o `fix/descripcion-breve`
