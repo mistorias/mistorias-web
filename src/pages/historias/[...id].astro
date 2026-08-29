@@ -1,4 +1,5 @@
 ---
+import { Picture } from "astro:assets";
 import {
     getCollection,
     render,
@@ -6,8 +7,10 @@ import {
 } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ListaTemas from "../../components/ListaTemas.astro";
+import SimboloMistorias from "../../components/SimboloMistorias.astro";
 import { dateForAttribute, readableDate } from "../../lib/dates";
 import { themesRoute } from "../../lib/routes";
+import { getStoryImage } from "../../lib/content/story-images";
 
 export async function getStaticPaths() {
     const stories = await getCollection("stories");
@@ -25,6 +28,7 @@ type Props = {
 const { story } = Astro.props;
 const { Content } = await render(story);
 const base = import.meta.env.BASE_URL;
+const imagen = getStoryImage(story.id);
 ---
 
 <BaseLayout
@@ -46,6 +50,33 @@ const base = import.meta.env.BASE_URL;
 
             <p class="historia__resumen">{story.data.summary}</p>
         </header>
+
+        {
+            // El gate de contenido (story-image-requirements.ts) exige
+            // imageAlt siempre que exista principal.jpg: si `imagen` está
+            // presente, `imageAlt` también, por construcción.
+            imagen && (
+                <figure class="columna historia__imagen">
+                    <span class="historia__marcador">
+                        <SimboloMistorias />
+                    </span>
+                    <Picture
+                        src={imagen}
+                        alt={story.data.imageAlt!}
+                        width={1200}
+                        formats={["webp"]}
+                        fallbackFormat="jpg"
+                        loading="lazy"
+                        class="historia__foto"
+                    />
+                    <figcaption class="historia__credito">
+                        {story.data.imageCredit}
+                        <span aria-hidden="true">·</span>
+                        {story.data.imageLicense}
+                    </figcaption>
+                </figure>
+            )
+        }
 
         {/* La prosa recibe un solo tratamiento tipográfico: el esquema no
             garantiza qué secciones trae una historia, así que el diseño no se
@@ -97,6 +128,71 @@ const base = import.meta.env.BASE_URL;
         font-family: var(--fuente-info);
         font-size: var(--paso--1);
         color: var(--color-metadato);
+    }
+
+    /* Mismo patrón que TarjetaHistoria.astro: el símbolo va detrás de la
+       foto y con shimmer mientras `loading="lazy"` todavía no la trae —
+       cero JS, el navegador la tapa solo al pintar encima. Acá siempre hay
+       imagen (el bloque entero no se renderiza si no la hay), así que el
+       shimmer se aplica sin condición. `prefers-reduced-motion` ya lo cubre
+       la regla global de base.css. */
+    .historia__imagen {
+        position: relative;
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+        border-radius: var(--radio);
+        background-color: var(--color-superficie);
+        margin-block-end: var(--esp-l);
+    }
+
+    .historia__marcador {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: var(--paso-3);
+        color: var(--color-borde);
+        background-image: linear-gradient(
+            110deg,
+            transparent 35%,
+            color-mix(in srgb, var(--color-acento) 25%, transparent) 50%,
+            transparent 65%
+        );
+        background-size: 200% 100%;
+        animation: historia-marcador-shimmer 1.6s ease-in-out infinite;
+    }
+
+    @keyframes historia-marcador-shimmer {
+        from {
+            background-position: 150% 0;
+        }
+        to {
+            background-position: -50% 0;
+        }
+    }
+
+    .historia__foto {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* El pie de foto se lee sobre una fotografía arbitraria, no sobre el
+       fondo de la página: por eso usa blanco fijo en vez de un token de
+       superficie, que en tema oscuro no garantizaría contraste contra la
+       imagen de abajo. */
+    .historia__credito {
+        position: absolute;
+        inset-block-end: 0;
+        inset-inline: 0;
+        padding: var(--esp-xs) var(--esp-s);
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        color: #fff;
+        background: linear-gradient(to top, rgb(0 0 0 / 60%), transparent);
     }
 
     .historia__resumen {
