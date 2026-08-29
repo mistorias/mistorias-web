@@ -1,0 +1,94 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { storyRoute } from "../lib/routes";
+
+type Props = {
+    historiaAnterior?: CollectionEntry<"stories">;
+    historiaSiguiente?: CollectionEntry<"stories">;
+};
+
+const { historiaAnterior, historiaSiguiente } = Astro.props;
+const base = import.meta.env.BASE_URL;
+---
+
+{
+    (historiaAnterior || historiaSiguiente) && (
+        <nav
+            class="navegacion-historias"
+            aria-label="Navegación entre historias"
+        >
+            {historiaAnterior && (
+                <a
+                    class="navegacion-historias__enlace navegacion-historias__enlace--anterior"
+                    href={storyRoute(base, historiaAnterior.id)}
+                >
+                    <span class="navegacion-historias__etiqueta">
+                        Historia anterior
+                    </span>
+                    <span class="navegacion-historias__titulo">
+                        {historiaAnterior.data.title}
+                    </span>
+                </a>
+            )}
+            {historiaSiguiente && (
+                <a
+                    class="navegacion-historias__enlace navegacion-historias__enlace--siguiente"
+                    href={storyRoute(base, historiaSiguiente.id)}
+                >
+                    <span class="navegacion-historias__etiqueta">
+                        Historia siguiente
+                    </span>
+                    <span class="navegacion-historias__titulo">
+                        {historiaSiguiente.data.title}
+                    </span>
+                </a>
+            )}
+        </nav>
+    )
+}
+
+<style>
+    .navegacion-historias {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--esp-m);
+        padding-block-start: var(--esp-l);
+        margin-block-start: var(--esp-xl);
+        border-block-start: 1px solid var(--color-borde);
+    }
+
+    .navegacion-historias__enlace {
+        display: flex;
+        flex-direction: column;
+        gap: var(--esp-3xs);
+        max-width: 28ch;
+        text-decoration: none;
+    }
+
+    /* Único hijo cuando falta el otro extremo: el margen automático lo
+       manda al lado derecho igual, sin depender de que el hermano exista. */
+    .navegacion-historias__enlace--siguiente {
+        margin-inline-start: auto;
+        text-align: end;
+    }
+
+    .navegacion-historias__etiqueta {
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--color-metadato);
+    }
+
+    .navegacion-historias__titulo {
+        font-family: var(--fuente-narrativa);
+        color: var(--color-texto);
+    }
+
+    @media (hover: hover) {
+        .navegacion-historias__enlace:hover .navegacion-historias__titulo {
+            color: var(--color-acento);
+        }
+    }
+</style>
