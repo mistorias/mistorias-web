@@ -7,25 +7,51 @@ import {
 } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ListaTemas from "../../components/ListaTemas.astro";
+import NavegacionHistorias from "../../components/NavegacionHistorias.astro";
 import SimboloMistorias from "../../components/SimboloMistorias.astro";
 import { dateForAttribute, readableDate } from "../../lib/dates";
 import { themesRoute } from "../../lib/routes";
 import { getStoryImage } from "../../lib/content/story-images";
+import { orderStoriesByDate } from "../../lib/content/story-order";
+import { resolveNeighbors } from "../../lib/content/story-order-cache";
 
 export async function getStaticPaths() {
     const stories = await getCollection("stories");
+    const storiesById = new Map(stories.map((story) => [story.id, story]));
 
-    return stories.map((story) => ({
-        params: { id: story.id },
-        props: { story }
-    }));
+    const orderedIds = orderStoriesByDate(
+        stories,
+        (story) => story.id,
+        (story) => story.data.date
+    );
+    const neighbors = resolveNeighbors(orderedIds);
+
+    return stories.map((story) => {
+        const { previous, next } = neighbors[story.id] ?? {
+            previous: null,
+            next: null
+        };
+
+        return {
+            params: { id: story.id },
+            props: {
+                story,
+                historiaAnterior: previous
+                    ? storiesById.get(previous)
+                    : undefined,
+                historiaSiguiente: next ? storiesById.get(next) : undefined
+            }
+        };
+    });
 }
 
 type Props = {
     story: CollectionEntry<"stories">;
+    historiaAnterior?: CollectionEntry<"stories">;
+    historiaSiguiente?: CollectionEntry<"stories">;
 };
 
-const { story } = Astro.props;
+const { story, historiaAnterior, historiaSiguiente } = Astro.props;
 const { Content } = await render(story);
 const base = import.meta.env.BASE_URL;
 const imagen = getStoryImage(story.id);
@@ -104,6 +130,11 @@ const imagen = getStoryImage(story.id);
                 </footer>
             )
         }
+
+        <NavegacionHistorias
+            historiaAnterior={historiaAnterior}
+            historiaSiguiente={historiaSiguiente}
+        />
     </article>
 </BaseLayout>
 
