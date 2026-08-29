@@ -1,0 +1,33 @@
+{
+  "generatedAt": "2026-08-29T22:01:54.298Z",
+  "hash": "f27c0961a511d65b8204d507885f02ffc4f4d7c58f3571ef0c81dabee78f5be4",
+  "order": [
+    "2026-07-24-el-aula-de-madera-donde-ximena-aprende",
+    "2026-07-31-los-libros-tambien-llegan-a-cotahuasi",
+    "2026-08-07-como-se-mueve-la-educacion",
+    "2026-08-14-valeria-imagina-su-colegio-si-las-lluvias-movieran-el-calendario",
+    "2026-08-21-lo-que-carolina-aprende-del-paro-en-arequipa"
+  ],
+  "stories": {
+    "2026-07-24-el-aula-de-madera-donde-ximena-aprende": {
+      "previous": null,
+      "next": "2026-07-31-los-libros-tambien-llegan-a-cotahuasi"
+    },
+    "2026-07-31-los-libros-tambien-llegan-a-cotahuasi": {
+      "previous": "2026-07-24-el-aula-de-madera-donde-ximena-aprende",
+      "next": "2026-08-07-como-se-mueve-la-educacion"
+    },
+    "2026-08-07-como-se-mueve-la-educacion": {
+      "previous": "2026-07-31-los-libros-tambien-llegan-a-cotahuasi",
+      "next": "2026-08-14-valeria-imagina-su-colegio-si-las-lluvias-movieran-el-calendario"
+    },
+    "2026-08-14-valeria-imagina-su-colegio-si-las-lluvias-movieran-el-calendario": {
+      "previous": "2026-08-07-como-se-mueve-la-educacion",
+      "next": "2026-08-21-lo-que-carolina-aprende-del-paro-en-arequipa"
+    },
+    "2026-08-21-lo-que-carolina-aprende-del-paro-en-arequipa": {
+      "previous": "2026-08-14-valeria-imagina-su-colegio-si-las-lluvias-movieran-el-calendario",
+      "next": null
+    }
+  }
+}
