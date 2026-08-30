@@ -55,21 +55,20 @@ export async function readStoryDates(
     (entry) => entry.isFile() && entry.name.endsWith(STORY_EXTENSION)
   );
 
-  const stories: StoryDate[] = [];
-  for (const storyFile of storyFiles) {
-    const id = storyFile.name.slice(0, -STORY_EXTENSION.length);
-    const storyPath = path.join(directory, storyFile.name);
-    const storyText = await readFile(storyPath, "utf8");
-    const date = extractDate(extractFrontmatter(storyText));
+  return Promise.all(
+    storyFiles.map(async (storyFile) => {
+      const id = storyFile.name.slice(0, -STORY_EXTENSION.length);
+      const storyPath = path.join(directory, storyFile.name);
+      const storyText = await readFile(storyPath, "utf8");
+      const date = extractDate(extractFrontmatter(storyText));
 
-    if (date === null) {
-      throw new Error(
-        `${storyFile.name} no declara un "date" válido (yyyy-mm-dd) en su frontmatter.`
-      );
-    }
+      if (date === null) {
+        throw new Error(
+          `${storyFile.name} no declara un "date" válido (yyyy-mm-dd) en su frontmatter.`
+        );
+      }
 
-    stories.push({ id, date });
-  }
-
-  return stories;
+      return { id, date };
+    })
+  );
 }
