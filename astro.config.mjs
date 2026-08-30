@@ -4,6 +4,7 @@ import { storyAssetFolders } from "./src/lib/content/story-asset-folders-integra
 import { storyImageRequirements } from "./src/lib/content/story-image-requirements-integration";
 import { brandSymbol } from "./src/lib/brand/symbol-gate-integration";
 import { publicSvg } from "./src/lib/assets/public-svg-gate-integration";
+import { portadaIllustration } from "./src/lib/assets/illustration-gate-integration";
 import { resolveDeploymentConfig } from "./src/lib/deployment";
 
 const { site, base } = resolveDeploymentConfig(process.env.DEPLOY_TARGET);
@@ -15,6 +16,7 @@ export default defineConfig({
     storyAssetFolders(),
     storyImageRequirements(),
     brandSymbol(),
+    portadaIllustration(),
     publicSvg()
   ],
   site,

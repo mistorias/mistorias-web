@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import DatoConFuente from "../components/DatoConFuente.astro";
+import PlantaDeLibros from "../components/PlantaDeLibros.astro";
 import TarjetaHistoria from "../components/TarjetaHistoria.astro";
 import { themesRoute } from "../lib/routes";
 import { limitPreviousStories, sortByDateDescending } from "../lib/stories";
@@ -48,41 +49,47 @@ const datos = [
     description="En pocos minutos entiendes un problema educativo real y sales con algo concreto que hacer."
 >
     <section class="portada">
-        <div class="columna">
-            <h1>Historias para transformar la educación</h1>
+        <div class="contenedor portada__disposicion">
+            <PlantaDeLibros />
 
-            <div class="portada__entrada">
-                {
-                    datos.map((dato) => (
-                        <>
-                            <DatoConFuente
-                                fuente={dato.fuente}
-                                href={dato.href}
-                                detalle={dato.detalle}
-                                grupo="fuentes-portada"
-                            >
-                                <strong class="portada__cifra">{dato.cifra}</strong>{" "}
-                                {dato.resto}
-                            </DatoConFuente>{" "}
-                        </>
-                    ))
-                }
+            <div class="portada__texto">
+                <h1>Historias para transformar la educación</h1>
+
+                <div class="portada__entrada">
+                    {
+                        datos.map((dato) => (
+                            <>
+                                <DatoConFuente
+                                    fuente={dato.fuente}
+                                    href={dato.href}
+                                    detalle={dato.detalle}
+                                    grupo="fuentes-portada"
+                                >
+                                    <strong class="portada__cifra">
+                                        {dato.cifra}
+                                    </strong>{" "}
+                                    {dato.resto}
+                                </DatoConFuente>{" "}
+                            </>
+                        ))
+                    }
+                </div>
+
+                <p class="portada__entrada">
+                    No es un problema de escuelas lejanas: es el país que mañana
+                    te atenderá, te contratará y decidirá contigo.
+                </p>
+
+                <p class="portada__promesa">
+                    Detrás de cada cifra hay una persona con nombre. En pocos
+                    minutos te ayudamos a empatizar con ella: <strong
+                        >adéntrate</strong
+                    > en una historia, <strong>entiende</strong> por qué se repite
+                    en miles más y <strong>convierte</strong> esa comprensión en algo
+                    concreto para mejorar nuestra educación: en tu casa, en tu colegio
+                    o frente a quien tiene el poder de cambiarla.
+                </p>
             </div>
-
-            <p class="portada__entrada">
-                No es un problema de escuelas lejanas: es el país que mañana te
-                atenderá, te contratará y decidirá contigo.
-            </p>
-
-            <p class="portada__promesa">
-                Detrás de cada cifra hay una persona con nombre. En pocos
-                minutos te ayudamos a empatizar con ella: <strong
-                    >adéntrate</strong
-                > en una historia, <strong>entiende</strong> por qué se repite en
-                miles más y <strong>convierte</strong> esa comprensión en algo concreto
-                para mejorar nuestra educación: en tu casa, en tu colegio o frente
-                a quien tiene el poder de cambiarla.
-            </p>
         </div>
     </section>
 
@@ -143,6 +150,70 @@ const datos = [
         padding-block: var(--esp-2xl) var(--esp-xl);
         border-block-end: 1px solid var(--color-borde);
         background-color: var(--color-realce);
+    }
+
+    /*
+     * `wrap-reverse` es lo que resuelve el pedido: la ilustración a la
+     * izquierda cuando hay ancho y debajo del texto cuando no. Invierte el eje
+     * transversal, no el principal, así que sin envolver la imagen queda a la
+     * izquierda —es la primera del DOM— y al envolver su línea se dibuja
+     * abajo. Sin `wrap-reverse` haría falta un punto de quiebre por ancho, que
+     * es justo lo que base.css evita.
+     *
+     * `align-items: center` también es a propósito: bajo `wrap-reverse` el eje
+     * transversal está invertido y `flex-start` alinearía abajo. `center` no
+     * depende de esa inversión.
+     */
+    .portada__disposicion {
+        display: flex;
+        flex-wrap: wrap-reverse;
+        align-items: center;
+        gap: var(--esp-l) var(--esp-xl);
+    }
+
+    /*
+     * `min-width: 0` porque el mínimo automático de un elemento flexible es su
+     * tamaño mínimo de contenido, y sin esto el texto se niega a encogerse por
+     * debajo de su base y se desborda en celular.
+     */
+    .portada__texto {
+        flex: 1 1 30rem;
+        min-width: 0;
+        max-width: var(--medida);
+    }
+
+    /*
+     * El tamaño del dibujo es fluido, no dos tamaños con un punto de quiebre
+     * entre medio. Da ~18rem en escritorio y va bajando con el ancho, así que
+     * cuando la fila envuelve —alrededor de 710px— el dibujo ya viene chico y
+     * pasa abajo sin dar un salto. Los topes existen porque el dibujo es muy
+     * vertical (proporción 0.467: 18rem de ancho son 38.5rem de alto): sin el
+     * máximo domina la portada, y sin el mínimo desaparece en celular.
+     *
+     * Se descartó resolverlo con una @container sobre la fila, que era lo
+     * natural para distinguir "al costado" de "abajo". Dos razones, las dos
+     * verificadas en navegador: `container-type` aplica `contain: layout`, y
+     * eso convierte al contenedor en bloque contenedor de los descendientes
+     * `position: fixed` —la barra de fuentes de DatoConFuente dejaba de
+     * anclarse a la ventana (ADR 0010)—; y el tamaño consultado alimentaba la
+     * decisión de envolver, así que achicar el dibujo lo hacía entrar de nuevo
+     * en la fila y la consulta nunca coincidía con el envolvimiento.
+     */
+    .portada__disposicion :global(.planta-de-libros) {
+        flex: 0 1 clamp(7rem, 22vw, 18rem);
+        margin-inline: auto;
+    }
+
+    /*
+     * El celular horizontal (844 × 390) es ancho: no envuelve, y el dibujo
+     * queda al lado del texto en una pantalla de 24rem de alto. Se corta por
+     * altura —el mismo criterio que base.css ya usa— porque la restricción
+     * real acá es el alto, no el ancho.
+     */
+    @media (max-height: 30rem) {
+        .portada__disposicion :global(.planta-de-libros) {
+            flex-basis: 9rem;
+        }
     }
 
     /*
