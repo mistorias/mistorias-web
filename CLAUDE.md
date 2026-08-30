@@ -105,6 +105,15 @@ Derived from [Mistorias Esencia de Marca](https://github.com/mistorias/mistorias
 - Typefaces are self-hosted via `@fontsource-variable` and served same-origin, so they fall under `default-src 'self'` and required no CSP change.
 - Contrast ratios are annotated next to each token. Both themes clear WCAG AA; `--color-vivo` is restricted to non-text use because it does not.
 - Story pages style prose uniformly and **do not** key off section titles: `storySchema` validates frontmatter only, so section names are editorial convention and a design that depends on them would break silently.
+- The homepage opens with `src/components/PlantaDeLibros.astro` beside the text:
+  `flex-wrap: wrap-reverse` puts the illustration left when there is width and
+  below the text when there is not, from a single DOM order and with no width
+  breakpoint. Its size is fluid (`clamp(7rem, 22vw, 18rem)`) so it is already
+  small by the time the row wraps. A container query would have been the
+  natural fit and does not work here: `container-type` applies `contain: layout`,
+  which makes the container the containing block for `position: fixed`
+  descendants and unpins `DatoConFuente`'s source bar from the viewport. See
+  [ADR 0012](docs/adr/0012-ilustracion-de-portada.md).
 - The homepage opens with two verifiable figures before the promise, read as one
   flowing paragraph, each wrapped in `src/components/DatoConFuente.astro`. That
   component is a native `details > summary + p` — the sentence is the `summary`
@@ -145,7 +154,7 @@ Both check out with `--recursive` (initializes submodules) and run `pnpm install
 
 Stories reject raw HTML (`assertStoriesHaveNoRawHtml` in `raw-html-gate.ts`) to prevent injection attacks. This is enforced on every `astro dev` and `astro build` through the integration registered in `astro.config.mjs` — the check only holds as long as that registration stays in place, so don't remove it.
 
-The brand symbol SVG goes through the same kind of gate (`assertBrandSymbolIsThemeReady` in `symbol-gate.ts`), because it's injected in line with `set:html` and its content is therefore executable markup, not just an image. It rejects fixed colors, `<script>`, event handlers, `foreignObject`, and external references — also registered in `astro.config.mjs`.
+Any SVG injected in line with `set:html` is executable markup, not just an image, so it goes through `assertInlineSvgIsThemeReady` in `src/lib/assets/inline-svg-gate.ts`: it requires a cropped `viewBox` and rejects fixed colors (as attributes *or* inside a `style` attribute, which is how SVGO writes them), `<style>`, `<script>`, event handlers, `foreignObject`, and external references. Two files consume it, both registered in `astro.config.mjs`: the brand symbol (`src/lib/brand/symbol-gate.ts`) and the cover illustration (`src/lib/assets/illustration-gate.ts`), which additionally requires the `ink-base` and `ink-acento` classes — without them the drawing gets no token and renders black on black in dark mode.
 
 Pages ship a strict Content-Security-Policy from `src/layouts/BaseLayout.astro`. `script-src` is `'none'` because the site sends no JavaScript; adding an Astro island or view transitions requires relaxing it to `'self'` in both the layout and `public/_headers`, which would otherwise break in the browser without failing the build.
 

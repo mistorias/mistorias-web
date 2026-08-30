@@ -2,7 +2,9 @@
 
 ## Estado
 
-Aceptado
+Reemplazado por [ADR 0012](0012-ilustracion-de-portada.md), que retira la
+silueta del sitio. Lo que sigue queda como registro de la decisión de su
+momento.
 
 ## Contexto
 
