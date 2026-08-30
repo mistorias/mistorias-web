@@ -1,0 +1,41 @@
+---
+import planta from "../assets/ilustraciones/planta-de-libros.svg?raw";
+---
+
+<span class="planta-de-libros" aria-hidden="true" set:html={planta} />
+
+<style>
+    /*
+     * Es decorativa: no dice nada que el texto de la portada no diga, así que
+     * va oculta a lectores de pantalla y sin nombre accesible. Por eso tampoco
+     * molesta que en el DOM venga antes del <h1> —orden que necesita el
+     * `wrap-reverse` de la portada para poder ponerla a la izquierda.
+     */
+    .planta-de-libros {
+        display: block;
+        color: var(--color-texto);
+    }
+
+    /*
+     * El SVG se inyecta con `set:html`, así que Astro no lo alcanza a marcar
+     * como propio del componente: hace falta `:global()` para seguir
+     * estilándolo, igual que en SimboloMistorias.
+     *
+     * Las dos tintas salen de tokens y no del archivo. Es lo que permite
+     * servir modo claro y oscuro desde un solo SVG: `ink-base` hereda el
+     * color del contenedor y `ink-acento` toma el burdeos de marca, que es el
+     * color que la ilustración tenía antes de vectorizarse.
+     */
+    .planta-de-libros :global(svg) {
+        width: 100%;
+        height: auto;
+    }
+
+    .planta-de-libros :global(.ink-base) {
+        fill: currentColor;
+    }
+
+    .planta-de-libros :global(.ink-acento) {
+        fill: var(--color-analitico);
+    }
+</style>
