@@ -14,7 +14,7 @@ const base = import.meta.env.BASE_URL;
 {
     (historiaAnterior || historiaSiguiente) && (
         <nav
-            class="navegacion-historias"
+            class="columna navegacion-historias"
             aria-label="Navegación entre historias"
         >
             {historiaAnterior && (
@@ -48,9 +48,17 @@ const base = import.meta.env.BASE_URL;
 }
 
 <style>
+    /*
+     * `flex-wrap` decide solo, por el ancho real de cada título, si caben
+     * los dos enlaces en la misma línea: si no caben, "siguiente" no se
+     * encoge (flex-shrink: 0) y baja a su propia línea, debajo de
+     * "anterior" por orden del marcado. Sin punto de quiebre, y sigue
+     * siendo correcta en anchos que hoy no existen.
+     */
     .navegacion-historias {
         display: flex;
         flex-wrap: wrap;
+        justify-content: space-between;
         gap: var(--esp-m);
         padding-block-start: var(--esp-l);
         margin-block-start: var(--esp-xl);
@@ -60,16 +68,19 @@ const base = import.meta.env.BASE_URL;
     .navegacion-historias__enlace {
         display: flex;
         flex-direction: column;
+        flex-shrink: 0;
         gap: var(--esp-3xs);
         max-width: 28ch;
         text-decoration: none;
     }
 
-    /* Único hijo cuando falta el otro extremo: el margen automático lo
-       manda al lado derecho igual, sin depender de que el hermano exista. */
-    .navegacion-historias__enlace--siguiente {
+    /* Cuando falta "anterior", este es el único hijo de <nav>: el margen
+       automático lo manda al lado derecho igual. Si ambos existen pero no
+       caben en la misma línea, `:only-child` no aplica (sigue teniendo a
+       "anterior" como hermano) y "siguiente" queda a la izquierda en su
+       propia línea, como corresponde al apilado. */
+    .navegacion-historias__enlace--siguiente:only-child {
         margin-inline-start: auto;
-        text-align: end;
     }
 
     .navegacion-historias__etiqueta {
