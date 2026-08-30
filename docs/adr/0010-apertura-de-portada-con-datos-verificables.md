@@ -118,10 +118,18 @@ Se probaron tres posiciones, en este orden:
 }
 ```
 
-`z-index: 5` es necesario porque `SiluetaSalon` también es `position: fixed` y
-se pinta después en el DOM: sin esto, la silueta le taparía la barra. Queda por
-debajo de `.salto-contenido` (`z-index: 10`), que debe seguir ganando el foco
-de teclado. `max-height: 40dvh` con `overflow-y: auto` es el seguro para
+`z-index: 5` la mantiene por encima del contenido de la página, que de otro
+modo la taparía al pintarse después en el DOM. Cuando se escribió este ADR el
+motivo concreto era `SiluetaSalon`, el otro `position: fixed` del sitio; esa
+silueta se retiró en [ADR 0012](0012-ilustracion-de-portada.md), pero el
+`z-index` sigue haciendo falta. Queda por debajo de `.salto-contenido`
+(`z-index: 10`), que debe seguir ganando el foco de teclado.
+
+Que la barra sea `fixed` respecto de la **ventana** no es un detalle: cualquier
+antepasado suyo con `contain: layout` —lo que aplica, entre otras cosas,
+`container-type`— pasa a ser su bloque contenedor y la desancla. [ADR
+0012](0012-ilustracion-de-portada.md) documenta el caso concreto en que eso
+apareció. `max-height: 40dvh` con `overflow-y: auto` es el seguro para
 celular horizontal (~390px de alto): sin él la barra puede comerse media
 pantalla; con él, el texto se desplaza dentro de la barra si no entra.
 
