@@ -104,7 +104,7 @@ describe("BaseLayout", () => {
     expect(html).toContain('name="twitter:card" content="summary_large_image"');
   });
 
-  it("con ogImage: usa la cabecera de la historia recortada, no la imagen por defecto", async () => {
+  it("con ogImage: usa la cabecera de la historia, no la imagen por defecto", async () => {
     const html = await renderAstroComponent(BaseLayout, {
       props: {
         title: "Titulo",
