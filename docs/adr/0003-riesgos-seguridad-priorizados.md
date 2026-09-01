@@ -91,6 +91,9 @@ Corresponde a OWASP Top 10 **A05:2021 – Security Misconfiguration**.
 Se agrega `public/_headers`, el mecanismo nativo de Netlify para sitios
 estáticos, aplicando estos headers a todas las rutas (`/*`).
 
+> Nota: `Cross-Origin-Opener-Policy` se agregó después, vía el
+> [ADR 0014](0014-coop-y-cache-inmutable-assets.md) (issue #40).
+
 ### 3. Doble superficie pública: hosting de producción + GitHub Pages (Medio) — aceptado
 
 Además del despliegue a producción (`deploy-netlify.yml`, dominio
