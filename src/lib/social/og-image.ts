@@ -12,7 +12,7 @@ const OG_IMAGE_HEIGHT = 630;
 
 const DEFAULT_OG_IMAGE_PATH = "imagenes/og-default.jpg";
 const DEFAULT_OG_IMAGE_ALT =
-    "Ilustración risograph de Mistorias: una planta creciendo entre libros.";
+    "Ilustración con risografía de Mistorias: metáfora de una planta con libros que florecen.";
 
 export type OgImage = {
     readonly src: string;
