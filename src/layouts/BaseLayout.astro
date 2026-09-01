@@ -5,10 +5,12 @@ import "../styles/tokens.css";
 import "../styles/base.css";
 import loraLatino from "@fontsource-variable/lora/files/lora-latin-wght-normal.woff2?url";
 
+import type { ImageMetadata } from "astro";
 import CabeceraSitio from "../components/CabeceraSitio.astro";
 import PieSitio from "../components/PieSitio.astro";
 import { assetRoute } from "../lib/routes";
 import { isDevelopmentTarget } from "../lib/deployment";
+import { defaultOgImage, ogImageFromStoryImage } from "../lib/social/og-image";
 
 // GitHub Pages no permite configurar cabeceras HTTP, así que la CSP viaja en
 // un <meta>. Es la única barrera disponible en el entorno de desarrollo; en
@@ -30,9 +32,10 @@ const contentSecurityPolicy = [
 type Props = {
     title: string;
     description?: string;
+    ogImage?: { src: ImageMetadata; alt: string };
 };
 
-const { title, description } = Astro.props;
+const { title, description, ogImage } = Astro.props;
 
 // El build de desarrollo antepone "WIP: " para que no se confunda con el
 // sitio real (issue #28).
@@ -57,6 +60,21 @@ const iconos = {
 
 const urlCanonica = Astro.site
     ? new URL(Astro.url.pathname, Astro.site)
+    : undefined;
+
+// La cabecera 16:9 de la historia (recortada a 1200×630) si la hay, o si no
+// la ilustración de portada pre-generada (issue #39): toda página emite un
+// og:image, nunca queda en blanco al compartirse.
+const imagenOg = ogImage
+    ? await ogImageFromStoryImage(ogImage.src, ogImage.alt)
+    : defaultOgImage(base);
+
+// Igual que urlCanonica: sin Astro.site (fuera de un build real, como los
+// tests de este componente) no hay origen contra el cual armar una URL
+// absoluta, y og:image la necesita absoluta para que Facebook y X puedan
+// buscarla.
+const urlImagenOg = Astro.site
+    ? new URL(imagenOg.src, Astro.site).toString()
     : undefined;
 ---
 
@@ -87,6 +105,17 @@ const urlCanonica = Astro.site
     <meta property="og:title" content={tituloMostrado} />
     {description && <meta property="og:description" content={description} />}
     {urlCanonica && <meta property="og:url" content={urlCanonica} />}
+    {
+        urlImagenOg && (
+            <>
+                <meta property="og:image" content={urlImagenOg} />
+                <meta property="og:image:width" content={String(imagenOg.width)} />
+                <meta property="og:image:height" content={String(imagenOg.height)} />
+                <meta property="og:image:alt" content={imagenOg.alt} />
+                <meta name="twitter:card" content="summary_large_image" />
+            </>
+        )
+    }
 
     <!-- La fuente narrativa es la que bloquea la lectura: se precarga solo el
          subconjunto latino, que es el único que el castellano necesita. -->

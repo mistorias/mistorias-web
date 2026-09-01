@@ -88,7 +88,7 @@ The gate runs via `src/lib/content/no-raw-html-integration.ts`, an Astro integra
 
 ### Pages & Routing
 
-- `src/layouts/BaseLayout.astro` — shared HTML skeleton; the `<meta>` Content-Security-Policy lives here and nowhere else. Also carries the header, the footer and the skip link, so every page shares them
+- `src/layouts/BaseLayout.astro` — shared HTML skeleton; the `<meta>` Content-Security-Policy lives here and nowhere else. Also carries the header, the footer and the skip link, so every page shares them. It also resolves `og:image`: an `ogImage` prop (a story's header + alt) goes through `ogImageFromStoryImage()` for a build-time 1200×630 crop via `astro:assets`; no prop falls back to `defaultOgImage()`, the pre-generated risograph illustration at `public/imagenes/og-default.jpg` (regenerate with `pnpm og-default-image`). Both live in `src/lib/social/og-image.ts` — see [ADR 0013](docs/adr/0013-og-image-por-historia.md) for why this doesn't use Netlify's Image CDN despite the two-target build.
 - `src/pages/index.astro` — homepage: promise banner, featured story, older stories
 - `src/pages/historias/[...id].astro` — dynamic story detail pages (file-based routing)
 - `src/pages/temas/index.astro` and `src/pages/temas/[tema].astro` — theme index and per-theme listings
