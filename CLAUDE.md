@@ -150,6 +150,10 @@ Two workflows in `.github/workflows/`:
 
 Both check out with `--recursive` (initializes submodules) and run `pnpm install --frozen-lockfile` before building.
 
+### Never deploy without an explicit instruction
+
+Merging a branch to `main` (triggers GitHub Pages) and pushing a tag (triggers Netlify) are both real, hard-to-reverse publishing actions — do them only when the user explicitly asks for that specific action, naming it ("merge to main", "publish the tag", "despliega a Netlify"). Never propose it as a next step, and never turn "the content/branch is ready" into a question like "which destination should I deploy to?" — that already frames deploying as the default next move, which it is not. Finish the `desplegar-contenido` skill's validation steps, report the branch is ready, and stop there; wait for the user to ask for the merge or tag by name.
+
 ## Security & Validation
 
 Stories reject raw HTML (`assertStoriesHaveNoRawHtml` in `raw-html-gate.ts`) to prevent injection attacks. This is enforced on every `astro dev` and `astro build` through the integration registered in `astro.config.mjs` — the check only holds as long as that registration stays in place, so don't remove it.
