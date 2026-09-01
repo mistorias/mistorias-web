@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import BaseLayout from "../src/layouts/BaseLayout.astro";
+import fixtureImage from "./fixtures/principal.jpg";
 import { renderAstroComponent } from "./support/render-astro-component";
 
 // Solo la CSP y el salto de accesibilidad — el resto de BaseLayout es
@@ -76,5 +77,50 @@ describe("BaseLayout", () => {
     });
 
     expect(html).not.toContain('name="description"');
+  });
+
+  it("sin Astro.site no emite og:image (no hay origen para armar la URL absoluta)", async () => {
+    const html = await renderAstroComponent(BaseLayout, {
+      props: { title: "Titulo" },
+      slots: { default: "" },
+    });
+
+    expect(html).not.toContain('property="og:image"');
+  });
+
+  it("con Astro.site y sin ogImage: cae a la ilustración por defecto en 1200x630", async () => {
+    const html = await renderAstroComponent(BaseLayout, {
+      props: { title: "Titulo" },
+      slots: { default: "" },
+      site: "https://mistorias.pe",
+    });
+
+    expect(html).toContain(
+      'property="og:image" content="https://mistorias.pe/imagenes/og-default.jpg"'
+    );
+    expect(html).toContain('property="og:image:width" content="1200"');
+    expect(html).toContain('property="og:image:height" content="630"');
+    expect(html).toContain('property="og:image:alt"');
+    expect(html).toContain('name="twitter:card" content="summary_large_image"');
+  });
+
+  it("con ogImage: usa la cabecera de la historia recortada, no la imagen por defecto", async () => {
+    const html = await renderAstroComponent(BaseLayout, {
+      props: {
+        title: "Titulo",
+        ogImage: { src: fixtureImage, alt: "Descripción de la foto" },
+      },
+      slots: { default: "" },
+      site: "https://mistorias.pe",
+    });
+
+    // El path exacto de astro:assets difiere entre build (/_astro/*.jpg) y
+    // dev/tests (endpoint /_image on-demand); acá solo importa que es una
+    // URL absoluta sobre mistorias.pe y que no es la imagen por defecto.
+    expect(html).toMatch(
+      /property="og:image" content="https:\/\/mistorias\.pe\/[^"]+"/
+    );
+    expect(html).not.toContain("og-default.jpg");
+    expect(html).toContain('property="og:image:alt" content="Descripción de la foto"');
   });
 });

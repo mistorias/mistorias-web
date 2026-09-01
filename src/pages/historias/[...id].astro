@@ -60,6 +60,7 @@ const imagen = getStoryImage(story.id);
 <BaseLayout
     title={`${story.data.title} | Mistorias`}
     description={story.data.summary}
+    ogImage={imagen ? { src: imagen, alt: story.data.imageAlt! } : undefined}
 >
     <article class="historia">
         <header class="columna historia__cabecera">
