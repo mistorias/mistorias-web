@@ -1,12 +1,14 @@
 {
-  "generatedAt": "2026-08-29T22:01:54.298Z",
-  "hash": "f27c0961a511d65b8204d507885f02ffc4f4d7c58f3571ef0c81dabee78f5be4",
+  "generatedAt": "2026-09-01T15:39:33.757Z",
+  "hash": "15e990cf5086564991b5f83919f4d2f0e2dd4d0193906eea8cbf9bc6c558961c",
   "order": [
     "2026-07-24-el-aula-de-madera-donde-ximena-aprende",
     "2026-07-31-los-libros-tambien-llegan-a-cotahuasi",
     "2026-08-07-como-se-mueve-la-educacion",
     "2026-08-14-valeria-imagina-su-colegio-si-las-lluvias-movieran-el-calendario",
-    "2026-08-21-lo-que-carolina-aprende-del-paro-en-arequipa"
+    "2026-08-21-lo-que-carolina-aprende-del-paro-en-arequipa",
+    "2026-08-28-silvia-sostiene-su-escuela-entre-techos-bonos-pantallas",
+    "2026-08-31-octavio-y-julio-construyen-juntos-la-educacion"
   ],
   "stories": {
     "2026-07-24-el-aula-de-madera-donde-ximena-aprende": {
@@ -27,6 +29,14 @@
     },
     "2026-08-21-lo-que-carolina-aprende-del-paro-en-arequipa": {
       "previous": "2026-08-14-valeria-imagina-su-colegio-si-las-lluvias-movieran-el-calendario",
+      "next": "2026-08-28-silvia-sostiene-su-escuela-entre-techos-bonos-pantallas"
+    },
+    "2026-08-28-silvia-sostiene-su-escuela-entre-techos-bonos-pantallas": {
+      "previous": "2026-08-21-lo-que-carolina-aprende-del-paro-en-arequipa",
+      "next": "2026-08-31-octavio-y-julio-construyen-juntos-la-educacion"
+    },
+    "2026-08-31-octavio-y-julio-construyen-juntos-la-educacion": {
+      "previous": "2026-08-28-silvia-sostiene-su-escuela-entre-techos-bonos-pantallas",
       "next": null
     }
   }
