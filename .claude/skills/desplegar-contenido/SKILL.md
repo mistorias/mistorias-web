@@ -69,7 +69,33 @@ despliegue, ese es el diff de contenido que se va a publicar — vale la pena
 mencionarlo en el commit del bump (`chore(contenido): ...`, ver
 `git log --oneline` para el estilo de mensajes usados antes).
 
-### 2. Validar el contenido: schema y gates de seguridad
+### 2. Regenerar el orden cronológico de historias
+
+`data/story-order.json` es el cache versionado (commiteado en git, ver
+[ADR 0012](../../../docs/adr/0012-cache-versionado-orden-cronologico-historias.md))
+que usa cada página de historia para calcular los enlaces "anterior" y
+"siguiente". El build nunca lo escribe — es responsabilidad de quien trae
+contenido nuevo correrlo y commitearlo:
+
+```bash
+pnpm story-order
+```
+
+Si el hash del orden actual ya coincide con el del cache, el script no
+escribe nada y lo dice explícitamente ("ya está al día"). Si hace falta
+forzar la reescritura sin importar el hash:
+
+```bash
+pnpm story-order -- --rebuild
+```
+
+Commitear `data/story-order.json` junto con el cambio de contenido (bump del
+submódulo). Si se omite este paso, el sitio sigue siendo correcto — el build
+cae al cálculo en memoria (ver `resolveNeighbors`) — pero el cache
+commiteado queda desactualizado y dejará de ser el artefacto auditable que
+busca el ADR 0012.
+
+### 3. Validar el contenido: schema y gates de seguridad
 
 ```bash
 pnpm install --frozen-lockfile   # si no se hizo ya
@@ -90,7 +116,7 @@ Si falla, el error dice cuál gate lo detuvo:
 No hay forma de saltarse estos gates a propósito: son la defensa contra
 contenido malicioso o mal formado llegando a producción (ver ADR 0004).
 
-### 3. Verificar el listado de la portada
+### 4. Verificar el listado de la portada
 
 Con el build corriendo (`pnpm dev` o `pnpm preview` después de `pnpm build`),
 revisar `/`:
@@ -104,7 +130,7 @@ revisar `/`:
   historia tiene al menos un tema no vacío — si el contenido nuevo trae la
   primera historia con temas del sitio, confirmar que el enlace aparezca.
 
-### 4. Verificar el conteo de temas
+### 5. Verificar el conteo de temas
 
 Esto es lo más fácil de romper en silencio: un tema mal tipeado (con
 mayúscula distinta, un espacio de más, plural vs. singular) no falla el
@@ -135,7 +161,7 @@ Si algo no coincide, el problema casi siempre está en el frontmatter
 no en el código del sitio — `groupByTheme` normaliza a minúsculas y recorta
 espacios, pero no corrige errores de tipeo ni singular/plural.
 
-### 5. Confirmar el destino de despliegue
+### 6. Confirmar el destino de despliegue
 
 Antes de construir para publicar (no para desarrollo local), confirmar que
 `DEPLOY_TARGET` es el correcto para dónde va a vivir este contenido:
@@ -153,7 +179,7 @@ Si el despliegue va por CI (lo normal), no hace falta construir localmente
 con esa variable — los workflows ya la fijan. Este paso importa sobre todo
 si se va a correr `pnpm build` o `netlify deploy` a mano.
 
-### 6. Si se construye o despliega manualmente: validar el artefacto
+### 7. Si se construye o despliega manualmente: validar el artefacto
 
 Si por alguna razón se va a correr `netlify deploy` fuera del workflow (no
 es el flujo normal — el workflow ya usa `--no-build` para publicar
@@ -176,7 +202,7 @@ Falla si el `dist/` generado todavía contiene referencias a
 `/mistorias-web/` — la señal exacta del incidente del issue #29. Un build
 para Netlify nunca debe contener esa cadena.
 
-### 7. Publicar
+### 8. Publicar
 
 El flujo normal es dejar que CI lo haga:
 
@@ -186,8 +212,19 @@ El flujo normal es dejar que CI lo haga:
   `deploy-netlify.yml`, que construye, corre el chequeo de base y publica
   con `--no-build --prod`.
 
+**Nunca publicar a Netlify si no es a través de un tag.** No hay un flujo
+alterno válido: nada de `netlify deploy --prod` desde una máquina local,
+desde `main`, ni disparando `deploy-netlify.yml` por `workflow_dispatch`
+como atajo habitual — el tag es la única vía normal, porque es lo que dispara
+el workflow que construye con el `DEPLOY_TARGET` correcto, corre
+`scripts/check_build_base.sh` sobre el artefacto y recién entonces publica
+con `--no-build --prod`. Un deploy que se salte ese camino puede repetir el
+incidente del issue #29 (base de GitHub Pages publicada en mistorias.pe) sin
+que nada lo detenga a tiempo. Un deploy manual (paso 7) es solo para
+emergencia declarada, nunca la vía por defecto.
+
 No hace falta (ni se recomienda) reemplazar estos workflows con un deploy
-manual salvo emergencia — y en ese caso, seguir el paso 6 primero.
+manual salvo emergencia — y en ese caso, seguir el paso 7 primero.
 
 ## Recordatorios rápidos
 
@@ -201,3 +238,8 @@ manual salvo emergencia — y en ese caso, seguir el paso 6 primero.
 - `pnpm test` corre con cobertura mínima de 90%; si se tocó código de
   `src/lib` como parte de este trabajo (poco común en un despliegue de solo
   contenido), correrlo también.
+- **Netlify (mistorias.pe) se publica solo vía push de tag.** Nunca a mano,
+  nunca desde `main`. Ver paso 8.
+- Contenido nuevo o re-fechado siempre trae consigo un `data/story-order.json`
+  regenerado (paso 2) — no es opcional ni un detalle de "nice to have": es
+  parte del mismo cambio.
