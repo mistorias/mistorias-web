@@ -1,0 +1,47 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { homeRoute } from "../lib/routes";
+
+// Destino de `action` de todo formulario de Netlify Forms del sitio (issue
+// #42 de gestión de producto): una sola página de agradecimiento genérica,
+// porque a quien llega acá le basta saber que su mensaje se envió, sin
+// importar cuál de los formularios lo mandó.
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout
+    title="Gracias — Mistorias"
+    description="Tu mensaje llegó. Gracias por ayudarnos a mejorar Mistorias."
+>
+    <div class="columna gracias">
+        <h1>Gracias</h1>
+
+        <p class="gracias__mensaje">
+            Tu mensaje llegó. Lo leemos y, si hace falta responderte, lo
+            hacemos al correo que dejaste.
+        </p>
+
+        <p class="gracias__salida">
+            <a href={homeRoute(base)}>Volver a la portada</a>
+        </p>
+    </div>
+</BaseLayout>
+
+<style>
+    .gracias {
+        padding-block: var(--esp-2xl);
+    }
+
+    .gracias__mensaje {
+        max-width: var(--medida);
+        margin-block-start: var(--esp-m);
+        font-size: var(--paso-1);
+        color: var(--color-analitico);
+    }
+
+    .gracias__salida {
+        margin-block-start: var(--esp-l);
+        font-family: var(--fuente-info);
+        font-weight: 600;
+    }
+</style>
