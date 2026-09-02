@@ -4,7 +4,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import DatoConFuente from "../components/DatoConFuente.astro";
 import PlantaDeLibros from "../components/PlantaDeLibros.astro";
 import TarjetaHistoria from "../components/TarjetaHistoria.astro";
-import { themesRoute } from "../lib/routes";
+import { reportRoute, themesRoute } from "../lib/routes";
 import { limitPreviousStories, sortByDateDescending } from "../lib/stories";
 
 const historias = sortByDateDescending(
@@ -143,6 +143,15 @@ const datos = [
             </section>
         )
     }
+
+    <section class="columna feedback">
+        <p>
+            ¿Tienes algo que decirnos sobre el sitio? <a
+                href={reportRoute(import.meta.env.BASE_URL)}
+                >Cuéntanos qué encontraste</a
+            >.
+        </p>
+    </section>
 </BaseLayout>
 
 <style>
@@ -280,7 +289,8 @@ const datos = [
     }
 
     .vacia,
-    .explorar {
+    .explorar,
+    .feedback {
         padding-block-start: var(--esp-xl);
     }
 
@@ -288,5 +298,10 @@ const datos = [
         font-family: var(--fuente-info);
         font-size: var(--paso--1);
         font-weight: 600;
+    }
+
+    .feedback {
+        font-size: var(--paso--1);
+        color: var(--color-metadato);
     }
 </style>
