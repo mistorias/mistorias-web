@@ -11,12 +11,15 @@ pide que los lectores puedan dar feedback al sitio: reportar un error en una
 historia o una falla del sitio, y dejar una opinión rápida al terminar de leer
 cada historia. Hasta ahora la única vía era un `mailto:` en `reportar.astro`.
 
-Dos artículos guían el diseño de la interacción:
+Tres artículos guían el diseño de la interacción:
 [Nielsen Norman Group sobre cómo recoger feedback de usuarios](https://www.nngroup.com/articles/user-feedback/)
 (preferir una señal de bajo costo —una calificación con un clic— sobre un texto
-obligatorio) y
+obligatorio),
 [Smashing Magazine sobre reportar problemas sin fricción](https://www.smashingmagazine.com/2019/09/pain-free-workflow-issue-reporting-resolution/)
-(un enlace a una página con formulario, no un correo).
+(un enlace a una página con formulario, no un correo) y
+[el artículo de Typeform sobre el diseño de formularios de feedback](https://www.typeform.com/blog/designing-feedback-forms)
+(una sola pregunta protagonista, copia breve y personal, nunca la sensación de
+encuesta).
 
 Restricción que decide casi todo lo demás: **`script-src 'none'`**
 ([ADR 0004](0004-triaje-reportes-seguridad-github-pages.md)). El sitio no
@@ -61,14 +64,27 @@ la transparencia que pide la marca. En su lugar, `AvisoSoloNetlify.astro`
 en el caso de "Reportar un problema", dejando el correo como respaldo mientras
 tanto.
 
-### 4. La opinión al cierre de una historia es una calificación de 1 a 5 más un solo texto libre
+### 4. La opinión de una historia vive en su propia página, con una calificación de 1 a 5 y un solo texto libre
 
-Siguiendo a NN Group: la calificación —clic, sin escribir— es la señal de bajo
-costo que casi cualquiera deja; el texto es opcional y cubre tanto "qué te
-gustó" como "qué podría mejorar" en un solo campo, no dos, porque pedir dos
-respuestas de texto habría sido la fricción que la calificación existe para
-evitar. `OpinionHistoria.astro` manda un campo oculto con el id de la historia,
-así cada envío queda identificado sin necesitar una página por historia.
+Cada historia termina con un enlace corto («¿Qué te pareció esta historia?
+Cuéntanos, toma un minuto») a `/historias/<id>/opinar/`, una página propia por
+historia (`src/pages/historias/[...id]/opinar.astro`, con `getStaticPaths()`
+igual que la página de la historia) en vez de un formulario incrustado al
+pie. Es el mismo patrón de Smashing Magazine que ya usa "Reportar un
+problema": un enlace, no un bloque que alarga cada historia para quien no
+piensa usarlo.
+
+Que la página sea una por historia —y no una sola con un selector— evita
+tener que identificar la historia con JavaScript o con parámetros de consulta
+que un sitio estático no puede leer en el servidor: el id queda fijo en el
+HTML desde el build, igual que en cualquier otra ruta de `historias/`.
+
+Siguiendo a NN Group y a Typeform: la calificación —clic, sin escribir— es la
+señal de bajo costo que casi cualquiera deja, y es la protagonista de la
+página; el texto es opcional y cubre tanto "qué te gustó" como "qué podría
+mejorar" en un solo campo, no dos, porque pedir dos respuestas de texto
+habría sido la fricción que la calificación existe para evitar. Un campo
+oculto manda el id de la historia junto con el envío.
 
 ### 5. Anti-spam: honeypot, no captcha
 
@@ -100,10 +116,13 @@ eso, enlaza directo a la sección del formulario (`#formulario` en
 - El honeypot no detiene todo el spam, solo los bots que no ejecutan CSS. Es
   el único mecanismo disponible bajo `script-src 'none'`; subir el nivel de
   protección requeriría relajar esa directiva.
-- `AvisoSoloNetlify.astro`, `OpinionHistoria.astro` y las páginas nuevas
-  (`gracias.astro`, los cambios en `reportar.astro`, `404.astro` e
+- `AvisoSoloNetlify.astro`, `historias/[...id]/opinar.astro` y las páginas
+  nuevas (`gracias.astro`, los cambios en `reportar.astro`, `404.astro` e
   `index.astro`) quedan fuera de `coverage.config.ts`, igual que el resto de
   `src/pages/` y los componentes de puro maquetado (ver
   [docs/STANDARDS.md](../STANDARDS.md#control-de-cobertura)): no tienen lógica
   propia más allá de `isDevelopmentTarget()`, ya cubierta por
   `deployment.spec.ts`.
+- Una página por historia significa una página más por cada historia
+  publicada, generada en build time igual que la propia página de la
+  historia: no escala peor que el resto del sitio.
