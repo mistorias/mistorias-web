@@ -1,0 +1,31 @@
+---
+// Los formularios de feedback (issue #42 de gestión de producto) usan Netlify
+// Forms sin JavaScript: el POST lo dispara el propio HTML, y solo Netlify —el
+// despliegue en mistorias.pe— sabe interceptarlo y guardarlo. En GitHub Pages,
+// el otro destino público (marcado "WIP" por ADR 0008), ese mismo POST no
+// tiene a dónde llegar. En vez de ocultar el formulario ahí, se avisa: quien
+// llega a la versión de trabajo sigue viendo el formulario completo, pero
+// sabe por qué no le va a llegar la confirmación.
+import { isDevelopmentTarget } from "../lib/deployment";
+
+const avisoVisible = isDevelopmentTarget(process.env.DEPLOY_TARGET);
+---
+
+{
+    avisoVisible && (
+        <p class="aviso-solo-netlify">
+            <slot />
+        </p>
+    )
+}
+
+<style>
+    .aviso-solo-netlify {
+        padding: var(--esp-s);
+        border: 1px solid var(--color-borde);
+        border-radius: var(--radio);
+        background-color: var(--color-realce);
+        font-size: var(--paso--1);
+        color: var(--color-analitico);
+    }
+</style>

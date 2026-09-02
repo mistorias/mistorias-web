@@ -1,20 +1,30 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import NotaDeFuente from "../components/NotaDeFuente.astro";
+import AvisoSoloNetlify from "../components/AvisoSoloNetlify.astro";
 
 // El enlace del pie decía "Reportar un problema" pero llevaba a SECURITY.md,
 // que solo cubre vulnerabilidades: quien encontraba un dato mal citado no
 // tenía a dónde ir. Esta página bifurca los dos casos y deja el reporte de
 // vulnerabilidades donde debe estar, en el canal privado de GitHub (issue #28).
-import { editorialContentRoute } from "../lib/routes";
+//
+// Las dos rutas que antes iban por correo —un error en una historia, algo que
+// no funciona en el sitio— se comprimen acá en un solo formulario (issue #42
+// de gestión de producto): casi siempre alcanza con saber qué página y qué
+// pasó, sin que quien reporta tenga que elegir una categoría primero. Usa
+// Netlify Forms sin JavaScript: el HTML hace un POST normal, y Netlify lo
+// detecta en el build porque el formulario completo —con `data-netlify`—
+// queda en el HTML publicado, no armado por script.
+import { editorialContentRoute, gratitudeRoute } from "../lib/routes";
 
 const correo = "support@mistorias.pe";
 const base = import.meta.env.BASE_URL;
+const accion = gratitudeRoute(base);
 ---
 
 <BaseLayout
     title="Reportar un problema — Mistorias"
-    description="Encontraste un error en una historia o una falla en el sitio: aquí está a dónde escribir según el caso."
+    description="Encontraste un error en una historia o una falla en el sitio: cuéntanoslo acá."
 >
     <div class="columna reportar prosa">
         <h1>Reportar un problema</h1>
@@ -22,34 +32,70 @@ const base = import.meta.env.BASE_URL;
         <p class="reportar__entrada">
             Si encontraste algo mal, queremos saberlo. Publicar con fuentes
             visibles solo sirve si además corregimos cuando nos equivocamos.
+            Puede ser un dato mal citado, un nombre escrito mal, una página
+            que no carga o algo que tu lector de pantalla no anuncia: el mismo
+            formulario sirve para los dos casos.
         </p>
 
-        <h2>Un error en una historia</h2>
+        <h2 id="formulario">Cuéntanos qué encontraste</h2>
 
-        <p>
-            Un dato mal citado, una fuente que no dice lo que le atribuimos, un
-            nombre escrito mal, algo que quedó injusto con alguien. Escríbenos
-            a <a href={`mailto:${correo}`}>{correo}</a> contándonos qué historia
-            es y qué parte está mal.
-        </p>
+        <AvisoSoloNetlify>
+            Estás viendo la versión de trabajo del sitio, publicada en GitHub
+            Pages: este formulario solo llega cuando se envía desde
+            mistorias.pe. Mientras tanto, escríbenos directamente a <a
+                href={`mailto:${correo}`}>{correo}</a
+            >.
+        </AvisoSoloNetlify>
 
-        <p>
-            Ayuda mucho si incluyes el enlace de la historia y, cuando lo tengas,
-            la fuente que muestra el error. No hace falta que sea formal.
-        </p>
+        <form
+            class="reportar__formulario"
+            name="reportar-problema"
+            method="POST"
+            data-netlify="true"
+            netlify-honeypot="reportar-empresa"
+            action={accion}
+        >
+            <input type="hidden" name="form-name" value="reportar-problema" />
 
-        <h2>Algo que no funciona en el sitio</h2>
+            <p class="reportar__oculto" aria-hidden="true">
+                <label>
+                    No llenes este campo si eres una persona:
+                    <input tabindex="-1" autocomplete="off" name="reportar-empresa" />
+                </label>
+            </p>
 
-        <p>
-            Una página que no carga, un enlace roto, texto que no se lee bien en
-            tu pantalla o algo que tu lector de pantalla no anuncia. Va al mismo
-            correo: <a href={`mailto:${correo}`}>{correo}</a>.
-        </p>
+            <p class="reportar__campo">
+                <label for="reportar-pagina">
+                    ¿Qué historia o página es? (opcional)
+                </label>
+                <input
+                    id="reportar-pagina"
+                    name="pagina"
+                    type="text"
+                    placeholder="Por ejemplo, el enlace de la historia"
+                />
+            </p>
 
-        <p>
-            Cuéntanos qué equipo y qué navegador usas. Con eso lo reproducimos
-            mucho más rápido.
-        </p>
+            <p class="reportar__campo">
+                <label for="reportar-descripcion">Qué está mal</label>
+                <textarea
+                    id="reportar-descripcion"
+                    name="descripcion"
+                    rows="5"
+                    required
+                    placeholder="Qué encontraste y, si aplica, qué fuente muestra el error"
+                ></textarea>
+            </p>
+
+            <p class="reportar__campo">
+                <label for="reportar-correo">
+                    Tu correo, si quieres que te respondamos (opcional)
+                </label>
+                <input id="reportar-correo" name="correo" type="email" />
+            </p>
+
+            <button type="submit">Enviar reporte</button>
+        </form>
 
         <h2>Una vulnerabilidad de seguridad</h2>
 
@@ -93,5 +139,65 @@ const base = import.meta.env.BASE_URL;
     .reportar__entrada {
         font-size: var(--paso-1);
         color: var(--color-analitico);
+    }
+
+    .reportar__formulario {
+        display: grid;
+        gap: var(--esp-m);
+        margin-block: var(--esp-m) var(--esp-l);
+    }
+
+    /* Campo trampa contra bots: solo lo rellenan scripts que no ejecutan CSS
+       ni distinguen `display: none` de un campo real, así que a cualquier
+       persona —con o sin lector de pantalla— nunca le aparece. */
+    .reportar__oculto {
+        display: none;
+    }
+
+    .reportar__campo {
+        display: grid;
+        gap: var(--esp-2xs);
+    }
+
+    .reportar__campo label {
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        font-weight: 600;
+        color: var(--color-texto);
+    }
+
+    .reportar__campo input,
+    .reportar__campo textarea {
+        padding: var(--esp-xs) var(--esp-s);
+        border: 1px solid var(--color-borde);
+        border-radius: var(--radio);
+        background-color: var(--color-superficie);
+        color: var(--color-texto);
+        font: inherit;
+        font-size: var(--paso--1);
+    }
+
+    .reportar__campo textarea {
+        resize: vertical;
+    }
+
+    .reportar__formulario button {
+        justify-self: start;
+        min-height: 44px;
+        padding-inline: var(--esp-m);
+        border: none;
+        border-radius: var(--radio);
+        background-color: var(--color-acento);
+        color: var(--color-superficie);
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    @media (hover: hover) {
+        .reportar__formulario button:hover {
+            opacity: 0.9;
+        }
     }
 </style>
