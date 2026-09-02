@@ -19,6 +19,11 @@ import { defaultOgImage, ogImageFromStoryImage } from "../lib/social/og-image";
 //
 // Las tipografías son propias y se sirven desde el mismo origen, así que caen
 // bajo `default-src 'self'` y no hizo falta relajar ninguna directiva.
+//
+// `form-action` es la excepción: los formularios de feedback (issue #42 de
+// gestión de producto) usan Netlify Forms sin JavaScript, así que el propio
+// HTML hace un POST normal a la página donde vive el formulario. 'self' basta
+// —nunca se postea a otro origen— y sigue bloqueando cualquier envío externo.
 const contentSecurityPolicy = [
     "default-src 'self'",
     "img-src 'self' data:",
@@ -26,7 +31,7 @@ const contentSecurityPolicy = [
     "script-src 'none'",
     "object-src 'none'",
     "base-uri 'self'",
-    "form-action 'none'"
+    "form-action 'self'"
 ].join("; ");
 
 type Props = {

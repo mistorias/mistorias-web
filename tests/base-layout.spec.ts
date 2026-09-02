@@ -25,7 +25,10 @@ describe("BaseLayout", () => {
     expect(csp).toContain("script-src 'none'");
     expect(csp).toContain("object-src 'none'");
     expect(csp).toContain("base-uri 'self'");
-    expect(csp).toContain("form-action 'none'");
+    // 'self' y no 'none': los formularios de feedback (issue #42 de gestión
+    // de producto) usan Netlify Forms, que necesita poder recibir el POST
+    // que el propio HTML dispara sin JavaScript.
+    expect(csp).toContain("form-action 'self'");
   });
 
   it("empareja el salto de contenido con el id del <main>", async () => {
