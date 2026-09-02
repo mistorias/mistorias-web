@@ -8,6 +8,7 @@ import {
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ListaTemas from "../../components/ListaTemas.astro";
 import NavegacionHistorias from "../../components/NavegacionHistorias.astro";
+import OpinionHistoria from "../../components/OpinionHistoria.astro";
 import SimboloMistorias from "../../components/SimboloMistorias.astro";
 import { dateForAttribute, readableDate } from "../../lib/dates";
 import { themesRoute } from "../../lib/routes";
@@ -130,6 +131,8 @@ const imagen = getStoryImage(story.id);
                 </footer>
             )
         }
+
+        <OpinionHistoria historiaId={story.id} />
 
         <NavegacionHistorias
             historiaAnterior={historiaAnterior}
