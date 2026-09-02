@@ -5,6 +5,7 @@ import {
   brandRoute,
   buildRoute,
   editorialContentRoute,
+  gratitudeRoute,
   homeRoute,
   reportRoute,
   siteCodeRoute,
@@ -130,5 +131,12 @@ describe("rutas con nombre", () => {
     expect(siteCodeRoute(BASE_PAGES)).toBe("/mistorias-web/codigo/");
     expect(brandRoute(BASE_PAGES)).toBe("/mistorias-web/marca/");
     expect(reportRoute(BASE_PAGES)).toBe("/mistorias-web/reportar/");
+  });
+
+  // Destino al que Netlify redirige tras un envío exitoso de cualquiera de
+  // los formularios de feedback (issue #42 de gestión de producto).
+  it("expone la página de agradecimiento tras enviar un formulario", () => {
+    expect(gratitudeRoute(BASE_NETLIFY)).toBe("/gracias/");
+    expect(gratitudeRoute(BASE_PAGES)).toBe("/mistorias-web/gracias/");
   });
 });

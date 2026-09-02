@@ -17,6 +17,7 @@ const EDITORIAL_CONTENT_SECTION = "contenido";
 const SITE_CODE_SECTION = "codigo";
 const BRAND_SECTION = "marca";
 const REPORT_SECTION = "reportar";
+const GRATITUDE_SECTION = "gracias";
 
 const splitIntoSegments = (value: string): readonly string[] =>
   value.split("/").filter((segment) => segment.length > 0);
@@ -72,3 +73,6 @@ export const brandRoute = (base: string): string =>
 
 export const reportRoute = (base: string): string =>
   buildRoute(base, REPORT_SECTION);
+
+export const gratitudeRoute = (base: string): string =>
+  buildRoute(base, GRATITUDE_SECTION);
