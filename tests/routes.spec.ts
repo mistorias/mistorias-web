@@ -7,6 +7,7 @@ import {
   editorialContentRoute,
   gratitudeRoute,
   homeRoute,
+  opinionRoute,
   reportRoute,
   siteCodeRoute,
   storyRoute,
@@ -138,5 +139,16 @@ describe("rutas con nombre", () => {
   it("expone la página de agradecimiento tras enviar un formulario", () => {
     expect(gratitudeRoute(BASE_NETLIFY)).toBe("/gracias/");
     expect(gratitudeRoute(BASE_PAGES)).toBe("/mistorias-web/gracias/");
+  });
+
+  // Cada historia tiene su propia página de opinión, no un formulario
+  // inline: `/historias/<id>/opinar/` (issue #42 de gestión de producto).
+  it("publica la opinión de cada historia bajo su propia ruta", () => {
+    expect(opinionRoute(BASE_NETLIFY, "2026-08-07-como-se-mueve")).toBe(
+      "/historias/2026-08-07-como-se-mueve/opinar/"
+    );
+    expect(opinionRoute(BASE_PAGES, "2026-08-07-como-se-mueve")).toBe(
+      "/mistorias-web/historias/2026-08-07-como-se-mueve/opinar/"
+    );
   });
 });
