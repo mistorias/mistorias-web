@@ -25,7 +25,15 @@ type Props = {
 const { historiaId } = Astro.props;
 const base = import.meta.env.BASE_URL;
 const accion = gratitudeRoute(base);
-const escala = [1, 2, 3, 4, 5] as const;
+
+// El punto crece con el valor (14px→30px) y su borde se acerca al acento de
+// marca a la misma velocidad (20%→100%): tamaño y color cuentan la misma
+// historia — de "nada útil" a "muy útil" — antes de que se lea un número.
+const escala = [1, 2, 3, 4, 5].map((valor) => ({
+    valor,
+    tamano: 10 + valor * 4,
+    intensidad: valor * 20
+}));
 ---
 
 <section class="columna opinion-historia">
@@ -67,15 +75,22 @@ const escala = [1, 2, 3, 4, 5] as const;
 
             <div class="opinion-historia__opciones">
                 {
-                    escala.map((valor) => (
-                        <label class="opinion-historia__opcion">
+                    escala.map(({ valor, tamano, intensidad }) => (
+                        <label
+                            class="opinion-historia__opcion"
+                            style={`--tamano: ${tamano}px; --intensidad: ${intensidad}%`}
+                        >
                             <input
                                 type="radio"
                                 name="calificacion"
                                 value={valor}
                                 required
+                                aria-label={`Calificar ${valor} de 5`}
                             />
-                            <span>{valor}</span>
+                            <span class="opinion-historia__punto" aria-hidden="true" />
+                            <span class="opinion-historia__numero" aria-hidden="true">
+                                {valor}
+                            </span>
                         </label>
                     ))
                 }
@@ -140,29 +155,106 @@ const escala = [1, 2, 3, 4, 5] as const;
         color: var(--color-texto);
     }
 
-    .opinion-historia__escala {
+    /* La escala y los puntos comparten el mismo ancho y el mismo
+       `space-between`: es lo que hace que "Muy útil" y el punto del 5
+       terminen exactamente en el mismo borde derecho, sin un número mágico
+       repetido en dos sitios. Más ancho que antes (era 16rem) a propósito:
+       es el "más espacio entre los valores" que se pidió — `space-between`
+       reparte ese ancho extra entre los puntos, no hace falta un `gap`. */
+    .opinion-historia__escala,
+    .opinion-historia__opciones {
         display: flex;
         justify-content: space-between;
-        max-width: 16rem;
+        max-width: 22rem;
+    }
+
+    .opinion-historia__escala {
         margin-block-start: var(--esp-2xs);
         font-size: var(--paso--1);
         color: var(--color-metadato);
     }
 
     .opinion-historia__opciones {
-        display: flex;
-        flex-wrap: wrap;
-        gap: var(--esp-s);
-        margin-block-start: var(--esp-2xs);
+        margin-block-start: var(--esp-s);
     }
 
+    /* Un solo clic activa el radio en cualquier punto del label —así lo
+       resuelve `<label>` de forma nativa—, así que el input real no
+       necesita ocupar espacio visual: 1px, fuera del flujo, siempre
+       enfocable por teclado. El punto y el número son los que se ven. */
     .opinion-historia__opcion {
+        position: relative;
         display: inline-flex;
+        flex-direction: column;
         align-items: center;
         gap: var(--esp-3xs);
+        min-width: 44px;
         min-height: 44px;
+        justify-content: center;
         font-family: var(--fuente-info);
+        cursor: pointer;
+    }
+
+    .opinion-historia__opcion input {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+    }
+
+    /* Casilla de tamaño fijo (el punto más grande, el del 5, la define) para
+       que los cinco puntos —de diámetro distinto— centren su círculo sobre
+       el mismo eje horizontal en vez de compartir solo el borde superior. */
+    .opinion-historia__punto {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+    }
+
+    .opinion-historia__punto::after {
+        content: "";
+        width: var(--tamano);
+        height: var(--tamano);
+        border-radius: 50%;
+        /* El borde se acerca al acento a la misma velocidad que crece el
+           punto: la escala se lee en color además de en tamaño antes de
+           fijarse en el número. */
+        border: 2px solid
+            color-mix(in srgb, var(--color-acento) var(--intensidad), var(--color-borde));
+        background-color: transparent;
+        transition: transform 0.15s ease, background-color 0.15s ease;
+    }
+
+    .opinion-historia__opcion input:checked ~ .opinion-historia__punto::after {
+        background-color: var(--color-acento);
+        border-color: var(--color-acento);
+    }
+
+    .opinion-historia__numero {
         font-size: var(--paso--1);
+        color: var(--color-metadato);
+    }
+
+    .opinion-historia__opcion input:checked ~ .opinion-historia__numero {
+        font-weight: 600;
+        color: var(--color-acento);
+    }
+
+    /* El input real está en `opacity: 0`, así que su propio foco (la regla
+       global de base.css) es invisible; se redirige al punto, que además
+       gana su propio radio de foco en vez del cuadrado por defecto. */
+    .opinion-historia__opcion input:focus-visible ~ .opinion-historia__punto::after {
+        outline: var(--grosor-foco) solid var(--color-vivo);
+        outline-offset: 3px;
+        border-radius: 50%;
+    }
+
+    @media (hover: hover) {
+        .opinion-historia__opcion:hover .opinion-historia__punto::after {
+            transform: scale(1.15);
+        }
     }
 
     .opinion-historia__campo {
