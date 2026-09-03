@@ -60,7 +60,7 @@ const escala = [1, 2, 3, 4, 5].map((valor) => ({
 
         <p class="opinion-historia__oculto" aria-hidden="true">
             <label>
-                No llenes este campo si eres una persona:
+                Empresa
                 <input tabindex="-1" autocomplete="off" name="opinion-empresa" />
             </label>
         </p>
@@ -137,7 +137,10 @@ const escala = [1, 2, 3, 4, 5].map((valor) => ({
 
     /* Campo trampa contra bots: solo lo rellenan scripts que no ejecutan CSS
        ni distinguen `display: none` de un campo real, así que a cualquier
-       persona —con o sin lector de pantalla— nunca le aparece. */
+       persona —con o sin lector de pantalla— nunca le aparece. La etiqueta
+       ("Empresa") es deliberadamente genérica y no una advertencia tipo "no
+       llenes esto": un bot que lee el texto en vez de solo la forma del
+       campo no tiene por qué reconocerlo como trampa. */
     .opinion-historia__oculto {
         display: none;
     }
