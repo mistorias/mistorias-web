@@ -104,6 +104,13 @@ que el control no se apague en silencio.
 
 Tres líneas de código similares son preferibles a una función auxiliar creada antes de tiempo. Si un patrón se repite en distintos dominios, se extrae. Si está aislado, se deja tal cual.
 
+### Enlaces
+
+Texto descriptivo, un solo enlace accesible por tarjeta cuando hay una zona
+clicable extendida, y cómo estirar ese enlace con CSS puro sin duplicar el
+destino para quien navega con lector de pantalla: ver
+[docs/ENLACES.md](ENLACES.md).
+
 ---
 
 ## Estándares de Commits
