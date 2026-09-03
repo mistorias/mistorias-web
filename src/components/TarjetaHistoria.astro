@@ -166,9 +166,13 @@ const Titulo = `h${nivelTitulo}` as const;
     /* Único enlace real de la tarjeta: `::after` lo estira sobre toda la
        tarjeta (que por eso es `position: relative`), así que un clic en la
        imagen, el título o el resumen navega igual sin que ninguno de ellos
-       sea un enlace por sí mismo. Ver ADR 0015. */
+       sea un enlace por sí mismo. Ver ADR 0015.
+       `.tarjeta__enlace` NO debe llevar `position`: si lo tuviera, se
+       convertiría en el containing block de su propio `::after` y el
+       `inset: 0` se estiraría solo sobre este enlace (el texto "Leer la
+       historia"), no sobre `.tarjeta` — que es exactamente el bug que
+       dejaba el resto de la tarjeta sin poder clickearse. */
     .tarjeta__enlace {
-        position: relative;
         color: var(--color-acento);
         text-decoration: none;
     }
@@ -186,6 +190,18 @@ const Titulo = `h${nivelTitulo}` as const;
         }
 
         .tarjeta:hover {
+            box-shadow: 0 0 3rem 1.25rem
+                color-mix(in srgb, var(--color-acento) 50%, transparent);
+        }
+    }
+
+    /* En táctil no hay `:hover`, así que el toque usa `:active` para el
+       mismo resalte. Mejor esfuerzo: iOS Safari no dispara `:active` en un
+       toque corto sin un listener táctil en JS, y este sitio no envía JS
+       (`script-src 'none'`) — funciona en Android/Chrome y en toque
+       sostenido en cualquier plataforma. */
+    @media (hover: none) {
+        .tarjeta:active {
             box-shadow: 0 0 3rem 1.25rem
                 color-mix(in srgb, var(--color-acento) 50%, transparent);
         }
