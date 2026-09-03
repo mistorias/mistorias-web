@@ -185,7 +185,7 @@ const Titulo = `h${nivelTitulo}` as const;
             text-underline-offset: 0.2em;
         }
 
-        .tarjeta:hover .tarjeta__imagen {
+        .tarjeta:hover {
             box-shadow: 0 0 3rem 1.25rem
                 color-mix(in srgb, var(--color-acento) 50%, transparent);
         }
@@ -205,7 +205,7 @@ const Titulo = `h${nivelTitulo}` as const;
         border-radius: var(--radio);
     }
 
-    .tarjeta:has(.tarjeta__enlace:focus-visible) .tarjeta__imagen {
+    .tarjeta:has(.tarjeta__enlace:focus-visible) {
         box-shadow: 0 0 3rem 1.25rem
             color-mix(in srgb, var(--color-acento) 50%, transparent);
     }
