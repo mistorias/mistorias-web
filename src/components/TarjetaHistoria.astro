@@ -85,6 +85,14 @@ const Titulo = `h${nivelTitulo}` as const;
         border: 1px solid var(--color-borde);
         border-radius: var(--radio);
         background-color: var(--color-superficie);
+        /* El brillo parte de esta misma sombra al 0% de opacidad (en vez de
+           `none`) para que el `transition` siempre interpole entre dos
+           sombras con la misma forma — de `none` a una sombra el resultado
+           varía entre navegadores. `prefers-reduced-motion` ya lo cubre la
+           regla global de base.css, que colapsa la duración de cualquier
+           `transition` a 0.01ms. */
+        box-shadow: 0 0 3rem 1.25rem color-mix(in srgb, var(--color-acento) 0%, transparent);
+        transition: box-shadow 0.15s ease;
     }
 
     .tarjeta--destacada {
