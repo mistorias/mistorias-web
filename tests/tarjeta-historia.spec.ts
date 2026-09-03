@@ -39,8 +39,8 @@ describe("TarjetaHistoria", () => {
 
     expect(html.match(/class="tarjeta__enlace"/g)).toHaveLength(1);
     expect(html).toContain("Leer la historia");
-    expect(html).toContain(
-      '<span class="sr-only"> completa: Historia con enlace único</span>',
+    expect(html).toMatch(
+      /<span class="sr-only"[^>]*> completa: Historia con enlace único<\/span>/,
     );
   });
 
@@ -51,7 +51,7 @@ describe("TarjetaHistoria", () => {
     });
 
     expect(html).toMatch(
-      /<h2 class="tarjeta__titulo">Título sin enlace propio<\/h2>/,
+      /<h2 class="tarjeta__titulo"[^>]*>Título sin enlace propio<\/h2>/,
     );
   });
 
