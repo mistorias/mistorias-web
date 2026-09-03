@@ -1,0 +1,210 @@
+---
+// Feedback al cierre de cada historia (issue #42 de gestión de producto): una
+// calificación de 1 a 5 —clic, sin escribir nada— más un campo de texto
+// opcional para quien quiera contar qué le gustó o qué podría mejorar. Un solo
+// campo libre y no dos (uno por pregunta): la calificación ya separa a quien
+// solo quiere dejar una señal rápida de quien quiere elaborar, así que pedir
+// dos textos distintos habría sido fricción de más para el mismo dato.
+//
+// Vive en la propia historia, no en una página aparte: se probó una página
+// por historia (`/historias/<id>/opinar/`) y se descartó — duplicaba el
+// número de páginas del sitio sin necesidad, cuando calificar sin salir de
+// la lectura es igual de simple y no rompe el hilo de haber terminado de
+// leer. El nombre de la historia no aparece en la pregunta: quien lo ve ya
+// está leyéndola, repetirlo no suma nada a la decisión de calificar.
+//
+// Mismo mecanismo que "Reportar un problema": Netlify Forms sin JavaScript,
+// un formulario por historia identificado con un campo oculto.
+import AvisoSoloNetlify from "./AvisoSoloNetlify.astro";
+import { gratitudeRoute } from "../lib/routes";
+
+type Props = {
+    historiaId: string;
+};
+
+const { historiaId } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const accion = gratitudeRoute(base);
+const escala = [1, 2, 3, 4, 5] as const;
+---
+
+<section class="columna opinion-historia">
+    <h2 class="opinion-historia__titulo">¿Qué te pareció esta historia?</h2>
+    <p class="opinion-historia__gancho">
+        Con un clic nos ayudas a mejorar las próximas.
+    </p>
+
+    <AvisoSoloNetlify>
+        Estás viendo la versión de trabajo del sitio, publicada en GitHub
+        Pages: este formulario solo llega cuando se envía desde mistorias.pe.
+    </AvisoSoloNetlify>
+
+    <form
+        class="opinion-historia__formulario"
+        name="opinion-historia"
+        method="POST"
+        data-netlify="true"
+        netlify-honeypot="opinion-empresa"
+        action={accion}
+    >
+        <input type="hidden" name="form-name" value="opinion-historia" />
+        <input type="hidden" name="historia" value={historiaId} />
+
+        <p class="opinion-historia__oculto" aria-hidden="true">
+            <label>
+                No llenes este campo si eres una persona:
+                <input tabindex="-1" autocomplete="off" name="opinion-empresa" />
+            </label>
+        </p>
+
+        <fieldset class="opinion-historia__calificacion">
+            <legend>Calificación</legend>
+
+            <div class="opinion-historia__escala">
+                <span>Nada útil</span>
+                <span>Muy útil</span>
+            </div>
+
+            <div class="opinion-historia__opciones">
+                {
+                    escala.map((valor) => (
+                        <label class="opinion-historia__opcion">
+                            <input
+                                type="radio"
+                                name="calificacion"
+                                value={valor}
+                                required
+                            />
+                            <span>{valor}</span>
+                        </label>
+                    ))
+                }
+            </div>
+        </fieldset>
+
+        <p class="opinion-historia__campo">
+            <label for={`opinion-comentario-${historiaId}`}>
+                Cuéntanos más (opcional)
+            </label>
+            <textarea
+                id={`opinion-comentario-${historiaId}`}
+                name="comentario"
+                rows="4"
+                placeholder="Qué te gustó o qué podríamos mejorar"
+            ></textarea>
+        </p>
+
+        <button type="submit">Enviar opinión</button>
+    </form>
+</section>
+
+<style>
+    .opinion-historia {
+        padding-block-start: var(--esp-l);
+        margin-block-start: var(--esp-xl);
+        border-block-start: 1px solid var(--color-borde);
+    }
+
+    .opinion-historia__titulo {
+        font-size: var(--paso-1);
+    }
+
+    .opinion-historia__gancho {
+        margin-block-start: var(--esp-2xs);
+        color: var(--color-analitico);
+    }
+
+    .opinion-historia__formulario {
+        display: grid;
+        gap: var(--esp-m);
+        margin-block-start: var(--esp-m);
+    }
+
+    /* Campo trampa contra bots: solo lo rellenan scripts que no ejecutan CSS
+       ni distinguen `display: none` de un campo real, así que a cualquier
+       persona —con o sin lector de pantalla— nunca le aparece. */
+    .opinion-historia__oculto {
+        display: none;
+    }
+
+    .opinion-historia__calificacion {
+        padding: 0;
+        border: none;
+    }
+
+    .opinion-historia__calificacion legend {
+        padding: 0;
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        font-weight: 600;
+        color: var(--color-texto);
+    }
+
+    .opinion-historia__escala {
+        display: flex;
+        justify-content: space-between;
+        max-width: 16rem;
+        margin-block-start: var(--esp-2xs);
+        font-size: var(--paso--1);
+        color: var(--color-metadato);
+    }
+
+    .opinion-historia__opciones {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--esp-s);
+        margin-block-start: var(--esp-2xs);
+    }
+
+    .opinion-historia__opcion {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--esp-3xs);
+        min-height: 44px;
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+    }
+
+    .opinion-historia__campo {
+        display: grid;
+        gap: var(--esp-2xs);
+    }
+
+    .opinion-historia__campo label {
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        font-weight: 600;
+        color: var(--color-texto);
+    }
+
+    .opinion-historia__campo textarea {
+        padding: var(--esp-xs) var(--esp-s);
+        border: 1px solid var(--color-borde);
+        border-radius: var(--radio);
+        background-color: var(--color-superficie);
+        color: var(--color-texto);
+        font: inherit;
+        font-size: var(--paso--1);
+        resize: vertical;
+    }
+
+    .opinion-historia__formulario button {
+        justify-self: start;
+        min-height: 44px;
+        padding-inline: var(--esp-m);
+        border: none;
+        border-radius: var(--radio);
+        background-color: var(--color-acento);
+        color: var(--color-superficie);
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    @media (hover: hover) {
+        .opinion-historia__formulario button:hover {
+            opacity: 0.9;
+        }
+    }
+</style>

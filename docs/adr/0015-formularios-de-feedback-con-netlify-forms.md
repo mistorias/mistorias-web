@@ -64,27 +64,32 @@ la transparencia que pide la marca. En su lugar, `AvisoSoloNetlify.astro`
 en el caso de "Reportar un problema", dejando el correo como respaldo mientras
 tanto.
 
-### 4. La opinión de una historia vive en su propia página, con una calificación de 1 a 5 y un solo texto libre
+### 4. La opinión de una historia vive en la propia historia, con una calificación de 1 a 5 y un solo texto libre
 
-Cada historia termina con un enlace corto («¿Qué te pareció esta historia?
-Cuéntanos, toma un minuto») a `/historias/<id>/opinar/`, una página propia por
-historia (`src/pages/historias/[...id]/opinar.astro`, con `getStaticPaths()`
-igual que la página de la historia) en vez de un formulario incrustado al
-pie. Es el mismo patrón de Smashing Magazine que ya usa "Reportar un
-problema": un enlace, no un bloque que alarga cada historia para quien no
-piensa usarlo.
+Se probó primero moverla a una página propia por historia
+(`/historias/<id>/opinar/`, con `getStaticPaths()` igual que la página de la
+historia), siguiendo el mismo patrón de Smashing Magazine que ya usa
+"Reportar un problema". Se descartó: a diferencia de reportar un error —algo
+que no siempre ocurre—, la opinión es el cierre natural de *toda* lectura, y
+sacarla de la historia duplicaba el número de páginas del sitio (una más por
+cada historia) sin bajar la fricción real: calificar sin salir de la página
+que se acaba de leer es igual de simple, y mantiene el hilo de haber
+terminado de leer en vez de cortarlo con una navegación.
 
-Que la página sea una por historia —y no una sola con un selector— evita
-tener que identificar la historia con JavaScript o con parámetros de consulta
-que un sitio estático no puede leer en el servidor: el id queda fijo en el
-HTML desde el build, igual que en cualquier otra ruta de `historias/`.
+`OpinionHistoria.astro` queda entonces incrustado al pie de cada historia,
+igual que antes de considerar la página propia. La pregunta no repite el
+nombre de la historia —quien la ve ya está leyéndola, así que repetirlo no
+suma nada a la decisión de calificar— y el gancho apunta a lo fácil que es
+("con un clic") en vez de a cuánto toma, porque ya no hay que salir de la
+página para descubrirlo.
 
 Siguiendo a NN Group y a Typeform: la calificación —clic, sin escribir— es la
-señal de bajo costo que casi cualquiera deja, y es la protagonista de la
-página; el texto es opcional y cubre tanto "qué te gustó" como "qué podría
+señal de bajo costo que casi cualquiera deja, y es la protagonista del
+bloque; el texto es opcional y cubre tanto "qué te gustó" como "qué podría
 mejorar" en un solo campo, no dos, porque pedir dos respuestas de texto
 habría sido la fricción que la calificación existe para evitar. Un campo
-oculto manda el id de la historia junto con el envío.
+oculto manda el id de la historia junto con el envío, así cada opinión queda
+identificada sin necesitar una URL por historia.
 
 ### 5. Anti-spam: honeypot, no captcha
 
@@ -116,13 +121,10 @@ eso, enlaza directo a la sección del formulario (`#formulario` en
 - El honeypot no detiene todo el spam, solo los bots que no ejecutan CSS. Es
   el único mecanismo disponible bajo `script-src 'none'`; subir el nivel de
   protección requeriría relajar esa directiva.
-- `AvisoSoloNetlify.astro`, `historias/[...id]/opinar.astro` y las páginas
-  nuevas (`gracias.astro`, los cambios en `reportar.astro`, `404.astro` e
+- `AvisoSoloNetlify.astro`, `OpinionHistoria.astro` y las páginas nuevas
+  (`gracias.astro`, los cambios en `reportar.astro`, `404.astro` e
   `index.astro`) quedan fuera de `coverage.config.ts`, igual que el resto de
   `src/pages/` y los componentes de puro maquetado (ver
   [docs/STANDARDS.md](../STANDARDS.md#control-de-cobertura)): no tienen lógica
   propia más allá de `isDevelopmentTarget()`, ya cubierta por
   `deployment.spec.ts`.
-- Una página por historia significa una página más por cada historia
-  publicada, generada en build time igual que la propia página de la
-  historia: no escala peor que el resto del sitio.
