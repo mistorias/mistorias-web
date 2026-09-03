@@ -1,4 +1,5 @@
 import { defineConfig } from "astro/config";
+import sitemap from "@astrojs/sitemap";
 import { noRawHtml } from "./src/lib/content/no-raw-html-integration";
 import { storyAssetFolders } from "./src/lib/content/story-asset-folders-integration";
 import { storyImageRequirements } from "./src/lib/content/story-image-requirements-integration";
@@ -17,7 +18,12 @@ export default defineConfig({
     storyImageRequirements(),
     brandSymbol(),
     portadaIllustration(),
-    publicSvg()
+    publicSvg(),
+    sitemap({
+      // 404 no es contenido; reportar/ es soporte, no contenido editorial
+      // (issue #44) — ninguno vale la pena indexar.
+      filter: (page) => !page.includes("/reportar/") && !page.includes("/404")
+    })
   ],
   site,
   base
