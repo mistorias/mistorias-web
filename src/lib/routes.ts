@@ -34,8 +34,8 @@ export const buildRoute = (
 };
 
 /**
- * Ruta de un archivo que se sirve tal cual desde `public/`: iconos, manifiesto,
- * `robots.txt`.
+ * Ruta de un archivo que se sirve tal cual desde `public/`: iconos,
+ * manifiesto.
  *
  * Lleva la base del despliegue como cualquier enlace, pero termina en el nombre
  * del archivo: `favicon.ico/` no existe. Pasa por acá y no por interpolación de
