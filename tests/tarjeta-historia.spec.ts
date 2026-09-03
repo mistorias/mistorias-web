@@ -26,7 +26,33 @@ describe("TarjetaHistoria", () => {
       props: { historia },
     });
 
-    expect(html).toContain("una-historia");
+    expect(html).toMatch(
+      /<a class="tarjeta__enlace" href="[^"]*\/historias\/una-historia\/?"/,
+    );
+  });
+
+  it("la tarjeta expone un único enlace, con texto accesible que incluye el título (issue #41)", async () => {
+    const historia = buildStoryFixture({ title: "Historia con enlace único" });
+    const html = await renderAstroComponent(TarjetaHistoria, {
+      props: { historia },
+    });
+
+    expect(html.match(/class="tarjeta__enlace"/g)).toHaveLength(1);
+    expect(html).toContain("Leer la historia");
+    expect(html).toContain(
+      '<span class="sr-only"> completa: Historia con enlace único</span>',
+    );
+  });
+
+  it("el título ya no es un enlace: es texto plano dentro del encabezado", async () => {
+    const historia = buildStoryFixture({ title: "Título sin enlace propio" });
+    const html = await renderAstroComponent(TarjetaHistoria, {
+      props: { historia },
+    });
+
+    expect(html).toMatch(
+      /<h2 class="tarjeta__titulo">Título sin enlace propio<\/h2>/,
+    );
   });
 
   it("usa h2 cuando no se pasa nivelTitulo", async () => {

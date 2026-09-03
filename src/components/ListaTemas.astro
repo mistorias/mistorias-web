@@ -32,8 +32,14 @@ const base = import.meta.env.BASE_URL;
     }
 
     .temas__ficha {
-        /* 44px de blanco de toque: en celular vertical las fichas son lo más
-           difícil de acertar con el pulgar. */
+        /* `position: relative` + `z-index: 1`: cuando esta lista vive dentro
+           de TarjetaHistoria, su enlace único ("Leer la historia") se estira
+           sobre toda la tarjeta con un `::after` (ver ADR 0015). Sin esto,
+           ese `::after` queda encima y las fichas de tema se vuelven
+           inclicables. 44px de blanco de toque: en celular vertical las
+           fichas son lo más difícil de acertar con el pulgar. */
+        position: relative;
+        z-index: 1;
         display: inline-flex;
         align-items: center;
         min-height: 44px;

@@ -50,9 +50,7 @@ const Titulo = `h${nivelTitulo}` as const;
         }
     </div>
 
-    <Titulo class="tarjeta__titulo">
-        <a class="tarjeta__enlace" href={enlace}>{title}</a>
-    </Titulo>
+    <Titulo class="tarjeta__titulo">{title}</Titulo>
 
     <p class="tarjeta__metadatos">
         <time datetime={dateForAttribute(date)}>{readableDate(date)}</time>
@@ -67,10 +65,18 @@ const Titulo = `h${nivelTitulo}` as const;
             <ListaTemas temas={themes ?? []} temaTextual={`Temas de ${title}`} />
         )
     }
+
+    <p class="tarjeta__cta">
+        <a class="tarjeta__enlace" href={enlace}>
+            Leer la historia<span class="sr-only"> completa: {title}</span>
+            <span aria-hidden="true">→</span>
+        </a>
+    </p>
 </article>
 
 <style>
     .tarjeta {
+        position: relative;
         display: flex;
         flex-direction: column;
         gap: var(--esp-xs);
@@ -151,17 +157,57 @@ const Titulo = `h${nivelTitulo}` as const;
         font-size: var(--paso-2);
     }
 
+    .tarjeta__cta {
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        font-weight: 600;
+    }
+
+    /* Único enlace real de la tarjeta: `::after` lo estira sobre toda la
+       tarjeta (que por eso es `position: relative`), así que un clic en la
+       imagen, el título o el resumen navega igual sin que ninguno de ellos
+       sea un enlace por sí mismo. Ver ADR 0015. */
     .tarjeta__enlace {
-        color: inherit;
+        position: relative;
+        color: var(--color-acento);
         text-decoration: none;
+    }
+
+    .tarjeta__enlace::after {
+        content: "";
+        position: absolute;
+        inset: 0;
     }
 
     @media (hover: hover) {
         .tarjeta__enlace:hover {
-            color: var(--color-acento);
             text-decoration: underline;
             text-underline-offset: 0.2em;
         }
+
+        .tarjeta:hover .tarjeta__imagen {
+            box-shadow: 0 0 3rem 1.25rem
+                color-mix(in srgb, var(--color-acento) 50%, transparent);
+        }
+    }
+
+    /* El contorno de foco se dibuja sobre el `::after` (del tamaño de la
+       tarjeta entera) en vez de sobre el texto "Leer la historia": así
+       quien navega con teclado ve resaltada toda la tarjeta, no una línea
+       diminuta al final. */
+    .tarjeta__enlace:focus-visible {
+        outline: none;
+    }
+
+    .tarjeta__enlace:focus-visible::after {
+        outline: var(--grosor-foco) solid var(--color-vivo);
+        outline-offset: 3px;
+        border-radius: var(--radio);
+    }
+
+    .tarjeta:has(.tarjeta__enlace:focus-visible) .tarjeta__imagen {
+        box-shadow: 0 0 3rem 1.25rem
+            color-mix(in srgb, var(--color-acento) 50%, transparent);
     }
 
     /* Flex con `gap` en vez de espacios en el marcado: el compilador colapsa la
