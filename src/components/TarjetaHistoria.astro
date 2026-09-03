@@ -91,7 +91,7 @@ const Titulo = `h${nivelTitulo}` as const;
            varía entre navegadores. `prefers-reduced-motion` ya lo cubre la
            regla global de base.css, que colapsa la duración de cualquier
            `transition` a 0.01ms. */
-        box-shadow: 0 0 3rem 1.25rem color-mix(in srgb, var(--color-acento) 0%, transparent);
+        box-shadow: 0 0 1.5rem 0.75rem color-mix(in srgb, var(--color-acento) 0%, transparent);
         transition: box-shadow 0.15s ease;
     }
 
@@ -198,7 +198,7 @@ const Titulo = `h${nivelTitulo}` as const;
         }
 
         .tarjeta:hover {
-            box-shadow: 0 0 3rem 1.25rem
+            box-shadow: 0 0 1.5rem 0.75rem
                 color-mix(in srgb, var(--color-acento) 50%, transparent);
         }
     }
@@ -210,7 +210,7 @@ const Titulo = `h${nivelTitulo}` as const;
        sostenido en cualquier plataforma. */
     @media (hover: none) {
         .tarjeta:active {
-            box-shadow: 0 0 3rem 1.25rem
+            box-shadow: 0 0 1.5rem 0.75rem
                 color-mix(in srgb, var(--color-acento) 50%, transparent);
         }
     }
@@ -230,7 +230,7 @@ const Titulo = `h${nivelTitulo}` as const;
     }
 
     .tarjeta:has(.tarjeta__enlace:focus-visible) {
-        box-shadow: 0 0 3rem 1.25rem
+        box-shadow: 0 0 1.5rem 0.75rem
             color-mix(in srgb, var(--color-acento) 50%, transparent);
     }
 
