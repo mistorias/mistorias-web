@@ -48,7 +48,10 @@ configurado en `astro.config.mjs`, así que sigue siendo enteramente estático.
 
 - **`development`** → `User-agent: *` / `Disallow: /`. Coherente con ADR
   0008: si el build ya se marca como no-real en la propia página, no tiene
-  sentido dejar que un buscador lo indexe como si lo fuera.
+  sentido dejar que un buscador lo indexe como si lo fuera. **Este archivo por
+  sí solo no logra eso** —ver §3— pero se mantiene como señal de mejor
+  esfuerzo: no cuesta nada y documenta la intención aunque un crawler nunca
+  lo lea desde ahí.
 - **`netlify`** → `User-agent: *` / `Allow: /` (indexación completa por
   defecto, para no repetir el error del allowlist descrito arriba), más un
   bloque `Disallow` dirigido a crawlers de entrenamiento de IA, más
@@ -89,10 +92,44 @@ hay contenido en borrador que excluir: `storySchema` no tiene un campo de
 publicación —todo lo que vive en el submódulo `mistorias-contenido` ya se
 trata como publicado.
 
-Se genera igual en ambos destinos: una sola configuración, sin ramificar
-`astro.config.mjs` por `DEPLOY_TARGET`. En GitHub Pages es inofensivo porque
-su `robots.txt` ya deshabilita el crawleo completo —un crawler que lo
-respeta ni siquiera llega a pedir el sitemap.
+**No se genera en `development`** (`astro.config.mjs` solo registra la
+integración `sitemap()` cuando `!isDevelopmentTarget(...)`) — ver §3 para el
+porqué: no es una simplificación, es lo que corrige un error de la primera
+versión de este ADR.
+
+### 3. `robots.txt` no alcanza en GitHub Pages: por qué hace falta `<meta name="robots">`
+
+La primera versión de este ADR asumía que `Disallow: /` en el `robots.txt`
+de `development` bastaba para que ese destino "no compitiera por indexación".
+Es falso: la norma de robots.txt solo se lee en la raíz del origen
+(`https://mistorias.github.io/robots.txt`, que pertenece a otro repo —el de
+la página de usuario/organización, no este). GitHub Pages sirve este sitio
+bajo `/mistorias-web` (`resolveDeploymentConfig("development").base`), así
+que ningún crawler llega jamás a leer el `Disallow: /` que
+`src/lib/seo/robots.ts` genera en `https://mistorias.github.io/mistorias-web/robots.txt`
+—un `curl` a esa URL confirma que el archivo dice lo correcto, pero no que
+algo lo use (issue detectado en revisión de
+[PR #94](https://github.com/mistorias/mistorias-web/pull/94#discussion_r3926434101)).
+
+Esto ya era cierto **antes** de este PR —el `robots.txt` viejo, con
+`Allow: /`, tampoco se leía nunca desde la raíz real—, pero no importaba
+porque no había nada que proteger. Con este cambio sí importa: sin
+corrección, `development` pasaría a tener un `sitemap-index.xml` real y
+completamente rastreable, dejando el build de trabajo en progreso *más*
+descubrible que antes del PR, exactamente lo opuesto de lo que ADR 0008
+busca.
+
+La corrección tiene dos partes, ninguna de las cuales depende de dónde vive
+`robots.txt`:
+
+1. **`BaseLayout.astro` agrega `<meta name="robots" content="noindex, nofollow">`**
+   cuando `isDevelopmentTarget(process.env.DEPLOY_TARGET)`, mismo punto de
+   entrada y mismo patrón condicional que ya usa el marcador "WIP:" del
+   título (issue #28). A diferencia de `robots.txt`, una etiqueta `<meta>` se
+   lee por página, así que no importa bajo qué subpath cuelgue el sitio.
+2. **No se genera sitemap para `development`** (§2): no tiene sentido
+   publicar un mapa completo de URLs de un build que se marca `noindex` en
+   cada una de ellas.
 
 ## Consecuencias
 
@@ -112,6 +149,10 @@ respeta ni siquiera llega a pedir el sitemap.
 - La lista de crawlers de IA bloqueados es manual y puede quedar desactualizada
   si aparecen nuevos bots relevantes; es una decisión consciente de alcance
   mínimo, no un olvido.
+- `robots.txt` sigue sin ser una barrera real bajo `/mistorias-web` (§3): solo
+  documenta intención. Cualquier decisión futura de "bloquear X en
+  `development`" tiene que pasar por `<meta name="robots">` en
+  `BaseLayout.astro`, no por `src/lib/seo/robots.ts`.
 
 ## Verificación
 
@@ -119,13 +160,19 @@ Después de desplegar:
 
 1. `curl -s https://mistorias.pe/robots.txt` → debe mostrar `Allow: /`, el
    bloque `Disallow` de `Bytespider` y la línea `Sitemap:`.
-2. `curl -s https://mistorias.github.io/mistorias-web/robots.txt` → debe
-   mostrar solo `Disallow: /`.
-3. `curl -s https://mistorias.pe/sitemap-index.xml` (y el `sitemap-0.xml`
+2. `curl -s https://mistorias.github.io/mistorias-web/robots.txt` → muestra
+   `Disallow: /`, pero esto es solo el archivo, no la barrera real (§3) — no
+   basta con este paso.
+3. `curl -s https://mistorias.github.io/mistorias-web/ | grep 'name="robots"'`
+   → debe mostrar `<meta name="robots" content="noindex, nofollow">`. Esta es
+   la comprobación que sí importa para `development`.
+4. `curl -s https://mistorias.github.io/mistorias-web/sitemap-index.xml` →
+   debe responder 404: no se genera sitemap para este destino.
+5. `curl -s https://mistorias.pe/sitemap-index.xml` (y el `sitemap-0.xml`
    que enlaza) → confirmar que aparecen todas las historias, temas y páginas
    esperadas, y que **no** aparecen `404` ni `reportar`.
-4. Google Search Console (propiedad `mistorias.pe`): revisar que lea
+6. Google Search Console (propiedad `mistorias.pe`): revisar que lea
    `robots.txt` sin errores y enviar `sitemap-index.xml` en Sitemaps.
-5. Volver a probar una vista previa de enlace (Slack, WhatsApp, X) de una
+7. Volver a probar una vista previa de enlace (Slack, WhatsApp, X) de una
    historia, para confirmar que el `Allow: /` por defecto no rompió lo que
    construyó ADR 0013.

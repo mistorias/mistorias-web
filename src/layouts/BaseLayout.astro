@@ -39,9 +39,8 @@ const { title, description, ogImage } = Astro.props;
 
 // El build de desarrollo antepone "WIP: " para que no se confunda con el
 // sitio real (issue #28).
-const tituloMostrado = isDevelopmentTarget(process.env.DEPLOY_TARGET)
-    ? `WIP: ${title}`
-    : title;
+const esDesarrollo = isDevelopmentTarget(process.env.DEPLOY_TARGET);
+const tituloMostrado = esDesarrollo ? `WIP: ${title}` : title;
 
 // Los iconos viven en `public/` y se sirven tal cual, así que su ruta depende
 // de la base del despliegue igual que cualquier enlace interno. El navegador
@@ -88,6 +87,14 @@ const urlImagenOg = Astro.site
     <title>{tituloMostrado}</title>
     {description && <meta name="description" content={description} />}
     {urlCanonica && <link rel="canonical" href={urlCanonica} />}
+
+    <!-- GitHub Pages sirve este build bajo /mistorias-web, no en la raíz del
+         origen: un crawler solo lee robots.txt en mistorias.github.io/robots.txt
+         (de otro repo), así que el Disallow de src/lib/seo/robots.ts nunca
+         llega a leerse ahí. La única barrera que sí opera bajo un subpath es
+         esta etiqueta por página — mismo destino que el marcador "WIP:" de
+         arriba (issue #28, ADR 0015). -->
+    {esDesarrollo && <meta name="robots" content="noindex, nofollow" />}
 
     <!-- El .ico trae 16, 32 y 48 para los navegadores que solo leen ese
          formato; los PNG son para los que prefieren mapa de bits. El

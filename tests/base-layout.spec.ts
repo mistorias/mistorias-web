@@ -61,6 +61,28 @@ describe("BaseLayout", () => {
     expect(html).not.toContain("<title>WIP:");
   });
 
+  it("agrega meta robots noindex en el destino development", async () => {
+    vi.stubEnv("DEPLOY_TARGET", "development");
+
+    const html = await renderAstroComponent(BaseLayout, {
+      props: { title: "Portada" },
+      slots: { default: "" },
+    });
+
+    expect(html).toContain('<meta name="robots" content="noindex, nofollow"');
+  });
+
+  it("no agrega meta robots noindex en el destino netlify", async () => {
+    vi.stubEnv("DEPLOY_TARGET", "netlify");
+
+    const html = await renderAstroComponent(BaseLayout, {
+      props: { title: "Portada" },
+      slots: { default: "" },
+    });
+
+    expect(html).not.toContain('name="robots"');
+  });
+
   it("incluye meta description cuando se pasa", async () => {
     const html = await renderAstroComponent(BaseLayout, {
       props: { title: "Titulo", description: "Descripción de la página" },
