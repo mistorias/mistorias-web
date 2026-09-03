@@ -71,14 +71,16 @@ con stretched-link. Se resuelve con `position: relative; z-index: 1;` en
 elemento interactivo que se agregue dentro de una tarjeta con enlace estirado
 necesita el mismo tratamiento.
 
-### La sombra/brillo de la imagen reusa `--color-acento`, sin token nuevo
+### La sombra/brillo traza el contorno de toda la tarjeta y reusa `--color-acento`, sin token nuevo
 
-El issue pide una señal visual de interactividad en la imagen: sombra difusa
-en modo claro, brillo en modo oscuro, sin desplazamiento y con difuso y
-dispersión largos. Se implementa como `box-shadow` en `.tarjeta__imagen`,
-disparada junto con el hover y el foco del enlace de la tarjeta (para reforzar
-—junto con el cursor— que la tarjeta es interactiva, no como decoración
-permanente):
+El issue pide una señal visual de interactividad: sombra difusa en modo
+claro, brillo en modo oscuro, sin desplazamiento y con difuso y dispersión
+largos. Se implementa como `box-shadow` en `.tarjeta` (la tarjeta completa,
+no solo el cuadrado de la imagen) para que el resaltado siga el contorno real
+de la tarjeta —incluido su `border-radius`— y no quede recortado al tamaño de
+la foto en historias sin imagen. Se dispara junto con el hover y el foco del
+enlace de la tarjeta (para reforzar —junto con el cursor— que la tarjeta es
+interactiva, no como decoración permanente):
 
 ```css
 box-shadow: 0 0 3rem 1.25rem
