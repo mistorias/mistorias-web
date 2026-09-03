@@ -8,9 +8,10 @@ import {
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ListaTemas from "../../components/ListaTemas.astro";
 import NavegacionHistorias from "../../components/NavegacionHistorias.astro";
+import OpinionHistoria from "../../components/OpinionHistoria.astro";
 import SimboloMistorias from "../../components/SimboloMistorias.astro";
 import { dateForAttribute, readableDate } from "../../lib/dates";
-import { opinionRoute, themesRoute } from "../../lib/routes";
+import { themesRoute } from "../../lib/routes";
 import { getStoryImage } from "../../lib/content/story-images";
 import { orderStoriesByDate } from "../../lib/content/story-order";
 import { resolveNeighbors } from "../../lib/content/story-order-cache";
@@ -131,12 +132,7 @@ const imagen = getStoryImage(story.id);
             )
         }
 
-        <p class="columna historia__opinar">
-            ¿Qué te pareció esta historia? <a
-                href={opinionRoute(base, story.id)}
-                >Cuéntanos, toma un minuto</a
-            >.
-        </p>
+        <OpinionHistoria historiaId={story.id} />
 
         <NavegacionHistorias
             historiaAnterior={historiaAnterior}
@@ -271,19 +267,5 @@ const imagen = getStoryImage(story.id);
         letter-spacing: 0.08em;
         text-transform: uppercase;
         color: var(--color-metadato);
-    }
-
-    /* Mismo peso visual que tenía el widget de opinión que reemplaza: un
-       separador propio, no solo el enlace de "Explorar otros temas". */
-    .historia__opinar {
-        padding-block-start: var(--esp-l);
-        margin-block-start: var(--esp-xl);
-        border-block-start: 1px solid var(--color-borde);
-        font-size: var(--paso-1);
-        color: var(--color-analitico);
-    }
-
-    .historia__opinar a {
-        font-weight: 600;
     }
 </style>
