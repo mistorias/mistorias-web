@@ -76,9 +76,11 @@ git commit --no-verify  # Skips all hooks for this commit
 
 Stories are loaded by Astro's Content Collections API. `src/content.config.ts` declares the `stories` collection with a `glob()` loader over `content/mistorias-contenido/stories/**/*.md`, validated against `storySchema` (`src/lib/content/schema.ts`). That loader is the single source of truth for parsing and validating frontmatter — do not add a second parser alongside it.
 
+The same file declares a second collection, `authors`, over `content/mistorias-contenido/authors/*.md` and validated against `authorSchema`. A story's `author` is `reference("authors")`, not a name: an `author` with no matching file fails the build, and the visible name is resolved once per page with `buildAuthorNameMap`/`authorNameFor` (`src/lib/content/authors.ts`) rather than by the card component. `authorship` is a required enum (`escrito-por-persona` | `editado-con-ia` | `escrito-con-ia`) declaring what the AI did in *that* story; its reader-facing labels live in `src/lib/content/authorship.ts` and are consumed by both `FirmaAutoria.astro` and `acerca.astro`. See [ADR 0016](docs/adr/0016-autoria-verificable-de-las-historias.md).
+
 `src/lib/content/raw-html-gate.ts` complements it with the raw-HTML gate: `assertStoriesHaveNoRawHtml()` scans every story file and rejects real HTML tags. It validates the full file text rather than re-parsing frontmatter, precisely so it cannot disagree with Astro's loader about what the file contains.
 
-The gate runs via `src/lib/content/no-raw-html-integration.ts`, an Astro integration registered in `astro.config.mjs`. Its `astro:config:setup` hook fires on both `astro dev` and `astro build`, so a story with executable HTML fails the build instead of being published. See [ADR 0004](docs/adr/0004-triaje-reportes-seguridad-github-pages.md) for why this exists.
+The gate runs via `src/lib/content/no-raw-html-integration.ts`, an Astro integration registered in `astro.config.mjs`. Its `astro:config:setup` hook fires on both `astro dev` and `astro build`, so a story with executable HTML fails the build instead of being published. See [ADR 0004](docs/adr/0004-triaje-reportes-seguridad-github-pages.md) for why this exists. `assertAuthorsHaveNoRawHtml` covers author profiles the same way — their body is rendered Markdown too — via its own integration (`authors-no-raw-html-integration.ts`) so each gate keeps its own injectable directory.
 
 `src/lib/content/story-asset-folders.ts` is the sibling gate for the image folders nested under `stories/` (see [ADR 0005](docs/adr/0005-imagenes-en-historias.md)), registered the same way via `src/lib/content/story-asset-folders-integration.ts`. Both gates share directory-reading helpers from `src/lib/content/stories-directory.ts`.
 
@@ -92,6 +94,7 @@ The gate runs via `src/lib/content/no-raw-html-integration.ts`, an Astro integra
 - `src/pages/index.astro` — homepage: promise banner, featured story, older stories
 - `src/pages/historias/[...id].astro` — dynamic story detail pages (file-based routing)
 - `src/pages/temas/index.astro` and `src/pages/temas/[tema].astro` — theme index and per-theme listings
+- `src/pages/autores/[autor].astro` — author profile: bio, verification link, and the stories they signed. There is deliberately no `/autores/` index while there is a single author (ADR 0016)
 - `src/pages/acerca.astro`, `src/pages/404.astro`
 
 Public URLs are in Spanish (`/historias/`, `/temas/`), matching the project's ubiquitous language. **Never hardcode an internal `href`**: `base` differs per deploy target, so a hand-written path silently breaks on GitHub Pages without failing the build. Build every internal link with the helpers in `src/lib/routes.ts`, which also own the section names.
@@ -173,13 +176,13 @@ As of issue #33, `.astro` components can be tested with Vitest using the `experi
 
 - Import and render a component via `renderAstroComponent(Component, { props: {...}, slots: {...} })` (defined in `tests/support/render-astro-component.ts`).
 - Assert on the HTML string it produces (no DOM API in Node tests, so use `.toContain()` for substrings).
-- For data fixtures (e.g. `CollectionEntry<"stories">`), use `buildStoryFixture(overrides?)` from `tests/support/story-fixture.ts`.
+- For data fixtures (e.g. `CollectionEntry<"stories">`), use `buildStoryFixture(overrides?)` from `tests/support/story-fixture.ts`, and `buildAuthorFixture(overrides?)` from `tests/support/author-fixture.ts` for `CollectionEntry<"authors">`.
 - Stub environment variables with `vi.stubEnv("DEPLOY_TARGET", "netlify")` and clean up in `afterEach(() => vi.unstubAllEnvs())`.
 
 **Coverage:**
 
-- `coverage.config.ts` explicitly lists only the `.astro` files under test (not `src/**/*.astro`, which would count all untested components at 0%). Currently: `BaseLayout.astro`, `LogotipoMistorias.astro`, `TarjetaHistoria.astro`, `ListaTemas.astro`, `SimboloMistorias.astro`, `CabeceraSitio.astro`, `PieSitio.astro`.
-- The 90% coverage threshold applies to those files (108 tests as of now pass; ~89% branches still needs work on `Astro.site`-dependent code in future iterations).
+- `coverage.config.ts` explicitly lists only the `.astro` files under test (not `src/**/*.astro`, which would count all untested components at 0%). Currently: `BaseLayout.astro`, `LogotipoMistorias.astro`, `SimboloMistorias.astro`, `TarjetaHistoria.astro`, `ListaTemas.astro`, `FirmaAutoria.astro`, `NavegacionHistorias.astro`, `CabeceraSitio.astro`, `PieSitio.astro`, `DatoConFuente.astro`, `PlantaDeLibros.astro`. Keep this list in sync with `coverage.config.ts` — it is the file that decides, not this paragraph.
+- The 90% coverage threshold applies to those files, plus every `.ts` under `src/` — `src/**/*.ts` is a glob, so a new helper in `src/lib/` must arrive with its tests or it drags coverage below the threshold.
 
 **Limitations:**
 
