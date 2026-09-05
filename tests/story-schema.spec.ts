@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { storySchema } from "../src/lib/content/schema";
+import { AUTHORSHIP_VALUES, storySchema } from "../src/lib/content/schema";
 
 const validFrontmatter = {
   title: "Historia validada",
   summary: "Resumen breve de prueba",
   date: "2026-04-26",
-  author: "Equipo Mistorias",
+  author: "paolo-carrasco",
+  authorship: "escrito-con-ia",
   themes: ["educacion", "comunidad"]
 };
 
@@ -63,13 +64,40 @@ describe("storySchema", () => {
     const parsed = storySchema.parse({
       ...validFrontmatter,
       imageAlt: "Descripción de la imagen",
-      imageCredit: "Equipo Mistorias",
+      imageCredit: "Mistorias",
       imageLicense: "CC BY-NC 4.0"
     });
 
     expect(parsed.imageAlt).toBe("Descripción de la imagen");
-    expect(parsed.imageCredit).toBe("Equipo Mistorias");
+    expect(parsed.imageCredit).toBe("Mistorias");
     expect(parsed.imageLicense).toBe("CC BY-NC 4.0");
+  });
+
+  it("convierte el autor en una referencia a la colección de fichas", () => {
+    const parsed = storySchema.parse(validFrontmatter);
+
+    expect(parsed.author).toEqual({
+      collection: "authors",
+      id: "paolo-carrasco"
+    });
+  });
+
+  it("exige que la historia declare quién hizo qué con la IA", () => {
+    const { authorship, ...withoutAuthorship } = validFrontmatter;
+
+    expect(() => storySchema.parse(withoutAuthorship)).toThrow();
+  });
+
+  it("acepta las tres etiquetas de autoría y ninguna más", () => {
+    for (const value of AUTHORSHIP_VALUES) {
+      expect(
+        storySchema.parse({ ...validFrontmatter, authorship: value }).authorship
+      ).toBe(value);
+    }
+
+    expect(() =>
+      storySchema.parse({ ...validFrontmatter, authorship: "hecho-por-robots" })
+    ).toThrow();
   });
 
   it("rechaza imageAlt vacío", () => {

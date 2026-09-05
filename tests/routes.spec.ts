@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   aboutRoute,
   assetRoute,
+  authorRoute,
   brandRoute,
   buildRoute,
   editorialContentRoute,
@@ -138,5 +139,19 @@ describe("rutas con nombre", () => {
   it("expone la página de agradecimiento tras enviar un formulario", () => {
     expect(gratitudeRoute(BASE_NETLIFY)).toBe("/gracias/");
     expect(gratitudeRoute(BASE_PAGES)).toBe("/mistorias-web/gracias/");
+  });
+});
+
+describe("authorRoute", () => {
+  it("arma la ficha de quien firma bajo /autores/", () => {
+    expect(authorRoute(BASE_NETLIFY, "paolo-carrasco")).toBe(
+      "/autores/paolo-carrasco/"
+    );
+  });
+
+  it("conserva la base de GitHub Pages", () => {
+    expect(authorRoute(BASE_PAGES, "paolo-carrasco")).toBe(
+      "/mistorias-web/autores/paolo-carrasco/"
+    );
   });
 });

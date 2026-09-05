@@ -1,11 +1,13 @@
 import type { CollectionEntry } from "astro:content";
+import type { Authorship } from "../../src/lib/content/schema";
 
 interface StoryFixtureOverrides {
   id?: string;
   title?: string;
   summary?: string;
   date?: Date;
-  author?: string;
+  authorId?: string;
+  authorship?: Authorship;
   themes?: string[];
   imageAlt?: string;
   imageCredit?: string;
@@ -22,7 +24,13 @@ export function buildStoryFixture(
       title: overrides?.title ?? "Historia de prueba",
       summary: overrides?.summary ?? "Resumen breve",
       date: overrides?.date ?? new Date("2026-04-26"),
-      author: overrides?.author ?? "Equipo Mistorias",
+      // `author` es una referencia a `authors/`, no un nombre: la forma la fija
+      // `reference("authors")` en el esquema.
+      author: {
+        collection: "authors",
+        id: overrides?.authorId ?? "paolo-carrasco"
+      },
+      authorship: overrides?.authorship ?? "escrito-con-ia",
       themes: overrides?.themes ?? ["educacion"],
       imageAlt: overrides?.imageAlt,
       imageCredit: overrides?.imageCredit,

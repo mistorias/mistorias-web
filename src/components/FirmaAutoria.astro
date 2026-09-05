@@ -1,0 +1,83 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { authorRoute } from "../lib/routes";
+import { describeAuthorship } from "../lib/content/authorship";
+import type { Authorship } from "../lib/content/schema";
+
+type Props = {
+    autor: CollectionEntry<"authors">;
+    autoria: Authorship;
+};
+
+const { autor, autoria } = Astro.props;
+const enlace = authorRoute(import.meta.env.BASE_URL, autor.id);
+const declaracion = describeAuthorship(autoria);
+---
+
+{/* Quien termina de leer tiene que poder llegar a alguien que responda por lo
+    que acaba de leer. Por eso el nombre es un enlace acá y no en la tarjeta:
+    la tarjeta tiene un solo destino estirado sobre toda su superficie
+    (ADR 0015) y un segundo enlace adentro le daría dos destinos al lector de
+    pantalla por cada historia listada. */}
+<footer class="columna firma">
+    <h2 class="firma__titulo">Quién escribió esta historia</h2>
+
+    <p class="firma__nombre">
+        <a href={enlace}>{autor.data.name}</a>
+    </p>
+
+    <p class="firma__bio">{autor.data.bio}</p>
+
+    <p class="firma__autoria">
+        <span class="firma__etiqueta">{declaracion.label}</span>
+        <span class="firma__detalle">{declaracion.detail}</span>
+    </p>
+</footer>
+
+<style>
+    .firma {
+        padding-block-start: var(--esp-l);
+        margin-block-start: var(--esp-xl);
+        border-block-start: 1px solid var(--color-borde);
+    }
+
+    .firma__titulo {
+        margin-block-end: var(--esp-xs);
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--color-metadato);
+    }
+
+    .firma__nombre {
+        font-family: var(--fuente-narrativa);
+        font-size: var(--paso-1);
+    }
+
+    .firma__bio {
+        margin-block-start: var(--esp-xs);
+        color: var(--color-analitico);
+    }
+
+    /* La declaración de autoría se lee como una sola frase: el rótulo nombra
+       lo que pasó y el detalle lo explica, sin obligar a ir a otra página. */
+    .firma__autoria {
+        margin-block-start: var(--esp-m);
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        color: var(--color-metadato);
+    }
+
+    .firma__etiqueta {
+        font-weight: 600;
+        color: var(--color-acento);
+    }
+
+    .firma__etiqueta::after {
+        content: " · ";
+        font-weight: 400;
+        color: var(--color-metadato);
+    }
+</style>

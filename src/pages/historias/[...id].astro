@@ -2,16 +2,18 @@
 import { Picture } from "astro:assets";
 import {
     getCollection,
+    getEntry,
     render,
     type CollectionEntry
 } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ListaTemas from "../../components/ListaTemas.astro";
+import FirmaAutoria from "../../components/FirmaAutoria.astro";
 import NavegacionHistorias from "../../components/NavegacionHistorias.astro";
 import OpinionHistoria from "../../components/OpinionHistoria.astro";
 import SimboloMistorias from "../../components/SimboloMistorias.astro";
 import { dateForAttribute, readableDate } from "../../lib/dates";
-import { themesRoute } from "../../lib/routes";
+import { authorRoute, themesRoute } from "../../lib/routes";
 import { getStoryImage } from "../../lib/content/story-images";
 import { orderStoriesByDate } from "../../lib/content/story-order";
 import { resolveNeighbors } from "../../lib/content/story-order-cache";
@@ -56,6 +58,17 @@ const { story, historiaAnterior, historiaSiguiente } = Astro.props;
 const { Content } = await render(story);
 const base = import.meta.env.BASE_URL;
 const imagen = getStoryImage(story.id);
+
+// `reference("authors")` ya garantiza que la ficha existe; el chequeo está
+// para que el tipo lo refleje y para que un contenido a medio sincronizar
+// falle acá y no publique una firma sin destino.
+const autor = await getEntry(story.data.author);
+
+if (autor === undefined) {
+    throw new Error(
+        `La historia ${story.id} firma como "${story.data.author.id}" y no hay ficha para esa persona en authors/.`
+    );
+}
 ---
 
 <BaseLayout
@@ -68,7 +81,7 @@ const imagen = getStoryImage(story.id);
             <h1>{story.data.title}</h1>
 
             <p class="historia__metadatos">
-                Por {story.data.author}
+                Por <a href={authorRoute(base, autor.id)}>{autor.data.name}</a>
                 <span aria-hidden="true">·</span>
                 <time datetime={dateForAttribute(story.data.date)}>
                     {readableDate(story.data.date)}
@@ -131,6 +144,8 @@ const imagen = getStoryImage(story.id);
                 </footer>
             )
         }
+
+        <FirmaAutoria autor={autor} autoria={story.data.authorship} />
 
         <OpinionHistoria historiaId={story.id} />
 

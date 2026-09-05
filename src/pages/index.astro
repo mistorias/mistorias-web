@@ -6,10 +6,19 @@ import PlantaDeLibros from "../components/PlantaDeLibros.astro";
 import TarjetaHistoria from "../components/TarjetaHistoria.astro";
 import { reportRoute, themesRoute } from "../lib/routes";
 import { limitPreviousStories, sortByDateDescending } from "../lib/stories";
+import { authorNameFor, buildAuthorNameMap } from "../lib/content/authors";
 
 const historias = sortByDateDescending(
     await getCollection("stories"),
     (historia) => historia.data.date
+);
+
+// El nombre de quien firma se resuelve una sola vez por página: la tarjeta
+// recibe el nombre ya resuelto y no toca la colección de fichas.
+const nombresDeAutor = buildAuthorNameMap(
+    await getCollection("authors"),
+    (autor) => autor.id,
+    (autor) => autor.data.name
 );
 
 const [destacada, ...resto] = historias;
@@ -98,7 +107,11 @@ const datos = [
             <section class="destacada" aria-label="Última historia">
                 <div class="columna">
                     <p class="destacada__rotulo">Última historia</p>
-                    <TarjetaHistoria historia={destacada} destacada />
+                    <TarjetaHistoria
+                        historia={destacada}
+                        nombreAutor={authorNameFor(nombresDeAutor, destacada.data.author.id)}
+                        destacada
+                    />
                 </div>
             </section>
         )
@@ -114,6 +127,10 @@ const datos = [
                         {anteriores.map((historia) => (
                             <TarjetaHistoria
                                 historia={historia}
+                                nombreAutor={authorNameFor(
+                                    nombresDeAutor,
+                                    historia.data.author.id
+                                )}
                                 nivelTitulo={3}
                             />
                         ))}
