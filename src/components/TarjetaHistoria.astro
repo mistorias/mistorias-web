@@ -9,12 +9,16 @@ import { getStoryImage } from "../lib/content/story-images";
 
 type Props = {
     historia: CollectionEntry<"stories">;
+    nombreAutor: string;
     destacada?: boolean;
     nivelTitulo?: 2 | 3;
 };
 
-const { historia, destacada = false, nivelTitulo = 2 } = Astro.props;
-const { title, summary, date, author, themes, imageAlt } = historia.data;
+// `historia.data.author` es una referencia a `authors/`, no un nombre. El
+// nombre llega ya resuelto desde la página para que la tarjeta no tenga que
+// leer la colección: así sigue siendo un componente puro y testeable.
+const { historia, nombreAutor, destacada = false, nivelTitulo = 2 } = Astro.props;
+const { title, summary, date, themes, imageAlt } = historia.data;
 const enlace = storyRoute(import.meta.env.BASE_URL, historia.id);
 const imagen = getStoryImage(historia.id);
 
@@ -55,7 +59,7 @@ const Titulo = `h${nivelTitulo}` as const;
     <p class="tarjeta__metadatos">
         <time datetime={dateForAttribute(date)}>{readableDate(date)}</time>
         <span aria-hidden="true">·</span>
-        {author}
+        {nombreAutor}
     </p>
 
     <p class="tarjeta__resumen">{summary}</p>

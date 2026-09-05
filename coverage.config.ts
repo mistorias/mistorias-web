@@ -16,6 +16,7 @@ export const coverageConfig = {
     "src/components/SimboloMistorias.astro",
     "src/components/TarjetaHistoria.astro",
     "src/components/ListaTemas.astro",
+    "src/components/FirmaAutoria.astro",
     "src/components/NavegacionHistorias.astro",
     "src/components/CabeceraSitio.astro",
     "src/components/PieSitio.astro",

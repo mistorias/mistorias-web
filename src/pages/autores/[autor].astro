@@ -1,0 +1,177 @@
+---
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import TarjetaHistoria from "../../components/TarjetaHistoria.astro";
+import { aboutRoute } from "../../lib/routes";
+import { sortByDateDescending } from "../../lib/stories";
+import { storiesByAuthor } from "../../lib/content/authors";
+
+export async function getStaticPaths() {
+    const historias = sortByDateDescending(
+        await getCollection("stories"),
+        (historia) => historia.data.date
+    );
+
+    const autores = await getCollection("authors");
+
+    return autores.map((autor) => ({
+        params: { autor: autor.id },
+        props: {
+            autor,
+            historias: storiesByAuthor(
+                historias,
+                (historia) => historia.data.author.id,
+                autor.id
+            )
+        }
+    }));
+}
+
+type Props = {
+    autor: CollectionEntry<"authors">;
+    historias: readonly CollectionEntry<"stories">[];
+};
+
+const { autor, historias } = Astro.props;
+const { Content } = await render(autor);
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout
+    title={`${autor.data.name} | Mistorias`}
+    description={autor.data.bio}
+>
+    <div class="contenedor autor">
+        <p class="autor__rotulo">Quién escribe</p>
+        <h1>{autor.data.name}</h1>
+
+        <p class="autor__bio">{autor.data.bio}</p>
+
+        {
+            autor.data.link && (
+                <p class="autor__enlace">
+                    {/* El enlace apunta a un perfil que esta persona ya
+                        mantiene por su cuenta: es lo que permite verificar que
+                        existe sin que Mistorias publique un dato suyo que
+                        después no pueda retirar. */}
+                    <a href={autor.data.link} rel="me noopener" target="_blank">
+                        {autor.data.linkLabel}
+                    </a>
+                </p>
+            )
+        }
+
+        <div class="prosa autor__semblanza">
+            <Content />
+        </div>
+
+        <h2 class="autor__titulo-historias">
+            {
+                historias.length === 1
+                    ? "1 historia firmada"
+                    : `${historias.length} historias firmadas`
+            }
+        </h2>
+
+        {
+            historias.length > 0 ? (
+                <div class="autor__rejilla">
+                    {historias.map((historia) => (
+                        <TarjetaHistoria
+                            historia={historia}
+                            nombreAutor={autor.data.name}
+                            nivelTitulo={3}
+                        />
+                    ))}
+                </div>
+            ) : (
+                <p>Todavía no publica ninguna historia.</p>
+            )
+        }
+
+        {/* Se promete lo que se puede cumplir. El repositorio de contenido es
+            público y su historial no se reescribe, así que decir "borramos tus
+            datos" sería falso: se puede quitar la ficha del sitio, no del
+            historial. Por eso también se pide tan poco. */}
+        <p class="autor__permanencia">
+            Esta ficha la escribió quien firma. Mistorias no pide ni publica el
+            correo, el empleador ni la dirección de nadie. El repositorio de
+            contenido es público y su historial queda: una ficha se puede quitar
+            del sitio, pero no del historial de Git. Para pedir que se quite,
+            escribe a <span class="autor__correo">support@mistorias.pe</span>.
+        </p>
+
+        <p class="autor__volver">
+            <a href={aboutRoute(base)}>Cómo se hace cada historia</a>
+        </p>
+    </div>
+</BaseLayout>
+
+<style>
+    .autor {
+        padding-block-start: var(--esp-xl);
+    }
+
+    .autor__rotulo {
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--color-metadato);
+    }
+
+    .autor__bio {
+        margin-block-start: var(--esp-2xs);
+        font-size: var(--paso-1);
+        color: var(--color-analitico);
+    }
+
+    .autor__enlace {
+        margin-block-start: var(--esp-xs);
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+    }
+
+    .autor__semblanza {
+        margin-block-start: var(--esp-l);
+    }
+
+    .autor__titulo-historias {
+        padding-block-start: var(--esp-m);
+        margin-block-start: var(--esp-xl);
+        border-block-start: 1px solid var(--color-borde);
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--color-metadato);
+    }
+
+    .autor__rejilla {
+        display: grid;
+        gap: var(--esp-m);
+        margin-block-start: var(--esp-l);
+        grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+    }
+
+    .autor__permanencia {
+        padding-block-start: var(--esp-m);
+        margin-block-start: var(--esp-xl);
+        border-block-start: 1px solid var(--color-borde);
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        color: var(--color-metadato);
+    }
+
+    .autor__correo {
+        white-space: nowrap;
+    }
+
+    .autor__volver {
+        margin-block-start: var(--esp-l);
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+    }
+</style>
