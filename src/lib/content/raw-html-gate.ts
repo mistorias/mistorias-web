@@ -1,5 +1,10 @@
+import type { Dirent } from "node:fs";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import {
+  defaultAuthorsDirectory,
+  readAuthorsDirectoryEntries
+} from "./authors-directory";
 import {
   defaultStoriesDirectory,
   readStoriesDirectoryEntries
@@ -15,11 +20,18 @@ export function assertNoRawHtml(value: string, filePath: string): void {
   }
 }
 
-async function readStoryFilenames(directory: string): Promise<string[]> {
-  const entries = await readStoriesDirectoryEntries(directory);
-  return entries
+async function assertMarkdownFilesHaveNoRawHtml(
+  directory: string,
+  entries: readonly Dirent[]
+): Promise<void> {
+  const filenames = entries
     .filter((entry) => entry.isFile() && entry.name.endsWith(".md"))
     .map((entry) => entry.name);
+
+  for (const filename of filenames) {
+    const filePath = path.join(directory, filename);
+    assertNoRawHtml(await readFile(filePath, "utf8"), filePath);
+  }
 }
 
 /**
@@ -33,10 +45,24 @@ async function readStoryFilenames(directory: string): Promise<string[]> {
 export async function assertStoriesHaveNoRawHtml(
   directory = defaultStoriesDirectory
 ): Promise<void> {
-  const filenames = await readStoryFilenames(directory);
+  await assertMarkdownFilesHaveNoRawHtml(
+    directory,
+    await readStoriesDirectoryEntries(directory)
+  );
+}
 
-  for (const filename of filenames) {
-    const filePath = path.join(directory, filename);
-    assertNoRawHtml(await readFile(filePath, "utf8"), filePath);
-  }
+/**
+ * Lo mismo para las fichas de autoría.
+ *
+ * El cuerpo de una ficha es Markdown que el sitio renderiza igual que el de
+ * una historia, así que sin este gate la biografía sería la vía de inyección
+ * que las historias ya tienen cerrada.
+ */
+export async function assertAuthorsHaveNoRawHtml(
+  directory = defaultAuthorsDirectory
+): Promise<void> {
+  await assertMarkdownFilesHaveNoRawHtml(
+    directory,
+    await readAuthorsDirectoryEntries(directory)
+  );
 }
