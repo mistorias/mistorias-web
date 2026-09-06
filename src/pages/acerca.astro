@@ -1,5 +1,4 @@
 ---
-import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { authorRoute } from "../lib/routes";
 import { authorshipDescriptions } from "../lib/content/authorship";
@@ -42,7 +41,6 @@ const ciclo = [
 // deja de significar lo que esta página promete.
 const autorias = authorshipDescriptions();
 
-const autores = await getCollection("authors");
 const base = import.meta.env.BASE_URL;
 ---
 
@@ -71,15 +69,9 @@ const base = import.meta.env.BASE_URL;
 
         <p>
             Mistorias es un <strong>proyecto personal</strong> de{" "}
-            {
-                autores.map((autor, indice) => (
-                    <>
-                        {indice > 0 && " y "}
-                        <a href={authorRoute(base, autor.id)}>{autor.data.name}</a>
-                    </>
-                ))
-            }. Lo hace por su cuenta, en sus horas libres y sin fines de lucro.
-            No representa a ninguna empresa, institución ni empleador, y nada de
+            <a href={authorRoute(base, "paolo-carrasco")}>Paolo Carrasco</a>.
+            Lo hace por su cuenta, en sus horas libres y sin fines de lucro. No
+            representa a ninguna empresa, institución ni empleador, y nada de
             lo que se publica acá compromete a nadie más que a quien lo firma.
         </p>
 
