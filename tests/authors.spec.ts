@@ -6,7 +6,7 @@ import {
 } from "../src/lib/content/authors";
 
 const fichas = [
-  { id: "paolo-carrasco", nombre: "Paolo Carrasco" },
+  { id: "mateo-salazar", nombre: "Mateo Salazar" },
   { id: "ana-quispe", nombre: "Ana Quispe" }
 ];
 
@@ -18,7 +18,7 @@ const nombres = buildAuthorNameMap(
 
 describe("buildAuthorNameMap", () => {
   it("traduce el id de la ficha al nombre visible", () => {
-    expect(authorNameFor(nombres, "paolo-carrasco")).toBe("Paolo Carrasco");
+    expect(authorNameFor(nombres, "mateo-salazar")).toBe("Mateo Salazar");
     expect(authorNameFor(nombres, "ana-quispe")).toBe("Ana Quispe");
   });
 
@@ -43,14 +43,14 @@ describe("authorNameFor", () => {
 
 describe("storiesByAuthor", () => {
   const historias = [
-    { id: "una", autor: "paolo-carrasco" },
+    { id: "una", autor: "mateo-salazar" },
     { id: "otra", autor: "ana-quispe" },
-    { id: "tercera", autor: "paolo-carrasco" }
+    { id: "tercera", autor: "mateo-salazar" }
   ];
 
   it("se queda solo con las historias que firma esa persona", () => {
     expect(
-      storiesByAuthor(historias, (h) => h.autor, "paolo-carrasco").map(
+      storiesByAuthor(historias, (h) => h.autor, "mateo-salazar").map(
         (h) => h.id
       )
     ).toEqual(["una", "tercera"]);

@@ -23,7 +23,7 @@ describe("TarjetaHistoria", () => {
   it("arma el enlace de la tarjeta con storyRoute a partir del id de la historia", async () => {
     const historia = buildStoryFixture({ id: "una-historia" });
     const html = await renderAstroComponent(TarjetaHistoria, {
-      props: { historia, nombreAutor: "Paolo Carrasco" },
+      props: { historia, nombreAutor: "Mateo Salazar" },
     });
 
     expect(html).toMatch(
@@ -34,7 +34,7 @@ describe("TarjetaHistoria", () => {
   it("la tarjeta expone un único enlace, con texto accesible que incluye el título (issue #41)", async () => {
     const historia = buildStoryFixture({ title: "Historia con enlace único" });
     const html = await renderAstroComponent(TarjetaHistoria, {
-      props: { historia, nombreAutor: "Paolo Carrasco" },
+      props: { historia, nombreAutor: "Mateo Salazar" },
     });
 
     expect(html.match(/class="tarjeta__enlace"/g)).toHaveLength(1);
@@ -47,7 +47,7 @@ describe("TarjetaHistoria", () => {
   it("el título ya no es un enlace: es texto plano dentro del encabezado", async () => {
     const historia = buildStoryFixture({ title: "Título sin enlace propio" });
     const html = await renderAstroComponent(TarjetaHistoria, {
-      props: { historia, nombreAutor: "Paolo Carrasco" },
+      props: { historia, nombreAutor: "Mateo Salazar" },
     });
 
     expect(html).toMatch(
@@ -58,7 +58,7 @@ describe("TarjetaHistoria", () => {
   it("usa h2 cuando no se pasa nivelTitulo", async () => {
     const historia = buildStoryFixture({ title: "Título de prueba" });
     const html = await renderAstroComponent(TarjetaHistoria, {
-      props: { historia, nombreAutor: "Paolo Carrasco" },
+      props: { historia, nombreAutor: "Mateo Salazar" },
     });
 
     expect(html).toContain("<h2");
@@ -68,7 +68,7 @@ describe("TarjetaHistoria", () => {
   it("usa h3 cuando nivelTitulo es 3", async () => {
     const historia = buildStoryFixture({ title: "Título de prueba" });
     const html = await renderAstroComponent(TarjetaHistoria, {
-      props: { historia, nombreAutor: "Paolo Carrasco", nivelTitulo: 3 },
+      props: { historia, nombreAutor: "Mateo Salazar", nivelTitulo: 3 },
     });
 
     expect(html).toContain("<h3");
@@ -78,7 +78,7 @@ describe("TarjetaHistoria", () => {
   it("no agrega la clase tarjeta--destacada por defecto", async () => {
     const historia = buildStoryFixture();
     const html = await renderAstroComponent(TarjetaHistoria, {
-      props: { historia, nombreAutor: "Paolo Carrasco" },
+      props: { historia, nombreAutor: "Mateo Salazar" },
     });
 
     expect(html).not.toContain("tarjeta--destacada");
@@ -87,7 +87,7 @@ describe("TarjetaHistoria", () => {
   it("agrega tarjeta--destacada cuando destacada es true", async () => {
     const historia = buildStoryFixture();
     const html = await renderAstroComponent(TarjetaHistoria, {
-      props: { historia, nombreAutor: "Paolo Carrasco", destacada: true },
+      props: { historia, nombreAutor: "Mateo Salazar", destacada: true },
     });
 
     expect(html).toContain("tarjeta--destacada");
@@ -96,7 +96,7 @@ describe("TarjetaHistoria", () => {
   it("no renderiza ListaTemas cuando la historia no tiene temas", async () => {
     const historia = buildStoryFixture({ themes: [] });
     const html = await renderAstroComponent(TarjetaHistoria, {
-      props: { historia, nombreAutor: "Paolo Carrasco" },
+      props: { historia, nombreAutor: "Mateo Salazar" },
     });
 
     expect(html).not.toMatch(/class="temas"/);
@@ -108,7 +108,7 @@ describe("TarjetaHistoria", () => {
       themes: ["educacion", "comunidad"],
     });
     const html = await renderAstroComponent(TarjetaHistoria, {
-      props: { historia, nombreAutor: "Paolo Carrasco" },
+      props: { historia, nombreAutor: "Mateo Salazar" },
     });
 
     expect(html).toContain("Temas de Historia con temas");
@@ -138,10 +138,10 @@ describe("TarjetaHistoria", () => {
     // fichas de tema sí son enlaces propios y ya tienen su z-index.
     const historia = buildStoryFixture({ themes: [] });
     const html = await renderAstroComponent(TarjetaHistoria, {
-      props: { historia, nombreAutor: "Paolo Carrasco" },
+      props: { historia, nombreAutor: "Mateo Salazar" },
     });
 
-    expect(html).toContain("Paolo Carrasco");
+    expect(html).toContain("Mateo Salazar");
     expect(html).not.toContain("/autores/");
     expect(html.match(/<a /g)).toHaveLength(1);
   });
@@ -149,7 +149,7 @@ describe("TarjetaHistoria", () => {
   it("sin imagen: muestra el símbolo de Mistorias estático y ningún <img>", async () => {
     const historia = buildStoryFixture({ id: "historia-sin-imagen" });
     const html = await renderAstroComponent(TarjetaHistoria, {
-      props: { historia, nombreAutor: "Paolo Carrasco" },
+      props: { historia, nombreAutor: "Mateo Salazar" },
     });
 
     expect(html).toContain("tarjeta__marcador");
@@ -163,7 +163,7 @@ describe("TarjetaHistoria", () => {
       imageAlt: "Descripción de prueba",
     });
     const html = await renderAstroComponent(TarjetaHistoria, {
-      props: { historia, nombreAutor: "Paolo Carrasco" },
+      props: { historia, nombreAutor: "Mateo Salazar" },
     });
 
     expect(html).toContain("tarjeta__marcador--cargando");
@@ -178,7 +178,7 @@ describe("TarjetaHistoria", () => {
       imageAlt: "Descripción de prueba",
     });
     const html = await renderAstroComponent(TarjetaHistoria, {
-      props: { historia, nombreAutor: "Paolo Carrasco", destacada: true },
+      props: { historia, nombreAutor: "Mateo Salazar", destacada: true },
     });
 
     expect(html).toMatch(/<img[^>]+loading="lazy"/);

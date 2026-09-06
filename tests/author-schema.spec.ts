@@ -2,15 +2,15 @@ import { describe, expect, it } from "vitest";
 import { authorSchema } from "../src/lib/content/schema";
 
 const validFrontmatter = {
-  name: "Paolo Carrasco",
-  bio: "Escribe Mistorias desde Barcelona, con raíces arequipeñas."
+  name: "Mateo Salazar",
+  bio: "Escribe historias de prueba para Mistorias, con ganas de que el esquema pase."
 };
 
 describe("authorSchema", () => {
   it("acepta una ficha con lo mínimo: nombre y una línea de bio", () => {
     const parsed = authorSchema.parse(validFrontmatter);
 
-    expect(parsed.name).toBe("Paolo Carrasco");
+    expect(parsed.name).toBe("Mateo Salazar");
     expect(parsed.link).toBeUndefined();
     expect(parsed.linkLabel).toBeUndefined();
   });
@@ -28,11 +28,11 @@ describe("authorSchema", () => {
   it("acepta el enlace de verificación cuando trae su rótulo", () => {
     const parsed = authorSchema.parse({
       ...validFrontmatter,
-      link: "https://www.instagram.com/paolocarrasco",
+      link: "https://www.instagram.com/mateosalazar",
       linkLabel: "Instagram"
     });
 
-    expect(parsed.link).toBe("https://www.instagram.com/paolocarrasco");
+    expect(parsed.link).toBe("https://www.instagram.com/mateosalazar");
     expect(parsed.linkLabel).toBe("Instagram");
   });
 
@@ -54,7 +54,7 @@ describe("authorSchema", () => {
     expect(() =>
       authorSchema.parse({
         ...validFrontmatter,
-        link: "instagram.com/paolocarrasco",
+        link: "instagram.com/mateosalazar",
         linkLabel: "Instagram"
       })
     ).toThrow();

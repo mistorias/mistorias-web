@@ -5,7 +5,7 @@ const validFrontmatter = {
   title: "Historia validada",
   summary: "Resumen breve de prueba",
   date: "2026-04-26",
-  author: "paolo-carrasco",
+  author: "mateo-salazar",
   authorship: "escrito-con-ia",
   themes: ["educacion", "comunidad"]
 };
@@ -78,7 +78,7 @@ describe("storySchema", () => {
 
     expect(parsed.author).toEqual({
       collection: "authors",
-      id: "paolo-carrasco"
+      id: "mateo-salazar"
     });
   });
 
