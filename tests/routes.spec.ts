@@ -144,14 +144,14 @@ describe("rutas con nombre", () => {
 
 describe("authorRoute", () => {
   it("arma la ficha de quien firma bajo /autores/", () => {
-    expect(authorRoute(BASE_NETLIFY, "paolo-carrasco")).toBe(
-      "/autores/paolo-carrasco/"
+    expect(authorRoute(BASE_NETLIFY, "mateo-salazar")).toBe(
+      "/autores/mateo-salazar/"
     );
   });
 
   it("conserva la base de GitHub Pages", () => {
-    expect(authorRoute(BASE_PAGES, "paolo-carrasco")).toBe(
-      "/mistorias-web/autores/paolo-carrasco/"
+    expect(authorRoute(BASE_PAGES, "mateo-salazar")).toBe(
+      "/mistorias-web/autores/mateo-salazar/"
     );
   });
 });

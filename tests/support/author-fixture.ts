@@ -12,11 +12,11 @@ export function buildAuthorFixture(
   overrides?: AuthorFixtureOverrides
 ): CollectionEntry<"authors"> {
   return {
-    id: overrides?.id ?? "paolo-carrasco",
+    id: overrides?.id ?? "mateo-salazar",
     collection: "authors",
     data: {
-      name: overrides?.name ?? "Paolo Carrasco",
-      bio: overrides?.bio ?? "Escribe Mistorias desde Barcelona.",
+      name: overrides?.name ?? "Mateo Salazar",
+      bio: overrides?.bio ?? "Escribe historias de prueba para Mistorias.",
       link: overrides?.link,
       linkLabel: overrides?.linkLabel,
     },

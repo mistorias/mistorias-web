@@ -5,9 +5,9 @@ import { renderAstroComponent } from "./support/render-astro-component";
 import { buildAuthorFixture } from "./support/author-fixture";
 
 const autor = buildAuthorFixture({
-  id: "paolo-carrasco",
-  name: "Paolo Carrasco",
-  bio: "Escribe Mistorias desde Barcelona."
+  id: "mateo-salazar",
+  name: "Mateo Salazar",
+  bio: "Escribe historias de prueba para Mistorias."
 });
 
 afterEach(() => {
@@ -20,8 +20,8 @@ describe("FirmaAutoria", () => {
       props: { autor, autoria: "escrito-con-ia" }
     });
 
-    expect(html).toContain('href="/autores/paolo-carrasco/"');
-    expect(html).toContain("Paolo Carrasco");
+    expect(html).toContain('href="/autores/mateo-salazar/"');
+    expect(html).toContain("Mateo Salazar");
   });
 
   it("respeta la base del despliegue en vez de escribir la ruta a mano", async () => {
@@ -31,7 +31,7 @@ describe("FirmaAutoria", () => {
       props: { autor, autoria: "escrito-con-ia" }
     });
 
-    expect(html).toContain('href="/mistorias-web/autores/paolo-carrasco/"');
+    expect(html).toContain('href="/mistorias-web/autores/mateo-salazar/"');
   });
 
   it("muestra la línea de bio de la ficha", async () => {
@@ -39,7 +39,7 @@ describe("FirmaAutoria", () => {
       props: { autor, autoria: "escrito-con-ia" }
     });
 
-    expect(html).toContain("Escribe Mistorias desde Barcelona.");
+    expect(html).toContain("Escribe historias de prueba para Mistorias.");
   });
 
   it("declara qué hizo la inteligencia artificial en esta historia", async () => {

@@ -28,7 +28,7 @@ export function buildStoryFixture(
       // `reference("authors")` en el esquema.
       author: {
         collection: "authors",
-        id: overrides?.authorId ?? "paolo-carrasco"
+        id: overrides?.authorId ?? "mateo-salazar"
       },
       authorship: overrides?.authorship ?? "escrito-con-ia",
       themes: overrides?.themes ?? ["educacion"],
