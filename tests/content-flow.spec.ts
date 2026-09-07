@@ -3,8 +3,12 @@ import os from "node:os";
 import path from "node:path";
 import type { AstroIntegration } from "astro";
 import { afterEach, describe, expect, it } from "vitest";
-import { assertStoriesHaveNoRawHtml } from "../src/lib/content/raw-html-gate";
+import {
+  assertAuthorsHaveNoRawHtml,
+  assertStoriesHaveNoRawHtml
+} from "../src/lib/content/raw-html-gate";
 import { noRawHtml } from "../src/lib/content/no-raw-html-integration";
+import { authorsNoRawHtml } from "../src/lib/content/authors-no-raw-html-integration";
 
 type ConfigSetupHook = NonNullable<
   AstroIntegration["hooks"]["astro:config:setup"]
@@ -34,8 +38,31 @@ async function prepareStoriesDirectory(
   return storiesDirectory;
 }
 
+async function prepareAuthorsDirectory(
+  ...fixtureFilenames: string[]
+): Promise<string> {
+  const tempRoot = await mkdtemp(path.join(os.tmpdir(), "mistorias-web-"));
+  temporaryDirectories.push(tempRoot);
+  const authorsDirectory = path.join(tempRoot, "authors");
+  await mkdir(authorsDirectory, { recursive: true });
+
+  for (const fixtureFilename of fixtureFilenames) {
+    await cp(
+      fixturePath(fixtureFilename),
+      path.join(authorsDirectory, fixtureFilename)
+    );
+  }
+
+  return authorsDirectory;
+}
+
 async function runConfigSetupHook(directory: string): Promise<void> {
   const hook = noRawHtml(directory).hooks["astro:config:setup"];
+  await hook?.({} as ConfigSetupOptions);
+}
+
+async function runAuthorsConfigSetupHook(directory: string): Promise<void> {
+  const hook = authorsNoRawHtml(directory).hooks["astro:config:setup"];
   await hook?.({} as ConfigSetupOptions);
 }
 
@@ -113,5 +140,52 @@ describe("integración noRawHtml", () => {
     await expect(runConfigSetupHook(storiesDirectory)).rejects.toThrow(
       /Raw HTML is not allowed/
     );
+  });
+});
+
+// El cuerpo de una ficha es Markdown que el sitio renderiza igual que el de una
+// historia: sin este gate, la biografía sería la vía de inyección que las
+// historias ya tienen cerrada.
+describe("assertAuthorsHaveNoRawHtml", () => {
+  it("acepta una ficha en markdown sin HTML crudo", async () => {
+    const authorsDirectory = await prepareAuthorsDirectory("valid-author.md");
+
+    await expect(
+      assertAuthorsHaveNoRawHtml(authorsDirectory)
+    ).resolves.toBeUndefined();
+  });
+
+  it("rechaza una ficha con HTML crudo en la biografía", async () => {
+    const authorsDirectory = await prepareAuthorsDirectory(
+      "invalid-author-raw-html.md"
+    );
+
+    await expect(
+      assertAuthorsHaveNoRawHtml(authorsDirectory)
+    ).rejects.toThrow(/invalid-author-raw-html\.md/);
+  });
+
+  it("explica cómo inicializar el submódulo cuando la carpeta no existe", async () => {
+    await expect(
+      assertAuthorsHaveNoRawHtml(path.join(os.tmpdir(), "authors-que-no-existe"))
+    ).rejects.toThrow(/git submodule update --init --recursive/);
+  });
+});
+
+describe("integración authorsNoRawHtml", () => {
+  it("deja pasar el build cuando las fichas están limpias", async () => {
+    const authorsDirectory = await prepareAuthorsDirectory("valid-author.md");
+
+    await expect(
+      runAuthorsConfigSetupHook(authorsDirectory)
+    ).resolves.toBeUndefined();
+  });
+
+  it("falla el build cuando una ficha trae HTML crudo", async () => {
+    const authorsDirectory = await prepareAuthorsDirectory(
+      "invalid-author-raw-html.md"
+    );
+
+    await expect(runAuthorsConfigSetupHook(authorsDirectory)).rejects.toThrow();
   });
 });

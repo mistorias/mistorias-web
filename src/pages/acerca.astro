@@ -1,5 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { authorRoute } from "../lib/routes";
+import { authorshipDescriptions } from "../lib/content/authorship";
 
 const pilares = [
     {
@@ -33,6 +35,13 @@ const ciclo = [
         descripcion: "La comprensión se convierte en algo concreto que hacer."
     }
 ] as const;
+
+// Las tres etiquetas de autoría se explican acá, una sola vez, con el mismo
+// texto que muestra el pie de cada historia: si divergen, la etiqueta del pie
+// deja de significar lo que esta página promete.
+const autorias = authorshipDescriptions();
+
+const base = import.meta.env.BASE_URL;
 ---
 
 <BaseLayout
@@ -55,6 +64,18 @@ const ciclo = [
             falla por falta de datos, sino por falta de comprensión humana de
             esos datos.
         </p>
+
+        <h2>Quién está detrás</h2>
+
+        <p>
+            Mistorias es un <strong>proyecto personal</strong> de{" "}
+            <a href={authorRoute(base, "paolo-carrasco")}>Paolo Carrasco</a>.
+            Lo hace por su cuenta, en sus horas libres y sin fines de lucro. No
+            representa a ninguna empresa, institución ni empleador, y nada de
+            lo que se publica acá compromete a nadie más que a quien lo firma.
+        </p>
+
+        <p>Cada historia lleva su nombre y ese nombre lleva a su ficha.</p>
 
         <h2>Los tres pilares</h2>
 
@@ -108,6 +129,27 @@ const ciclo = [
             2050 es un escenario, no un destino. Un dato correcto presentado sin
             ese contexto puede seguir siendo engañoso.
         </p>
+
+        <h2>Cómo se usa la inteligencia artificial</h2>
+
+        <p>
+            Se usa, y por eso se dice. Cada historia declara al pie cuál de
+            estas tres cosas pasó al escribirla — cambia de una historia a otra,
+            así que no se declara una vez para todo el sitio. Lo que no cambia
+            es quién responde: una inteligencia artificial no puede hacerse
+            cargo de un dato mal citado, y la persona que firma sí.
+        </p>
+
+        <dl class="acerca__lista">
+            {
+                autorias.map((autoria) => (
+                    <div class="acerca__item">
+                        <dt>{autoria.label}</dt>
+                        <dd>{autoria.detail}</dd>
+                    </div>
+                ))
+            }
+        </dl>
 
         <h2>Todo es público y tiene historial</h2>
 

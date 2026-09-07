@@ -1,6 +1,7 @@
 import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
 import { noRawHtml } from "./src/lib/content/no-raw-html-integration";
+import { authorsNoRawHtml } from "./src/lib/content/authors-no-raw-html-integration";
 import { storyAssetFolders } from "./src/lib/content/story-asset-folders-integration";
 import { storyImageRequirements } from "./src/lib/content/story-image-requirements-integration";
 import { brandSymbol } from "./src/lib/brand/symbol-gate-integration";
@@ -19,6 +20,7 @@ const { site, base } = resolveDeploymentConfig(process.env.DEPLOY_TARGET);
 // sitemap además no aporta nada y sí expone de más.
 const integraciones = [
   noRawHtml(),
+  authorsNoRawHtml(),
   storyAssetFolders(),
   storyImageRequirements(),
   brandSymbol(),
