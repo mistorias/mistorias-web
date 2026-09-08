@@ -33,13 +33,26 @@ jobs:
       - name: Install pnpm
         run: corepack enable
 
+      # La página "Acerca de" muestra el tag del release (issue #106). Si el
+      # tag no coincide con la versión de package.json, producción y
+      # desarrollo anuncian versiones distintas y ninguna es confiable:
+      # scripts/check_release_version.sh es el único lugar donde vive este
+      # chequeo, y también sirve para correrlo en local antes de etiquetar.
+      - name: Check the tag matches the package.json version
+        if: github.ref_type == 'tag'
+        run: scripts/check_release_version.sh "$GITHUB_REF_NAME"
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # SITE_VERSION queda vacío en un workflow_dispatch desde una rama: no
+      # hay tag que mostrar, así que la página cae a la versión de
+      # package.json en vez de inventar uno (src/lib/version.ts).
       - name: Build for Netlify
         run: pnpm build
         env:
           DEPLOY_TARGET: netlify
+          SITE_VERSION: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
 
       # El sitio de producción vive en la raíz de mistorias.pe. Si el artefacto
       # conserva la base de GitHub Pages, la hoja de estilos y cada enlace
