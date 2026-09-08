@@ -95,7 +95,7 @@ The gate runs via `src/lib/content/no-raw-html-integration.ts`, an Astro integra
 - `src/pages/historias/[...id].astro` — dynamic story detail pages (file-based routing)
 - `src/pages/temas/index.astro` and `src/pages/temas/[tema].astro` — theme index and per-theme listings
 - `src/pages/autores/[autor].astro` — author profile: bio, verification link, and the stories they signed. There is deliberately no `/autores/` index while there is a single author (ADR 0016)
-- `src/pages/acerca.astro`, `src/pages/404.astro`
+- `src/pages/acerca.astro`, `src/pages/404.astro`. `acerca.astro` cierra con la versión del sitio, resuelta por `resolveSiteVersion(process.env.SITE_VERSION)` (`src/lib/version.ts`): el tag del release cuando el build viene de uno, y `v` + la `version` de `package.json` cuando no — ver [ADR 0017](docs/adr/0017-version-visible-del-sitio.md)
 
 Public URLs are in Spanish (`/historias/`, `/temas/`), matching the project's ubiquitous language. **Never hardcode an internal `href`**: `base` differs per deploy target, so a hand-written path silently breaks on GitHub Pages without failing the build. Build every internal link with the helpers in `src/lib/routes.ts`, which also own the section names.
 
@@ -153,6 +153,8 @@ Two workflows in `.github/workflows/`:
 2. **Netlify** (`deploy-netlify.yml`): Triggers on tag push or manual dispatch; uses `DEPLOY_TARGET=netlify`
 
 Both check out with `--recursive` (initializes submodules) and run `pnpm install --frozen-lockfile` before building.
+
+The Netlify workflow also passes the tag to the build as `SITE_VERSION`, and runs `scripts/check_release_version.sh` on a tag push: it fails the deploy if the tag is not `v` + the `version` in `package.json`. Cutting a release therefore means bumping `package.json` in the commit that precedes the tag. Keeping those two in sync is what stops `/acerca` from announcing a version that isn't what shipped (ADR 0017).
 
 ### Never deploy without an explicit instruction
 
