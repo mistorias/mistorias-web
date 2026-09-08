@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { authorRoute } from "../lib/routes";
 import { authorshipDescriptions } from "../lib/content/authorship";
+import { resolveSiteVersion } from "../lib/version";
 
 const pilares = [
     {
@@ -42,6 +43,11 @@ const ciclo = [
 const autorias = authorshipDescriptions();
 
 const base = import.meta.env.BASE_URL;
+
+// La versión hace concreto lo que promete la sección "Todo es público y tiene
+// historial": con este número se sabe exactamente qué build se está leyendo y
+// hasta dónde llega el historial que se puede revisar (issue #106).
+const version = resolveSiteVersion(process.env.SITE_VERSION);
 ---
 
 <BaseLayout
@@ -160,6 +166,8 @@ const base = import.meta.env.BASE_URL;
             página. La transparencia acá no es una declaración: es que puedas
             revisar quién cambió qué y cuándo.
         </p>
+
+        <p class="acerca__version">Versión {version}</p>
     </div>
 </BaseLayout>
 
@@ -187,5 +195,13 @@ const base = import.meta.env.BASE_URL;
     .acerca__item dd {
         margin-inline-start: 0;
         margin-block-start: var(--esp-3xs);
+    }
+
+    /* Un pie de página, no una afirmación editorial: el mismo tratamiento de
+       metadato que ya usan las fechas y la nota del pie del sitio. */
+    .acerca__version {
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        color: var(--color-metadato);
     }
 </style>
