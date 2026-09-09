@@ -1,0 +1,79 @@
+name: Mutation Testing Nocturno
+
+# Corre mutation testing completo una vez al día y publica el reporte HTML
+# en GitHub Pages para que se pueda revisar con un clic, sin descomprimir
+# nada (issue #112). Ver docs/adr/0019-mutation-testing-y-su-reporte-en-github-pages.md
+# para el porqué de reconstruir y redesplegar el sitio completo acá: es la
+# única forma de sumarle una carpeta persistente al Pages ya existente.
+on:
+  schedule:
+    - cron: "0 21 * * *" # 9pm UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  mutar-y-publicar:
+    environment:
+      name: development
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository and content
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+
+      - name: Install pnpm
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # No bloqueante a propósito (ver stryker.config.mjs): todavía no hace
+      # fallar el build, solo genera el reporte que se publica más abajo.
+      - name: Ejecutar mutation testing completo
+        run: pnpm mutation-test
+        continue-on-error: true
+
+      - name: Build for GitHub Pages
+        run: pnpm build
+        env:
+          DEPLOY_TARGET: development
+
+      - name: Incorporar el reporte de mutation testing al sitio
+        run: |
+          if [ -f reports/mutation/index.html ]; then
+            mkdir -p dist/reporte-mutacion
+            cp reports/mutation/index.html dist/reporte-mutacion/index.html
+          else
+            echo "Mutation testing no generó reporte; se publica el sitio sin él." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
+        with:
+          path: dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5
+
+      - name: Enlazar el reporte en el resumen del job
+        if: hashFiles('reports/mutation/index.html') != ''
+        run: echo "## Reporte de mutation testing: ${{ steps.deployment.outputs.page_url }}reporte-mutacion/" >> "$GITHUB_STEP_SUMMARY"
