@@ -4,7 +4,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import DatoConFuente from "../components/DatoConFuente.astro";
 import PlantaDeLibros from "../components/PlantaDeLibros.astro";
 import TarjetaHistoria from "../components/TarjetaHistoria.astro";
-import { reportRoute, themesRoute } from "../lib/routes";
+import { reportRoute, storiesRoute, themesRoute } from "../lib/routes";
 import { limitPreviousStories, sortByDateDescending } from "../lib/stories";
 import { authorNameFor, buildAuthorNameMap } from "../lib/content/authors";
 
@@ -152,10 +152,15 @@ const datos = [
     }
 
     {
-        hayTemas && (
+        destacada && (
             <section class="columna explorar">
-                <a href={themesRoute(import.meta.env.BASE_URL)}>
-                    Explorar las historias por tema
+                {hayTemas && (
+                    <a href={themesRoute(import.meta.env.BASE_URL)}>
+                        Explorar más historias por tema
+                    </a>
+                )}
+                <a href={storiesRoute(import.meta.env.BASE_URL)}>
+                    Recorrer las historias semana a semana
                 </a>
             </section>
         )
@@ -309,6 +314,12 @@ const datos = [
     .explorar,
     .feedback {
         padding-block-start: var(--esp-xl);
+    }
+
+    .explorar {
+        display: flex;
+        flex-direction: column;
+        gap: var(--esp-2xs);
     }
 
     .explorar a {
