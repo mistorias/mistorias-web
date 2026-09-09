@@ -1,6 +1,6 @@
 {
   "name": "mistorias-web",
-  "version": "0.1.0",
+  "version": "1.5.0-dev",
   "private": true,
   "type": "module",
   "scripts": {
