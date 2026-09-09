@@ -5,6 +5,12 @@ type Props = {
 
 const { cantidad } = Astro.props;
 
+/*
+ * Más de cinco lazadas apiladas dejan de leerse como unidades individuales,
+ * se amontonan y pierden claridad. El número real de historias vive siempre
+ * en el texto que acompaña este dibujo (es decoración, nunca la única fuente
+ * de verdad). Por eso el tope es visual, no una limitación de datos.
+ */
 const MAX_NUDOS_VISIBLES = 5;
 const nudosAVisualizar = Math.min(cantidad, MAX_NUDOS_VISIBLES);
 
@@ -12,7 +18,14 @@ const ANCHO = 24;
 const ALTO_POR_NUDO = 16;
 ---
 
-{nudosAVisualizar > 0 && (
+{
+  /*
+   * Cuando la cantidad es cero o menor, no se renderiza ni un <svg> vacío:
+   * es la representación del cero en el quipu (ausencia de nudo = cero
+   * historias esa semana). Que no exista marcado es más limpio y explícito
+   * que un SVG sin contenido.
+   */
+  nudosAVisualizar > 0 && (
     <svg
         class="nudo-de-quipu"
         viewBox={`0 0 ${ANCHO} ${ALTO_POR_NUDO * nudosAVisualizar}`}
@@ -31,6 +44,17 @@ const ALTO_POR_NUDO = 16;
 )}
 
 <style>
+    /*
+     * El fill="currentColor" en el <svg> raíz es una propiedad heredable en SVG:
+     * las <ellipse> la heredan sin necesidad de repetirla. Así el dibujo cambia
+     * de color con el tema sin tocar el archivo, el mismo mecanismo de
+     * SimboloMistorias y PlantaDeLibros.
+     *
+     * Cada lazada es una elipse horizontal (rx > ry para sugerir el cordón
+     * engrosándose en el nudo, no un círculo genérico). El viewBox escala con
+     * la cantidad: no queda espacio vacío ni se recorta. Con cantidad <= 0, no
+     * se renderiza marcado alguno (ausencia = cero del quipu).
+     */
     .nudo-de-quipu {
         display: block;
         width: 100%;
