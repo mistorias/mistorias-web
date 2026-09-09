@@ -55,7 +55,7 @@ describe("readableWeekRange", () => {
     process.env.TZ = "America/Lima";
     expect(
       readableWeekRange(new Date("2026-01-05T00:00:00Z"), new Date("2026-01-11T23:59:59Z"))
-    ).toContain("5");
+    ).toBe("del 5 al 11 de enero de 2026");
 
     process.env.TZ = originalTimeZone;
   });
