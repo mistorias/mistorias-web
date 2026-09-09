@@ -38,6 +38,11 @@ en cada conversación.
 
 ### Sin redirecciones
 
+> **Actualizado por [ADR 0018](0018-redirecciones-de-etiquetas-a-temas.md):**
+> los crawlers siguieron pidiendo `/etiquetas/…` (issue #107), así que
+> mistorias.pe ahora responde 301 hacia `/temas/…`. GitHub Pages sigue
+> devolviendo 404, como describe esta sección.
+
 Las URLs `/etiquetas/…` dejan de existir y devuelven 404. No se agregan
 redirecciones porque GitHub Pages —el destino de desarrollo, ver
 [ADR 0006](0006-sistema-de-diseno-del-sitio.md)— no sirve reglas de
@@ -61,6 +66,7 @@ El sitio no tiene todavía enlaces externos conocidos hacia esa sección.
 
 - Cualquier enlace externo a `/etiquetas/…` se rompe. Es el costo aceptado de no
   sostener redirecciones que solo funcionarían en la mitad de los despliegues.
+  El costo se cobró (issue #107) y ADR 0018 lo revierte para mistorias.pe.
 - El frontmatter queda con dos claves válidas hasta que `mistorias-contenido`
   migre a `themes`. El respaldo está marcado en `src/lib/content/schema.ts` y en
   `check_theme_counts.mjs`, y se elimina —junto con su prueba— cuando ninguna
