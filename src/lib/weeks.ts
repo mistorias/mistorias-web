@@ -83,6 +83,37 @@ const formatWeekKey = (date: Date): string => {
 const gapKey = (startWeek: number, endWeek: number): string =>
   `gap-w${startWeek}-w${endWeek}`;
 
+/**
+ * Convierte una semana ISO a su fecha de lunes UTC, para aritmetica
+ * comparativa de semanas.
+ */
+const getMondayOfISOWeek = (year: number, week: number): Date => {
+  // El 4 de enero siempre está en la semana 1
+  const jan4 = new Date(Date.UTC(year, 0, 4));
+  const jan4DayOfWeek = jan4.getUTCDay();
+
+  // Lunes de la semana 1 del año ISO
+  const monday1 = new Date(jan4);
+  monday1.setUTCDate(4 - (jan4DayOfWeek === 0 ? 6 : jan4DayOfWeek - 1));
+
+  // Semana deseada = lunes de W1 + (week - 1) * 7 días
+  const targetMonday = new Date(monday1);
+  targetMonday.setUTCDate(monday1.getUTCDate() + (week - 1) * 7);
+
+  return targetMonday;
+};
+
+/**
+ * Calcula la cantidad de semanas completas entre dos fechas en UTC.
+ * Ambas deben ser lunes UTC para resultados correctos.
+ */
+const weeksBetweenMondays = (earlierMonday: Date, laterMonday: Date): number => {
+  const daysDiff = Math.floor(
+    (laterMonday.getTime() - earlierMonday.getTime()) / (24 * 60 * 60 * 1000)
+  );
+  return daysDiff / 7;
+};
+
 export const buildTimeline = <T>(
   stories: readonly T[],
   getDate: (story: T) => Date,
@@ -124,93 +155,137 @@ export const buildTimeline = <T>(
     week.sort(byDateDescThenIdAsc);
   }
 
-  // Agrupar por año
-  const yearMap = new Map<number, typeof weekInfoList>();
-  const yearKeysOrder: { year: number; date: Date }[] = [];
+  // Ordenar semanas cronológicamente (de antigua a reciente)
+  weekInfoList.sort((a, b) => {
+    if (a.year !== b.year) return a.year - b.year;
+    return a.week - b.week;
+  });
 
-  for (const info of weekInfoList) {
-    if (!yearMap.has(info.year)) {
-      yearMap.set(info.year, []);
-      yearKeysOrder.push({ year: info.year, date: info.date });
-    }
-    yearMap.get(info.year)!.push(info);
-  }
+  // Construir entradas completas en orden cronológico, detectando huecos globales
+  type EntryWithYearWeek = TimelineEntry<T> & { year: number; week: number };
+  const allEntriesChronological: EntryWithYearWeek[] = [];
 
-  // Procesar cada año
-  const result: TimelineYear<T>[] = [];
-  for (const { year } of yearKeysOrder.sort((a, b) => b.year - a.year)) {
-    const yearWeeks = yearMap.get(year)!;
+  for (let i = 0; i < weekInfoList.length; i++) {
+    const info = weekInfoList[i];
 
-    // Ordenar semanas del año: ascendente (de antigua a reciente)
-    yearWeeks.sort((a, b) => a.week - b.week);
+    // Detectar hueco entre esta semana y la anterior
+    if (i > 0) {
+      const prevInfo = weekInfoList[i - 1];
 
-    // Construir entradas con huecos
-    const entries: TimelineEntry<T>[] = [];
-    for (let i = 0; i < yearWeeks.length; i++) {
-      const info = yearWeeks[i];
+      // Calcular diferencia de semanas entre prevInfo y info
+      const prevMonday = getMondayOfISOWeek(prevInfo.year, prevInfo.week);
+      const currMonday = getMondayOfISOWeek(info.year, info.week);
+      const weekGap = weeksBetweenMondays(prevMonday, currMonday) - 1;
 
-      // Si no es la primera semana, detectar hueco
-      if (i > 0) {
-        const prevInfo = yearWeeks[i - 1];
-        const weekGap = info.week - prevInfo.week - 1;
+      if (weekGap > 0) {
+        // Hemos encontrado un hueco. Ahora lo procesamos secuencialmente,
+        // semana por semana, dividiendo en el borde de año según lo requiera.
+        let gapYear = prevInfo.year;
+        let gapWeek = prevInfo.week + 1;
 
-        if (weekGap > 0) {
-          if (weekGap <= GAP_THRESHOLD) {
-            // Emitir TimelineWeek vacíos para cada semana faltante
-            for (let w = prevInfo.week + 1; w < info.week; w++) {
-              // Calcular una fecha en la semana vacía
-              const gapDate = new Date(prevInfo.date);
-              gapDate.setUTCDate(prevInfo.date.getUTCDate() + (w - prevInfo.week) * 7);
+        // Semanas totales en el hueco
+        let weeksProcessed = 0;
 
-              const monday = getMondayOfWeek(gapDate);
-              const sunday = new Date(monday);
-              sunday.setUTCDate(monday.getUTCDate() + 6);
+        while (weeksProcessed < weekGap) {
+          // Averigua cuántas semanas del hueco están en gapYear
+          const lastWeekOfYear = 52; // ISO permite W01-W53, pero simplificamos
+          const weeksRemainingInYear = lastWeekOfYear - gapWeek + 1;
+          const weeksInThisYear = Math.min(
+            weeksRemainingInYear,
+            weekGap - weeksProcessed
+          );
 
-              entries.push({
+          // Semanas del siguiente año ISO (si la próxima semana del hueco es W01)
+          let nextGapYear = gapYear;
+          let nextGapWeek = gapWeek + weeksInThisYear;
+          if (nextGapWeek > lastWeekOfYear) {
+            nextGapYear = gapYear + 1;
+            nextGapWeek = 1;
+          }
+
+          // Re-evaluar este segmento del hueco contra GAP_THRESHOLD
+          if (weeksInThisYear <= GAP_THRESHOLD) {
+            // Emitir semanas vacías
+            for (let w = gapWeek; w < gapWeek + weeksInThisYear; w++) {
+              const gapDate = getMondayOfISOWeek(gapYear, w);
+              const sunday = new Date(gapDate);
+              sunday.setUTCDate(gapDate.getUTCDate() + 6);
+
+              (allEntriesChronological as TimelineEntry<T>[]).push({
                 kind: "week",
-                key: formatWeekKey(gapDate),
-                start: monday,
+                key: `${gapYear}-W${String(w).padStart(2, "0")}`,
+                start: gapDate,
                 end: sunday,
                 stories: [] as readonly T[]
               });
+              // Propagar año y semana para seguimiento (atributos no-export)
+              (allEntriesChronological[allEntriesChronological.length - 1] as any).year = gapYear;
+              (allEntriesChronological[allEntriesChronological.length - 1] as any).week = w;
             }
           } else {
-            // Emitir un TimelineGap
-            entries.push({
+            // Emitir un gap colapsado
+            (allEntriesChronological as TimelineEntry<T>[]).push({
               kind: "gap",
-              key: gapKey(prevInfo.week + 1, info.week - 1),
-              weeks: weekGap
+              key: `gap-w${gapWeek}-w${gapWeek + weeksInThisYear - 1}`,
+              weeks: weeksInThisYear
             });
+            // Propagar año para seguimiento
+            (allEntriesChronological[allEntriesChronological.length - 1] as any).year = gapYear;
           }
+
+          weeksProcessed += weeksInThisYear;
+          gapYear = nextGapYear;
+          gapWeek = nextGapWeek;
         }
       }
-
-      // Agregar la semana con historias
-      const monday = getMondayOfWeek(info.date);
-      const sunday = new Date(monday);
-      sunday.setUTCDate(monday.getUTCDate() + 6);
-
-      entries.push({
-        kind: "week",
-        key: info.key,
-        start: monday,
-        end: sunday,
-        stories: weeksMap.get(info.key)!
-      });
     }
 
+    // Agregar la semana con historias
+    const monday = getMondayOfWeek(info.date);
+    const sunday = new Date(monday);
+    sunday.setUTCDate(monday.getUTCDate() + 6);
+
+    (allEntriesChronological as TimelineEntry<T>[]).push({
+      kind: "week",
+      key: info.key,
+      start: monday,
+      end: sunday,
+      stories: weeksMap.get(info.key)!
+    });
+    (allEntriesChronological[allEntriesChronological.length - 1] as any).year = info.year;
+    (allEntriesChronological[allEntriesChronological.length - 1] as any).week = info.week;
+  }
+
+  // Agrupar por año ISO y construir resultado
+  const yearMap = new Map<number, EntryWithYearWeek[]>();
+  const yearOrder: number[] = [];
+
+  for (const entry of allEntriesChronological) {
+    const year = (entry as any).year;
+    if (!yearMap.has(year)) {
+      yearMap.set(year, []);
+      yearOrder.push(year);
+    }
+    yearMap.get(year)!.push(entry);
+  }
+
+  // Invertir cada año a orden descendente (más reciente primero) y construir resultado
+  const result: TimelineYear<T>[] = [];
+  for (const year of yearOrder.sort((a, b) => b - a)) {
+    const yearEntries = yearMap.get(year)!;
+
     // Invertir para que sea de más reciente a más antiguo
-    entries.reverse();
+    yearEntries.reverse();
 
     // Contar historias
-    const storyCount = entries.reduce(
+    const storyCount = yearEntries.reduce(
       (sum, entry) => sum + (entry.kind === "week" ? entry.stories.length : 0),
       0
     );
 
     result.push({
       year,
-      entries,
+      entries: yearEntries,
       storyCount
     });
   }

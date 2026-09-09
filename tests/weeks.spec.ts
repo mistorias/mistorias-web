@@ -62,13 +62,16 @@ describe("buildTimeline", () => {
   it("el cálculo no depende de la zona horaria local", () => {
     vi.stubEnv("TZ", "America/Lima");  // UTC-5
 
-    const dateUtc = new Date("2026-01-05T10:00:00Z");  // lunes UTC
+    // Medianoche UTC en lunes 5. En Lima son las 19:00 del domingo 4.
+    // Si usa getDay() local, vería domingo (6) en lugar de lunes (1).
+    // La implementación DEBE usar getUTCDay() para que el resultado sea siempre
+    // el lunes 5 de enero, en la semana 2.
+    const dateUtc = new Date("2026-01-05T00:00:00Z");
     const stories = [story("story-1", dateUtc)];
 
     const result = buildTimeline(stories, getDate, getId);
     const week = result[0]?.entries[0] as TimelineWeek<TestStory>;
 
-    // Incluso con zona horaria local UTC-5, el lunes debe ser el mismo en UTC
     expect(week.start).toEqual(new Date("2026-01-05T00:00:00Z"));
     expect(week.key).toBe("2026-W02");
   });
@@ -234,9 +237,22 @@ describe("buildTimeline", () => {
     expect(gap2025).toBeDefined();
     expect(gap2025?.weeks).toBe(8);
 
-    // En 2026: solo una historia, sin gap
-    const gap2026 = year2026.entries.find(e => e.kind === "gap") as TimelineGap | undefined;
-    expect(gap2026).toBeUndefined();
+    // El hueco W50 → W02 cruza el borde de año: W51, W52 de 2025, W01 de 2026
+    // Cuando se parte en el borde: 2025 tiene W51-W52 (2 semanas = GAP_THRESHOLD),
+    // 2026 tiene W01 (1 semana < GAP_THRESHOLD).
+    // Ambas partes cumplen la condición de emitir semanas vacías.
+    const year2026Entries = year2026.entries.map(e => (e as TimelineWeek<TestStory>).key);
+
+    // Debería haber W01 (vacía) entre nada y W02
+    expect(year2026Entries).toContain("2026-W01");
+    expect(year2026Entries).toContain("2026-W02");
+
+    // Verificar que W01 está vacía
+    const w01 = year2026.entries.find(e =>
+      e.kind === "week" && (e as TimelineWeek<TestStory>).key === "2026-W01"
+    ) as TimelineWeek<TestStory> | undefined;
+    expect(w01).toBeDefined();
+    expect(w01?.stories).toHaveLength(0);
   });
 
   it("el año de agrupación es el año ISO de la semana", () => {
