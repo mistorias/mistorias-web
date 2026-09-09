@@ -1,0 +1,39 @@
+---
+type Props = {
+    cantidad: number;
+};
+
+const { cantidad } = Astro.props;
+
+const MAX_NUDOS_VISIBLES = 5;
+const nudosAVisualizar = Math.min(cantidad, MAX_NUDOS_VISIBLES);
+
+const ANCHO = 24;
+const ALTO_POR_NUDO = 16;
+---
+
+{nudosAVisualizar > 0 && (
+    <svg
+        class="nudo-de-quipu"
+        viewBox={`0 0 ${ANCHO} ${ALTO_POR_NUDO * nudosAVisualizar}`}
+        fill="currentColor"
+        aria-hidden="true"
+    >
+        {Array.from({ length: nudosAVisualizar }).map((_, indice) => (
+            <ellipse
+                cx={ANCHO / 2}
+                cy={ALTO_POR_NUDO * indice + ALTO_POR_NUDO / 2}
+                rx="8"
+                ry="5"
+            />
+        ))}
+    </svg>
+)}
+
+<style>
+    .nudo-de-quipu {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+</style>
