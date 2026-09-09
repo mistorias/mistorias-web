@@ -188,3 +188,15 @@ As of issue #33, `.astro` components can be tested with Vitest using the `experi
 
 - The Container API renders in a Node environment without a browser, so CSS media queries, viewport-dependent layouts, and DOM interactions can't be asserted. Test the *markup structure* (classes, attributes, text content) that these depend on instead.
 - `Astro.site` and `Astro.url` are not available (or undefined) in tests; features that need canonical URLs or depend on full site config should be deferred or tested differently.
+
+## Visual Verification for UI Changes
+
+The previous section's own limitation is the reason this exists: the Container API asserts markup, never what a viewport actually renders. A change to layout, CSS, or a visual component is not done when its tests are green — it's done when a real screenshot has been looked at.
+
+Before reporting such a change as finished, render it in the pre-installed Chromium (`/opt/pw-browsers/chromium`; Playwright is already configured to find it — see the environment notes on not re-running `playwright install`) and capture it at:
+
+- **390×844** (portrait phone)
+- **844×390** (landscape phone — the case `max-height: 30rem` in `src/styles/base.css` exists for)
+- **1440×900** (desktop)
+
+each in both `prefers-color-scheme: light` and `dark`. Send the screenshots to the user with `SendUserFile` — described in a chat message is not enough, and neither is capturing only one theme or only one width: a layout that looks right in light mode at 1440px has failed nothing yet, since every constraint the codebase actually cares about (contrast tokens per theme, the short-viewport breakpoint, intrinsic responsiveness with no per-device breakpoints) lives in the combinations, not the single default view.
