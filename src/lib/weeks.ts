@@ -77,18 +77,6 @@ const formatWeekKey = (date: Date): string => {
 };
 
 /**
- * Cuántas semanas ISO tiene un año.
- * Un año tiene 53 semanas cuando el 1 de enero es jueves, o cuando es bisiesto
- * y el 1 de enero es miércoles. De lo contrario, tiene 52 semanas.
- */
-const isoWeeksInYear = (year: number): number => {
-  // El 28 de diciembre siempre está en la última semana ISO del año
-  const dec28 = new Date(Date.UTC(year, 11, 28));
-  const { week } = getISOWeekInfo(dec28);
-  return week;
-};
-
-/**
  * Tipo interno para representar una semana con historias en construcción,
  * basado en su lunes UTC.
  */
