@@ -51,6 +51,9 @@ export const assetRoute = (
 
 export const homeRoute = (base: string): string => buildRoute(base);
 
+export const storiesRoute = (base: string): string =>
+  buildRoute(base, STORIES_SECTION);
+
 export const storyRoute = (base: string, id: string): string =>
   buildRoute(base, STORIES_SECTION, id);
 
