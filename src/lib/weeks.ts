@@ -10,6 +10,7 @@ export type TimelineGap = {
   readonly kind: "gap";
   readonly key: string;
   readonly weeks: number;
+  readonly year: number;
 };
 
 export type TimelineEntry<T> = TimelineWeek<T> | TimelineGap;
@@ -204,8 +205,7 @@ const partitionByYearAndBuild = <T>(
     if (entry.kind === "week") {
       year = getISOWeekInfo(entry.start).year;
     } else {
-      const match = entry.key.match(/gap-(\d{4})/);
-      year = match ? parseInt(match[1], 10) : 0;
+      year = entry.year;
     }
 
     if (!yearMap.has(year)) {
@@ -236,7 +236,8 @@ const partitionByYearAndBuild = <T>(
           collapsedEntries.push({
             kind: "gap",
             key: `gap-${year}-W${String(startWeek).padStart(2, "0")}-W${String(endWeek).padStart(2, "0")}`,
-            weeks: emptyWeekSequence.length
+            weeks: emptyWeekSequence.length,
+            year
           });
         } else {
           collapsedEntries.push(...emptyWeekSequence);
@@ -257,7 +258,8 @@ const partitionByYearAndBuild = <T>(
       collapsedEntries.push({
         kind: "gap",
         key: `gap-${year}-W${String(startWeek).padStart(2, "0")}-W${String(endWeek).padStart(2, "0")}`,
-        weeks: emptyWeekSequence.length
+        weeks: emptyWeekSequence.length,
+        year
       });
     } else {
       collapsedEntries.push(...emptyWeekSequence);

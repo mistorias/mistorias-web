@@ -303,6 +303,33 @@ describe("buildTimeline", () => {
     expect(emptyWeek.key).toBe("2026-W07");
   });
 
+  it("TimelineGap expone su año ISO y el key lo incluye sin ambigüedad", () => {
+    // Un gap de 4 semanas dentro de 2025 (W41 a W50 son W42-W49 = 8 semanas)
+    // garantiza un TimelineGap > GAP_THRESHOLD
+    const stories = [
+      story("a", new Date("2025-10-06T00:00:00Z")),  // 2025-W41
+      story("b", new Date("2025-12-08T00:00:00Z"))   // 2025-W50 (gap de 8 semanas)
+    ];
+
+    const result = buildTimeline(stories, getDate, getId);
+    const year2025 = result.find(y => y.year === 2025)!;
+
+    // Buscar el gap en 2025
+    const gap = year2025.entries.find(e => e.kind === "gap") as TimelineGap | undefined;
+
+    // Debe haber un TimelineGap de 8 semanas
+    expect(gap).toBeDefined();
+
+    // El gap debe exponer su año ISO
+    expect(gap?.year).toBe(2025);
+
+    // El key debe incluir el año para evitar colisiones
+    expect(gap?.key).toContain("2025");
+
+    // El gap debe identificar claramente su rango dentro del año
+    expect(gap?.weeks).toBe(8);
+  });
+
   afterEach(() => {
     vi.unstubAllEnvs();
   });
