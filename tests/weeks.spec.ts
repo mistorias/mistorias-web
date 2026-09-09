@@ -1,5 +1,5 @@
 import { describe, expect, it, afterEach, vi } from "vitest";
-import { buildTimeline, type TimelineWeek, type TimelineGap } from "../src/lib/weeks";
+import { buildTimeline, GAP_THRESHOLD, type TimelineWeek, type TimelineGap } from "../src/lib/weeks";
 
 type TestStory = {
   readonly id: string;
@@ -328,6 +328,125 @@ describe("buildTimeline", () => {
 
     // El gap debe identificar claramente su rango dentro del año
     expect(gap?.weeks).toBe(8);
+  });
+
+  it("mantiene sus invariantes sobre un barrido amplio de fechas (incluye años ISO de 52 y 53 semanas)", () => {
+    // Este test no fue agregado por TDD "rojo primero": la implementación ya es correcta
+    // y ya satisface sus invariantes. Existe porque los tests de ejemplo no atraparon dos
+    // defectos reales encontrados en la revisión anterior del algoritmo:
+    // - D1: huecos que cruzan el borde de año, donde GAP_THRESHOLD se calcula mal al
+    //   pasar de un año ISO al siguiente.
+    // - D3: años ISO de 53 semanas (2026 tiene 53), donde la cobertura se calculaba
+    //   sobre una aritmética de semanas incompleta.
+    // El barrido cubre 2024–2029 (730 días ÷ 3 = ~244 inicio), con gaps de 0 a 60
+    // semanas (÷ 7 ≈ 9 valores). Son ~3300 pares de historias — cada uno liviano,
+    // en total subsegundos. Sin este test, ambos defectos pasaban con toda la suite verde.
+    const DAY = 86400000;
+    const mondayOf = (d: Date) => {
+      const x = new Date(d);
+      const wd = x.getUTCDay() || 7;
+      x.setUTCDate(x.getUTCDate() - (wd - 1));
+      x.setUTCHours(0, 0, 0, 0);
+      return x;
+    };
+
+    const failures: string[] = [];
+    const base = Date.UTC(2024, 0, 1);
+
+    for (let startDay = 0; startDay < 730; startDay += 3) {
+      for (let gapWeeks = 0; gapWeeks <= 60; gapWeeks += 7) {
+        const d1 = base + startDay * DAY;
+        const d2 = d1 + gapWeeks * 7 * DAY;
+        const years = buildTimeline([story("a", new Date(d1)), story("b", new Date(d2))], getDate, getId);
+
+        // Ningún key de semana se repite dentro de un año.
+        for (const y of years) {
+          const keys = y.entries.filter((e) => e.kind === "week").map((e) => (e as TimelineWeek<TestStory>).key);
+          if (new Set(keys).size !== keys.length) {
+            failures.push(`key duplicado en ${y.year} (start=${startDay} gap=${gapWeeks}): ${keys.join(",")}`);
+          }
+        }
+
+        // Toda historia aparece exactamente una vez en todo el timeline.
+        const ids = years.flatMap((y) =>
+          y.entries.flatMap((e) => (e.kind === "week" ? (e as TimelineWeek<TestStory>).stories.map((x) => x.id) : []))
+        );
+        if (ids.length !== 2) {
+          failures.push(`historias perdidas/duplicadas: ${ids.join(",")} (start=${startDay} gap=${gapWeeks})`);
+        }
+
+        // storyCount de cada año coincide con lo que de verdad hay en sus entries.
+        for (const y of years) {
+          const real = y.entries.reduce((n, e) => n + (e.kind === "week" ? (e as TimelineWeek<TestStory>).stories.length : 0), 0);
+          if (real !== y.storyCount) {
+            failures.push(`storyCount ${y.storyCount} != ${real} en ${y.year}`);
+          }
+        }
+
+        // La cantidad de semanas cubiertas (vacías + con historia + las de los
+        // huecos colapsados) iguala el tramo real entre la primera y la última
+        // semana — ninguna semana se pierde ni se inventa.
+        const covered = years.reduce(
+          (n, y) => n + y.entries.reduce((m, e) => m + (e.kind === "gap" ? (e as TimelineGap).weeks : 1), 0),
+          0
+        );
+        const expected =
+          Math.round((mondayOf(new Date(d2)).getTime() - mondayOf(new Date(d1)).getTime()) / (7 * DAY)) + 1;
+        if (covered !== expected) {
+          failures.push(`cobertura ${covered} != esperado ${expected} (start=${startDay} gap=${gapWeeks})`);
+        }
+
+        // Los años salen en orden descendente.
+        const ys = years.map((y) => y.year);
+        if ([...ys].sort((a, b) => b - a).join() !== ys.join()) {
+          failures.push(`años desordenados: ${ys.join(",")}`);
+        }
+
+        // Dentro de un año, las semanas van de más reciente a más antigua.
+        for (const y of years) {
+          const ms = y.entries
+            .filter((e) => e.kind === "week")
+            .map((e) => (e as TimelineWeek<TestStory>).start.getTime());
+          if ([...ms].sort((a, b) => b - a).join() !== ms.join()) {
+            failures.push(`semanas desordenadas en ${y.year}`);
+          }
+        }
+
+        // start siempre cae en lunes 00:00 UTC, end seis días después.
+        for (const y of years) {
+          for (const e of y.entries) {
+            if (e.kind === "week") {
+              const w = e as TimelineWeek<TestStory>;
+              if (w.start.getUTCDay() !== 1 || w.start.getUTCHours() !== 0) {
+                failures.push(`start no es lunes 00:00Z: ${w.start.toISOString()}`);
+              }
+              if (w.end.getTime() - w.start.getTime() !== 6 * DAY) {
+                failures.push(`end no es start+6d en ${w.key}`);
+              }
+            }
+          }
+        }
+
+        // Ninguna corrida de semanas vacías consecutivas supera GAP_THRESHOLD
+        // sin colapsar en un TimelineGap.
+        for (const y of years) {
+          let run = 0;
+          for (const e of y.entries) {
+            if (e.kind === "week") {
+              const w = e as TimelineWeek<TestStory>;
+              run = w.stories.length === 0 ? run + 1 : 0;
+            } else {
+              run = 0;
+            }
+            if (run > GAP_THRESHOLD) {
+              failures.push(`corrida de ${run} semanas vacías sin colapsar en ${y.year} (gap=${gapWeeks})`);
+            }
+          }
+        }
+      }
+    }
+
+    expect(failures).toEqual([]);
   });
 
   afterEach(() => {
