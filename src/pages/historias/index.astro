@@ -1,0 +1,50 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import QuipuDeHistorias from "../../components/QuipuDeHistorias.astro";
+import { buildTimeline } from "../../lib/weeks";
+
+const historias = await getCollection("stories");
+
+const anos = buildTimeline(
+    historias,
+    (historia) => historia.data.date,
+    (historia) => historia.id
+);
+---
+
+<BaseLayout
+    title="Historias | Mistorias"
+    description="Todas las historias de Mistorias, semana a semana."
+>
+    <div class="columna historias-indice">
+        <h1>Historias</h1>
+
+        <p class="historias-indice__entrada">
+            Todas las historias, semana a semana.
+        </p>
+
+        {
+            anos.length > 0 ? (
+                <QuipuDeHistorias anos={anos} />
+            ) : (
+                <p>Todavía no hay historias publicadas.</p>
+            )
+        }
+    </div>
+</BaseLayout>
+
+<style>
+    .historias-indice {
+        padding-block-start: var(--esp-xl);
+    }
+
+    .historias-indice__entrada {
+        margin-block-start: var(--esp-m);
+        color: var(--color-analitico);
+    }
+
+    .historias-indice :global(.quipu-anos) {
+        margin-block-start: var(--esp-l);
+    }
+</style>
