@@ -212,6 +212,14 @@ describe("QuipuDeHistorias", () => {
     expect(html).toContain('href="/historias/el-id-de-la-historia/"');
     expect(html).toContain("Mi Historia");
     expect(html).toContain("Resumen de la historia");
+
+    // Nota: El componente consume `import.meta.env.BASE_URL` directamente
+    // (no como prop), así que para probarlo con un base con prefijo
+    // (GitHub Pages: /mistorias-web/) habría que stubear BASE_URL. No hay
+    // precedente en el repo para ese stub en componentes (ni ListaTemas ni
+    // TarjetaHistoria lo hacen), así que este test valida solo el caso por
+    // defecto ("/"). Un eventual base=/mistorias-web/ queda cubierto por el
+    // build y CI en GitHub.
   });
 
   it("una semana con DOS historias: contiene dos <a href> distintos y NudoDeQuipu fue invocado con cantidad: 2", async () => {
@@ -377,31 +385,4 @@ describe("QuipuDeHistorias", () => {
     expect(ellipseCount).toBe(1);
   });
 
-  it("con base no vacío (GitHub Pages): el href de la historia es correcto", async () => {
-    const historia = buildStoryFixture({
-      id: "historia-1",
-      date: new Date("2026-04-26"),
-    });
-
-    const ano: TimelineYear<CollectionEntry<"stories">> = {
-      year: 2026,
-      storyCount: 1,
-      entries: [
-        {
-          kind: "week",
-          key: "2026-W18",
-          start: new Date("2026-04-27"),
-          end: new Date("2026-05-03"),
-          stories: [historia],
-        },
-      ],
-    };
-
-    const html = await renderAstroComponent(QuipuDeHistorias, {
-      props: { anos: [ano] },
-    });
-
-    // Con BASE_URL por defecto en tests (que es "/"), el href debe ser "/historias/historia-1/"
-    expect(html).toContain('href="/historias/historia-1/"');
-  });
 });
