@@ -11,6 +11,7 @@ import {
   reportRoute,
   siteCodeRoute,
   storyRoute,
+  storiesRoute,
   themeRoute,
   themesRoute
 } from "../src/lib/routes";
@@ -100,6 +101,11 @@ describe("rutas con nombre", () => {
   it("apunta el inicio a la base del despliegue", () => {
     expect(homeRoute(BASE_PAGES)).toBe("/mistorias-web/");
     expect(homeRoute(BASE_NETLIFY)).toBe("/");
+  });
+
+  it("publica el índice de historias bajo /historias/", () => {
+    expect(storiesRoute(BASE_NETLIFY)).toBe("/historias/");
+    expect(storiesRoute(BASE_PAGES)).toBe("/mistorias-web/historias/");
   });
 
   it("publica cada historia bajo /historias/", () => {
