@@ -137,6 +137,8 @@ The build behaves differently based on the `DEPLOY_TARGET` environment variable.
 
 This allows the same codebase to deploy to either platform with correct base paths. CI workflows set this env var when building. An unrecognized value stops the build instead of falling back to the default target: a wrong-but-successful build publishes a site whose stylesheet and every link point at the other deploy's base, and nothing fails (issue #29).
 
+`public/_redirects` carries the Netlify-only redirect rules (today: `/etiquetas/…` → `/temas/…` with 301, [ADR 0018](docs/adr/0018-redirecciones-de-etiquetas-a-temas.md)). It lives in `public/` — like `_headers` — so it travels inside the artifact the workflow verifies and deploys with `--no-build`; on GitHub Pages it ships inert. `tests/redirects.spec.ts` keeps its destinations tied to `routes.ts`, since the file itself never goes through the build.
+
 `netlify.toml` declares the same target for whatever build Netlify runs on its side. `netlify deploy` rebuilds the site unless it is given `--no-build`, and that rebuild does not inherit the workflow's env — which is exactly how production ended up serving `/mistorias-web/…` links from mistorias.pe. The deploy workflow now passes `--no-build` and, before uploading, fails if the artifact still carries the GitHub Pages base.
 
 
