@@ -2,7 +2,7 @@
 import type { CollectionEntry } from "astro:content";
 import NudoDeQuipu from "./NudoDeQuipu.astro";
 import type { Redondeo } from "./NudoDeQuipu.astro";
-import type { TimelineEntry, TimelineYear } from "../lib/weeks";
+import type { TimelineYear } from "../lib/weeks";
 import { readableWeekRange } from "../lib/dates";
 import { storyRoute } from "../lib/routes";
 
@@ -18,25 +18,6 @@ const base = import.meta.env.BASE_URL;
 // archivos, no en tres o más (STANDARDS.md, sin abstracciones prematuras).
 const cuentaHistorias = (cantidad: number) =>
     cantidad === 1 ? "1 historia" : `${cantidad} historias`;
-
-/*
- * Altos de referencia para el viewBox de cada tramo de cuerda, en las mismas
- * unidades que ANCHO en NudoDeQuipu.astro. No tienen que predecir el alto
- * real en píxeles: como NudoDeQuipu dibuja con `preserveAspectRatio="none"`
- * y se estira al 100% de lo que el grid del padre le da, el viewBox solo fija
- * las proporciones internas (dónde caen los nudos dentro del tramo) — el
- * tamaño real en pantalla lo decide el contenido de la fila, no este número.
- */
-const ALTO_SEMANA_VACIA = 32;
-const ALTO_HUECO = 56;
-const ALTO_BASE_HISTORIA = 72;
-const ALTO_POR_HISTORIA_EXTRA = 56;
-
-const altoDe = (entrada: TimelineEntry<CollectionEntry<"stories">>): number => {
-    if (entrada.kind === "gap") return ALTO_HUECO;
-    if (entrada.stories.length === 0) return ALTO_SEMANA_VACIA;
-    return ALTO_BASE_HISTORIA + (entrada.stories.length - 1) * ALTO_POR_HISTORIA_EXTRA;
-};
 
 /*
  * El redondeo de cada tramo depende de su posición en la lista de semanas
@@ -89,9 +70,7 @@ const redondeoDe = (indice: number, total: number): Redondeo => {
                                         <span class="quipu-semana__cuerda">
                                             <NudoDeQuipu
                                                 cantidad={0}
-                                                alto={altoDe(entrada)}
                                                 redondeo={redondeo}
-                                                id={entrada.key}
                                             />
                                         </span>
                                         <p class="quipu-hueco__texto">
@@ -112,9 +91,7 @@ const redondeoDe = (indice: number, total: number): Redondeo => {
                                         <span class="quipu-semana__cuerda">
                                             <NudoDeQuipu
                                                 cantidad={0}
-                                                alto={altoDe(entrada)}
                                                 redondeo={redondeo}
-                                                id={entrada.key}
                                             />
                                         </span>
                                         <div class="quipu-semana__contenido" />
@@ -124,9 +101,7 @@ const redondeoDe = (indice: number, total: number): Redondeo => {
                                         <span class="quipu-semana__cuerda">
                                             <NudoDeQuipu
                                                 cantidad={entrada.stories.length}
-                                                alto={altoDe(entrada)}
                                                 redondeo={redondeo}
-                                                id={entrada.key}
                                             />
                                         </span>
                                         <div class="quipu-semana__contenido">
@@ -254,12 +229,6 @@ const redondeoDe = (indice: number, total: number): Redondeo => {
     .quipu-semana__cuerda {
         grid-column: 1;
         color: var(--color-metadato);
-    }
-
-    .quipu-semana__cuerda :global(svg) {
-        display: block;
-        width: 100%;
-        height: 100%;
     }
 
     .quipu-semana__contenido {

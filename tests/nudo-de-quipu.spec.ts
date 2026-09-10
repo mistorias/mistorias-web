@@ -3,115 +3,99 @@ import { renderAstroComponent } from "./support/render-astro-component";
 import NudoDeQuipu from "../src/components/NudoDeQuipu.astro";
 
 describe("NudoDeQuipu", () => {
-  it("cantidad: 0 → renderiza la cuerda pero sin huecos en la máscara", async () => {
+  it("cantidad: 0 → CERO ocurrencias de class=\"nudo-de-quipu__hueco\"", async () => {
     const html = await renderAstroComponent(NudoDeQuipu, {
-      props: { cantidad: 0, alto: 32, redondeo: "ninguno", id: "test-1" },
+      props: { cantidad: 0, redondeo: "ninguno" },
     });
-    expect(html).toContain("<svg");
-    const blackFills = (html.match(/fill="black"/g) ?? []).length;
-    expect(blackFills).toBe(0);
+    const huecoCount = (html.match(/class="nudo-de-quipu__hueco"/g) ?? []).length;
+    expect(huecoCount).toBe(0);
   });
 
-  it("cantidad: 1 → exactamente un rect con fill='black'", async () => {
+  it("cantidad: 1 → UNA ocurrencia de class=\"nudo-de-quipu__hueco\"", async () => {
     const html = await renderAstroComponent(NudoDeQuipu, {
-      props: { cantidad: 1, alto: 32, redondeo: "ninguno", id: "test-2" },
+      props: { cantidad: 1, redondeo: "ninguno" },
     });
-    const blackFills = (html.match(/fill="black"/g) ?? []).length;
-    expect(blackFills).toBe(1);
+    const huecoCount = (html.match(/class="nudo-de-quipu__hueco"/g) ?? []).length;
+    expect(huecoCount).toBe(1);
   });
 
-  it("cantidad: 3 → exactamente tres rects con fill='black'", async () => {
+  it("cantidad: 3 → TRES ocurrencias de class=\"nudo-de-quipu__hueco\"", async () => {
     const html = await renderAstroComponent(NudoDeQuipu, {
-      props: { cantidad: 3, alto: 32, redondeo: "ninguno", id: "test-3" },
+      props: { cantidad: 3, redondeo: "ninguno" },
     });
-    const blackFills = (html.match(/fill="black"/g) ?? []).length;
-    expect(blackFills).toBe(3);
+    const huecoCount = (html.match(/class="nudo-de-quipu__hueco"/g) ?? []).length;
+    expect(huecoCount).toBe(3);
   });
 
-  it("cantidad: 8 → exactamente ocho rects con fill='black' (sin cap en 5)", async () => {
+  it("cantidad: 8 → OCHO ocurrencias de class=\"nudo-de-quipu__hueco\" (sin tope)", async () => {
     const html = await renderAstroComponent(NudoDeQuipu, {
-      props: { cantidad: 8, alto: 32, redondeo: "ninguno", id: "test-4" },
+      props: { cantidad: 8, redondeo: "ninguno" },
     });
-    const blackFills = (html.match(/fill="black"/g) ?? []).length;
-    expect(blackFills).toBe(8);
+    const huecoCount = (html.match(/class="nudo-de-quipu__hueco"/g) ?? []).length;
+    expect(huecoCount).toBe(8);
   });
 
-  it("alto: 32 → viewBox='0 0 20 32'", async () => {
+  it("cantidad: 1 → el único hueco tiene top: 50%", async () => {
     const html = await renderAstroComponent(NudoDeQuipu, {
-      props: { cantidad: 1, alto: 32, redondeo: "ninguno", id: "test-5a" },
+      props: { cantidad: 1, redondeo: "ninguno" },
     });
-    expect(html).toContain('viewBox="0 0 20 32"');
+    expect(html).toContain("top: 50%");
   });
 
-  it("alto: 128 → viewBox='0 0 20 128'", async () => {
+  it("cantidad: 3 → los huecos tienen top: 25%, top: 50%, top: 75% en ese orden", async () => {
     const html = await renderAstroComponent(NudoDeQuipu, {
-      props: { cantidad: 1, alto: 128, redondeo: "ninguno", id: "test-5b" },
+      props: { cantidad: 3, redondeo: "ninguno" },
     });
-    expect(html).toContain('viewBox="0 0 20 128"');
+    // Verificar que los tres porcentajes aparecen en el html
+    expect(html).toContain("top: 25%");
+    expect(html).toContain("top: 50%");
+    expect(html).toContain("top: 75%");
+    // Verificar que aparecen en ese orden
+    const idx25 = html.indexOf("top: 25%");
+    const idx50 = html.indexOf("top: 50%");
+    const idx75 = html.indexOf("top: 75%");
+    expect(idx25 < idx50 && idx50 < idx75).toBe(true);
   });
 
-  it("redondeo: 'ambos' → exactamente 4 ocurrencias de 'A ' en el contorno", async () => {
+  it('redondeo: "arriba" → class="nudo-de-quipu nudo-de-quipu--arriba"', async () => {
     const html = await renderAstroComponent(NudoDeQuipu, {
-      props: { cantidad: 0, alto: 32, redondeo: "ambos", id: "test-6" },
+      props: { cantidad: 0, redondeo: "arriba" },
     });
-    const arcMatches = html.match(/d="[^"]*A [^"]*"/);
-    expect(arcMatches).toBeTruthy();
-    const arcCount = (arcMatches?.[0].match(/A /g) ?? []).length;
-    expect(arcCount).toBe(4);
+    expect(html).toContain('class="nudo-de-quipu nudo-de-quipu--arriba"');
   });
 
-  it("redondeo: 'arriba' → exactamente 2 ocurrencias de 'A ' en el contorno", async () => {
+  it('redondeo: "abajo" → class="nudo-de-quipu nudo-de-quipu--abajo"', async () => {
     const html = await renderAstroComponent(NudoDeQuipu, {
-      props: { cantidad: 0, alto: 32, redondeo: "arriba", id: "test-7" },
+      props: { cantidad: 0, redondeo: "abajo" },
     });
-    const arcMatches = html.match(/d="[^"]*A [^"]*"/);
-    expect(arcMatches).toBeTruthy();
-    const arcCount = (arcMatches?.[0].match(/A /g) ?? []).length;
-    expect(arcCount).toBe(2);
+    expect(html).toContain('class="nudo-de-quipu nudo-de-quipu--abajo"');
   });
 
-  it("redondeo: 'abajo' → exactamente 2 ocurrencias de 'A ' en el contorno", async () => {
+  it('redondeo: "ambos" → class="nudo-de-quipu nudo-de-quipu--ambos"', async () => {
     const html = await renderAstroComponent(NudoDeQuipu, {
-      props: { cantidad: 0, alto: 32, redondeo: "abajo", id: "test-8" },
+      props: { cantidad: 0, redondeo: "ambos" },
     });
-    const arcMatches = html.match(/d="[^"]*A [^"]*"/);
-    expect(arcMatches).toBeTruthy();
-    const arcCount = (arcMatches?.[0].match(/A /g) ?? []).length;
-    expect(arcCount).toBe(2);
+    expect(html).toContain('class="nudo-de-quipu nudo-de-quipu--ambos"');
   });
 
-  it("redondeo: 'ninguno' → 0 ocurrencias de 'A ' en el contorno", async () => {
+  it('redondeo: "ninguno" → class="nudo-de-quipu nudo-de-quipu--ninguno"', async () => {
     const html = await renderAstroComponent(NudoDeQuipu, {
-      props: { cantidad: 0, alto: 32, redondeo: "ninguno", id: "test-9" },
+      props: { cantidad: 0, redondeo: "ninguno" },
     });
-    const arcMatches = html.match(/d="[^"]*A [^"]*"/);
-    const arcCount = arcMatches ? (arcMatches[0].match(/A /g) ?? []).length : 0;
-    expect(arcCount).toBe(0);
+    expect(html).toContain('class="nudo-de-quipu nudo-de-quipu--ninguno"');
   });
 
-  it("id determina el id de la máscara: id='2026-W36' → <mask id='nudo-2026-W36'> y mask='url(#nudo-2026-W36)'", async () => {
+  it("aria-hidden=\"true\" siempre presente en el <span> raíz", async () => {
     const html = await renderAstroComponent(NudoDeQuipu, {
-      props: { cantidad: 0, alto: 32, redondeo: "ninguno", id: "2026-W36" },
-    });
-    expect(html).toContain('id="nudo-2026-W36"');
-    expect(html).toContain('mask="url(#nudo-2026-W36)"');
-  });
-
-  it("aria-hidden='true' siempre presente en el <svg> raíz", async () => {
-    const html = await renderAstroComponent(NudoDeQuipu, {
-      props: { cantidad: 0, alto: 32, redondeo: "ninguno", id: "test-11" },
+      props: { cantidad: 5, redondeo: "ambos" },
     });
     expect(html).toContain('aria-hidden="true"');
   });
 
-  it("cada rect de nudo (fill='black') lleva rx='1'", async () => {
+  it("el componente NO renderiza ningún <svg>", async () => {
     const html = await renderAstroComponent(NudoDeQuipu, {
-      props: { cantidad: 3, alto: 32, redondeo: "ninguno", id: "test-12" },
+      props: { cantidad: 3, redondeo: "arriba" },
     });
-    const rectMatches = html.match(/<rect[^>]*fill="black"[^>]*>/g) ?? [];
-    expect(rectMatches.length).toBe(3);
-    rectMatches.forEach((rect) => {
-      expect(rect).toContain('rx="1"');
-    });
+    expect(html).not.toContain("<svg");
   });
 });
