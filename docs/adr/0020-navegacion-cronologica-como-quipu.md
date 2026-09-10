@@ -1,4 +1,4 @@
-# ADR 0017: La navegación cronológica se dibuja como un quipu
+# ADR 0020: La navegación cronológica se dibuja como un quipu
 
 ## Estado
 
