@@ -27,7 +27,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for full setup instructions.
 
 Node version and pnpm version are defined in `.nvmrc` and `package.json` respectively — they may differ from values documented elsewhere.
 
-Common commands: `pnpm dev`, `pnpm build`, `pnpm test`. For dev container setup, Docker commands, and detailed development workflow, see [CONTRIBUTING.md](CONTRIBUTING.md).
+Common commands: `pnpm dev`, `pnpm build`, `pnpm test`, `pnpm mutation-test` (mutation testing with Stryker — not build-blocking yet, see [ADR 0019](docs/adr/0019-mutation-testing-y-su-reporte-en-github-pages.md)). For dev container setup, Docker commands, and detailed development workflow, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Developer Workflow & Hooks
 
@@ -96,7 +96,7 @@ The gate runs via `src/lib/content/no-raw-html-integration.ts`, an Astro integra
 - `src/pages/historias/index.astro` — the full archive, grouped into ISO weeks by `buildTimeline()` (`src/lib/weeks.ts`) and rendered by `QuipuDeHistorias.astro` as a quipu — see [ADR 0017](docs/adr/0017-navegacion-cronologica-como-quipu.md). Coexists with `[...id].astro` because that page's `getStaticPaths` only ever emits story ids, never the empty route.
 - `src/pages/temas/index.astro` and `src/pages/temas/[tema].astro` — theme index and per-theme listings
 - `src/pages/autores/[autor].astro` — author profile: bio, verification link, and the stories they signed. There is deliberately no `/autores/` index while there is a single author (ADR 0016)
-- `src/pages/acerca.astro`, `src/pages/404.astro`
+- `src/pages/acerca.astro`, `src/pages/404.astro`. `acerca.astro` cierra con la versión del sitio, resuelta por `resolveSiteVersion(process.env.SITE_VERSION)` (`src/lib/version.ts`): el tag del release cuando el build viene de uno, y `v` + la `version` de `package.json` cuando no — ver [ADR 0017](docs/adr/0017-version-visible-del-sitio.md)
 
 Public URLs are in Spanish (`/historias/`, `/temas/`), matching the project's ubiquitous language. **Never hardcode an internal `href`**: `base` differs per deploy target, so a hand-written path silently breaks on GitHub Pages without failing the build. Build every internal link with the helpers in `src/lib/routes.ts`, which also own the section names.
 
@@ -140,6 +140,8 @@ The build behaves differently based on the `DEPLOY_TARGET` environment variable.
 
 This allows the same codebase to deploy to either platform with correct base paths. CI workflows set this env var when building. An unrecognized value stops the build instead of falling back to the default target: a wrong-but-successful build publishes a site whose stylesheet and every link point at the other deploy's base, and nothing fails (issue #29).
 
+`public/_redirects` carries the Netlify-only redirect rules (today: `/etiquetas/…` → `/temas/…` with 301, [ADR 0018](docs/adr/0018-redirecciones-de-etiquetas-a-temas.md)). It lives in `public/` — like `_headers` — so it travels inside the artifact the workflow verifies and deploys with `--no-build`; on GitHub Pages it ships inert. `tests/redirects.spec.ts` keeps its destinations tied to `routes.ts`, since the file itself never goes through the build.
+
 `netlify.toml` declares the same target for whatever build Netlify runs on its side. `netlify deploy` rebuilds the site unless it is given `--no-build`, and that rebuild does not inherit the workflow's env — which is exactly how production ended up serving `/mistorias-web/…` links from mistorias.pe. The deploy workflow now passes `--no-build` and, before uploading, fails if the artifact still carries the GitHub Pages base.
 
 
@@ -156,6 +158,8 @@ Two workflows in `.github/workflows/`:
 2. **Netlify** (`deploy-netlify.yml`): Triggers on tag push or manual dispatch; uses `DEPLOY_TARGET=netlify`
 
 Both check out with `--recursive` (initializes submodules) and run `pnpm install --frozen-lockfile` before building.
+
+The Netlify workflow also passes the tag to the build as `SITE_VERSION`, and runs `scripts/check_release_version.sh` on a tag push: it fails the deploy if the tag is not `v` + the `version` in `package.json`. Cutting a release therefore means bumping `package.json` in the commit that precedes the tag. Keeping those two in sync is what stops `/acerca` from announcing a version that isn't what shipped (ADR 0017).
 
 ### Never deploy without an explicit instruction
 
@@ -178,13 +182,14 @@ As of issue #33, `.astro` components can be tested with Vitest using the `experi
 **Patterns:**
 
 - Import and render a component via `renderAstroComponent(Component, { props: {...}, slots: {...} })` (defined in `tests/support/render-astro-component.ts`).
+- Pages render the same way when they take no props: `tests/acerca.spec.ts` renders `src/pages/acerca.astro` directly and asserts only what has logic (the version line, the shared authorship labels), not its editorial prose.
 - Assert on the HTML string it produces (no DOM API in Node tests, so use `.toContain()` for substrings).
 - For data fixtures (e.g. `CollectionEntry<"stories">`), use `buildStoryFixture(overrides?)` from `tests/support/story-fixture.ts`, and `buildAuthorFixture(overrides?)` from `tests/support/author-fixture.ts` for `CollectionEntry<"authors">`.
 - Stub environment variables with `vi.stubEnv("DEPLOY_TARGET", "netlify")` and clean up in `afterEach(() => vi.unstubAllEnvs())`.
 
 **Coverage:**
 
-- `coverage.config.ts` explicitly lists only the `.astro` files under test (not `src/**/*.astro`, which would count all untested components at 0%). Currently: `BaseLayout.astro`, `LogotipoMistorias.astro`, `SimboloMistorias.astro`, `TarjetaHistoria.astro`, `ListaTemas.astro`, `FirmaAutoria.astro`, `NavegacionHistorias.astro`, `CabeceraSitio.astro`, `PieSitio.astro`, `DatoConFuente.astro`, `PlantaDeLibros.astro`, `NudoDeQuipu.astro`, `QuipuDeHistorias.astro`. Keep this list in sync with `coverage.config.ts` — it is the file that decides, not this paragraph.
+- `coverage.config.ts` explicitly lists only the `.astro` files under test (not `src/**/*.astro`, which would count all untested components at 0%). Currently: `BaseLayout.astro`, `LogotipoMistorias.astro`, `SimboloMistorias.astro`, `TarjetaHistoria.astro`, `ListaTemas.astro`, `FirmaAutoria.astro`, `NavegacionHistorias.astro`, `CabeceraSitio.astro`, `PieSitio.astro`, `DatoConFuente.astro`, `PlantaDeLibros.astro`, `NudoDeQuipu.astro`, `QuipuDeHistorias.astro`, `pages/acerca.astro`. Keep this list in sync with `coverage.config.ts` — it is the file that decides, not this paragraph.
 - The 90% coverage threshold applies to those files, plus every `.ts` under `src/` — `src/**/*.ts` is a glob, so a new helper in `src/lib/` must arrive with its tests or it drags coverage below the threshold.
 
 **Limitations:**

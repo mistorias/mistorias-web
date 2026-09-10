@@ -1,6 +1,6 @@
 {
   "name": "mistorias-web",
-  "version": "0.1.0",
+  "version": "1.5.0-dev",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,7 +9,8 @@
     "preview": "astro preview",
     "test": "vitest run",
     "story-order": "node scripts/generate-story-order-cache.ts",
-    "og-default-image": "node scripts/generate-default-og-image.ts"
+    "og-default-image": "node scripts/generate-default-og-image.ts",
+    "mutation-test": "stryker run"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.10",
@@ -20,6 +21,8 @@
     "sharp": "^0.35.4"
   },
   "devDependencies": {
+    "@stryker-mutator/core": "^10.0.0",
+    "@stryker-mutator/vitest-runner": "^10.0.0",
     "@types/node": "^26.4.1",
     "@vitest/coverage-v8": "4.1.9",
     "typescript": "^6.0.3",

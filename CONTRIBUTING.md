@@ -267,6 +267,25 @@ cambio de contenido.
 6. El workflow de Verificación (`.github/workflows/ci.yml`) corre en tu PR: tests con cobertura, type check, build y `pnpm audit --prod`. El paso de tests es bloqueante si la cobertura no supera el 90%, y el resumen del job muestra en cuánto quedó. El paso de audit también es bloqueante a propósito, así que una advisory nueva en una dependencia pone el PR en rojo aunque no la hayas introducido tú
 7. Una vez disponibles los cambios en `main`, el sitio se despliega a GitHub Pages (desarrollo). La Publicación a producción ocurre solo al empujar una etiqueta de versión — ver [CONTEXT.md](CONTEXT.md)
 
+### Cortar un release
+
+La página "Acerca de" muestra el tag del release, y `v` + la `version` de
+`package.json` cuando el build no viene de un tag (ver
+[ADR 0017](docs/adr/0017-version-visible-del-sitio.md)). Para que ambos números
+signifiquen lo mismo, el orden es:
+
+1. Sube `version` en `package.json` y haz commit.
+2. Etiqueta ese commit con `v` + esa misma versión: `git tag v0.2.0`.
+3. Empuja el tag. El workflow de Netlify corre
+   `scripts/check_release_version.sh` y **detiene el despliegue** si el tag y
+   `package.json` no coinciden.
+
+Puedes adelantar ese chequeo en local antes de etiquetar:
+
+```bash
+scripts/check_release_version.sh v0.2.0
+```
+
 ## Decisiones Técnicas
 
 Este proyecto usa Astro con las siguientes restricciones de seguridad y de marca:

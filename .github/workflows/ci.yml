@@ -22,6 +22,9 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: recursive
+          # Historial completo: el paso de mutation testing más abajo
+          # necesita diffear contra la base del PR o el commit anterior.
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -64,3 +67,36 @@ jobs:
       # para que Dependabot tenga que resolverla antes de publicar.
       - name: Audit production dependencies
         run: pnpm audit --prod
+
+      # Mutation testing (issue #112): no bloqueante todavía —a diferencia
+      # de la cobertura de líneas de arriba, que sí bloquea— porque solo da
+      # visibilidad de qué tan bien matan los mutantes los tests que
+      # cambió este PR o push. Se corre solo sobre los .ts modificados
+      # para mantener el tiempo del pipeline razonable; ver
+      # docs/adr/0019-mutation-testing-y-su-reporte-en-github-pages.md.
+      - name: Detectar archivos .ts modificados
+        id: cambios
+        if: github.event_name == 'pull_request' || github.event_name == 'push'
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+            HEAD="${{ github.event.pull_request.head.sha }}"
+          else
+            BASE="${{ github.event.before }}"
+            HEAD="${{ github.sha }}"
+          fi
+          ARCHIVOS=$(git diff --name-only --diff-filter=d "$BASE" "$HEAD" -- 'src/**/*.ts' | paste -sd, -)
+          echo "archivos=$ARCHIVOS" >> "$GITHUB_OUTPUT"
+
+      - name: Mutation testing en los archivos modificados
+        if: steps.cambios.outputs.archivos != ''
+        continue-on-error: true
+        run: pnpm mutation-test -- --mutate "${{ steps.cambios.outputs.archivos }}"
+
+      - name: Publicar el reporte de mutation testing
+        if: steps.cambios.outputs.archivos != '' && always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: reporte-mutacion
+          path: reports/mutation/index.html
+          if-no-files-found: ignore
