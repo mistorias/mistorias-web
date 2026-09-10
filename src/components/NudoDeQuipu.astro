@@ -10,13 +10,26 @@ const { cantidad, redondeo } = Astro.props;
 const nudosAVisualizar = Math.max(0, cantidad);
 
 /*
- * Los nudos se reparten a espacio parejo a lo largo del tramo: para N nudos,
- * el nudo i (indexado desde 0) va en el (i+1)/(N+1) por ciento del alto —
- * ni pegado al borde superior ni al inferior, y simétrico entre ellos.
+ * La fila no es solo la lista de historias: arranca con el rótulo de la
+ * semana (<h3>), y recién debajo va el título de cada historia seguido de su
+ * resumen. Repartir los nudos a espacio parejo en toda la fila (como hacía
+ * antes) los deja más cerca del resumen que del título con el que van —
+ * RESERVA_ENCABEZADO destina el primer tramo de la fila al rótulo, y dentro
+ * de lo que queda, SESGO_HACIA_TITULO ubica cada nudo hacia el comienzo de
+ * su historia (donde está el título) en vez de en el centro (que cae más
+ * cerca del resumen). Los dos números salen de comparar contra la posición
+ * real del título en un prototipo, no de una fórmula exacta — no hay forma
+ * de calcular el alto real del texto sin JavaScript, así que esto es una
+ * aproximación deliberada, no una medición.
  */
+const RESERVA_ENCABEZADO = 15;
+const SESGO_HACIA_TITULO = 0.25;
+
 const posiciones = Array.from(
     { length: nudosAVisualizar },
-    (_, indice) => ((indice + 1) / (nudosAVisualizar + 1)) * 100
+    (_, indice) =>
+        RESERVA_ENCABEZADO +
+        ((indice + SESGO_HACIA_TITULO) / nudosAVisualizar) * (100 - RESERVA_ENCABEZADO)
 );
 ---
 
