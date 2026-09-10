@@ -57,6 +57,14 @@ const posicionesNudo = Array.from({ length: nudosAVisualizar }, (_, indice) =>
     (alto * (indice + 1)) / (nudosAVisualizar + 1)
 );
 
+/*
+ * El `id` que recibe la prop tiene que ser único en toda la página: una sola
+ * lista de historias renderiza este componente una vez por semana, y un `id`
+ * de máscara SVG repetido hace que `mask="url(#...)"` de todas las instancias
+ * salvo la primera apunte a la máscara equivocada (o a ninguna). El llamador
+ * pasa la key de la semana (`2026-W36`), que ya es única por construcción de
+ * `buildTimeline` — no hace falta generar un id nuevo acá.
+ */
 const idMascara = `nudo-${id}`;
 ---
 
