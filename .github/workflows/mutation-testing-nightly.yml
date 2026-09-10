@@ -76,4 +76,5 @@ jobs:
 
       - name: Enlazar el reporte en el resumen del job
         if: hashFiles('reports/mutation/index.html') != ''
-        run: echo "## Reporte de mutation testing: ${{ steps.deployment.outputs.page_url }}reporte-mutacion/" >> "$GITHUB_STEP_SUMMARY"
+        run: |
+          echo "## Reporte de mutation testing: ${{ steps.deployment.outputs.page_url }}reporte-mutacion/" >> "$GITHUB_STEP_SUMMARY"
