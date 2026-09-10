@@ -3,99 +3,85 @@ export type Redondeo = "arriba" | "abajo" | "ambos" | "ninguno";
 
 type Props = {
     cantidad: number;
-    alto: number;
     redondeo: Redondeo;
-    id: string;
 };
 
-const { cantidad, alto, redondeo, id } = Astro.props;
-
-const ANCHO = 20;
-const RADIO = 3;
-/*
- * Aproximadamente el 38% del ancho de la cuerda: proporción medida en píxeles
- * sobre el hueco superior del símbolo de marca en public/android-chrome-512x512.png.
- * Este porcentaje es la clave de que el diseño se lea como coherente con la
- * identidad visual de Mistorias.
- */
-const ANCHO_NUDO = 7.6;
-const ALTO_NUDO = 6;
-
+const { cantidad, redondeo } = Astro.props;
 const nudosAVisualizar = Math.max(0, cantidad);
 
 /*
- * El contorno de este tramo de cuerda redondea solo las esquinas que
- * corresponden a su posición dentro del año: la primera fila redondea arriba
- * (linda con el titular del año), la última redondea abajo (linda con el año
- * siguiente), y las del medio quedan rectas. Así, cuando dos tramos se tocan,
- * sus esquinas empalman sin dejar una hendidura (que es lo que pasaría si
- * cada tramo redondeara las cuatro esquinas).
+ * Los nudos se reparten a espacio parejo a lo largo del tramo: para N nudos,
+ * el nudo i (indexado desde 0) va en el (i+1)/(N+1) por ciento del alto —
+ * ni pegado al borde superior ni al inferior, y simétrico entre ellos.
  */
-const contorno = (() => {
-    const r = RADIO;
-    const w = ANCHO;
-    const h = alto;
-    switch (redondeo) {
-        case "ambos":
-            return `M ${r},0 H ${w - r} A ${r},${r} 0 0 1 ${w},${r} V ${h - r} A ${r},${r} 0 0 1 ${w - r},${h} H ${r} A ${r},${r} 0 0 1 0,${h - r} V ${r} A ${r},${r} 0 0 1 ${r},0 Z`;
-        case "arriba":
-            return `M ${r},0 H ${w - r} A ${r},${r} 0 0 1 ${w},${r} V ${h} H 0 V ${r} A ${r},${r} 0 0 1 ${r},0 Z`;
-        case "abajo":
-            return `M 0,0 H ${w} V ${h - r} A ${r},${r} 0 0 1 ${w - r},${h} H ${r} A ${r},${r} 0 0 1 0,${h - r} Z`;
-        default:
-            return `M 0,0 H ${w} V ${h} H 0 Z`;
-    }
-})();
-
-/*
- * Los nudos se distribuyen a espaciado parejo a lo largo del tramo: para N
- * nudos, el nudo i (indexado desde 0) está en altura * (i+1) / (N+1).
- * Así el primero no está en la cumbre del primer pixel ni el último en la
- * cumbre del último: quedan incrustados dentro del tramo, simétricos.
- */
-const posicionesNudo = Array.from({ length: nudosAVisualizar }, (_, indice) =>
-    (alto * (indice + 1)) / (nudosAVisualizar + 1)
+const posiciones = Array.from(
+    { length: nudosAVisualizar },
+    (_, indice) => ((indice + 1) / (nudosAVisualizar + 1)) * 100
 );
-
-/*
- * El `id` que recibe la prop tiene que ser único en toda la página: una sola
- * lista de historias renderiza este componente una vez por semana, y un `id`
- * de máscara SVG repetido hace que `mask="url(#...)"` de todas las instancias
- * salvo la primera apunte a la máscara equivocada (o a ninguna). El llamador
- * pasa la key de la semana (`2026-W36`), que ya es única por construcción de
- * `buildTimeline` — no hace falta generar un id nuevo acá.
- */
-const idMascara = `nudo-${id}`;
 ---
 
-<svg class="nudo-de-quipu" viewBox={`0 0 ${ANCHO} ${alto}`} preserveAspectRatio="none" aria-hidden="true">
-    <mask id={idMascara}>
-        <path d={contorno} fill="white" />
-        {posicionesNudo.map((y) => (
-            <rect
-                x={(ANCHO - ANCHO_NUDO) / 2}
-                y={y - ALTO_NUDO / 2}
-                width={ANCHO_NUDO}
-                height={ALTO_NUDO}
-                rx="1"
-                fill="black"
-            />
-        ))}
-    </mask>
-    <path d={contorno} fill="currentColor" mask={`url(#${idMascara})`} />
-</svg>
+<span
+    class:list={["nudo-de-quipu", `nudo-de-quipu--${redondeo}`]}
+    aria-hidden="true"
+>
+    {posiciones.map((porcentaje) => (
+        <span class="nudo-de-quipu__hueco" style={`top: ${porcentaje}%`} />
+    ))}
+</span>
 
 <style>
     /*
-     * `height: 100%` (no `auto`): esta cuerda llena exactamente el alto que
-     * le da su celda de grid en el padre, sin que tengamos que calcularlo de
-     * antemano. El padre desconoce el alto real, que depende del largo del
-     * texto de la semana. Con `preserveAspectRatio="none"` en el SVG, se
-     * estira sin respetar proporciones.
+     * El tramo de cuerda es un simple rectángulo de color, no un dibujo: no
+     * hace falta SVG para una barra sólida. El redondeo depende de la
+     * posición de este tramo en la lista de semanas del año -- la primera
+     * fila redondea arriba (linda con el resumen del año), la última
+     * redondea abajo (linda con el año siguiente), y las del medio quedan
+     * rectas para que el empalme entre dos tramos consecutivos sea liso.
      */
     .nudo-de-quipu {
+        position: relative;
         display: block;
         width: 100%;
         height: 100%;
+        background-color: currentColor;
+    }
+
+    .nudo-de-quipu--arriba {
+        border-radius: 3px 3px 0 0;
+    }
+
+    .nudo-de-quipu--abajo {
+        border-radius: 0 0 3px 3px;
+    }
+
+    .nudo-de-quipu--ambos {
+        border-radius: 3px;
+    }
+
+    /*
+     * Ancho fijo, relativo al ancho de la cuerda (que no cambia de una fila
+     * a otra) y NUNCA relativo a su alto (que sí cambia, según cuánto texto
+     * tenga la semana, y que no podemos calcular de antemano sin
+     * JavaScript). Si el hueco escalara con el alto de la fila, una semana
+     * con título y resumen largos —que envuelven varias líneas— estiraría el
+     * hueco hasta verse como una ranura vertical en vez de un hueco parecido
+     * a un cuadrado. Con `top` en porcentaje pero `width`/`aspect-ratio`
+     * fijos, la POSICIÓN se adapta al alto real de la fila y el TAMAÑO no.
+     *
+     * 38% y la proporción 1.27:1 son la medida en píxeles del hueco superior
+     * del símbolo de marca (public/android-chrome-512x512.png). `max-height`
+     * es el tope explícito: aunque `aspect-ratio` ya lo mantiene acotado
+     * porque el ancho no crece, es la garantía escrita de que nunca se
+     * estira más allá de eso.
+     */
+    .nudo-de-quipu__hueco {
+        position: absolute;
+        left: 50%;
+        width: 38%;
+        aspect-ratio: 1.27 / 1;
+        max-height: 0.5rem;
+        background-color: var(--color-fondo);
+        border-radius: 1px;
+        transform: translate(-50%, -50%);
     }
 </style>
