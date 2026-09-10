@@ -1,63 +1,93 @@
 ---
+type Redondeo = "arriba" | "abajo" | "ambos" | "ninguno";
+
 type Props = {
     cantidad: number;
+    alto: number;
+    redondeo: Redondeo;
+    id: string;
 };
 
-const { cantidad } = Astro.props;
+const { cantidad, alto, redondeo, id } = Astro.props;
+
+const ANCHO = 20;
+const RADIO = 3;
+/*
+ * Aproximadamente el 38% del ancho de la cuerda: proporción medida en píxeles
+ * sobre el hueco superior del símbolo de marca en public/android-chrome-512x512.png.
+ * Este porcentaje es la clave de que el diseño se lea como coherente con la
+ * identidad visual de Mistorias.
+ */
+const ANCHO_NUDO = 7.6;
+const ALTO_NUDO = 6;
+
+const nudosAVisualizar = Math.max(0, cantidad);
 
 /*
- * Más de cinco lazadas apiladas dejan de leerse como unidades individuales,
- * se amontonan y pierden claridad. El número real de historias vive siempre
- * en el texto que acompaña este dibujo (es decoración, nunca la única fuente
- * de verdad). Por eso el tope es visual, no una limitación de datos.
+ * El contorno de este tramo de cuerda redondea solo las esquinas que
+ * corresponden a su posición dentro del año: la primera fila redondea arriba
+ * (linda con el titular del año), la última redondea abajo (linda con el año
+ * siguiente), y las del medio quedan rectas. Así, cuando dos tramos se tocan,
+ * sus esquinas empalman sin dejar una hendidura (que es lo que pasaría si
+ * cada tramo redondeara las cuatro esquinas).
  */
-const MAX_NUDOS_VISIBLES = 5;
-const nudosAVisualizar = Math.min(cantidad, MAX_NUDOS_VISIBLES);
+const contorno = (() => {
+    const r = RADIO;
+    const w = ANCHO;
+    const h = alto;
+    switch (redondeo) {
+        case "ambos":
+            return `M ${r},0 H ${w - r} A ${r},${r} 0 0 1 ${w},${r} V ${h - r} A ${r},${r} 0 0 1 ${w - r},${h} H ${r} A ${r},${r} 0 0 1 0,${h - r} V ${r} A ${r},${r} 0 0 1 ${r},0 Z`;
+        case "arriba":
+            return `M ${r},0 H ${w - r} A ${r},${r} 0 0 1 ${w},${r} V ${h} H 0 V ${r} A ${r},${r} 0 0 1 ${r},0 Z`;
+        case "abajo":
+            return `M 0,0 H ${w} V ${h - r} A ${r},${r} 0 0 1 ${w - r},${h} H ${r} A ${r},${r} 0 0 1 0,${h - r} Z`;
+        default:
+            return `M 0,0 H ${w} V ${h} H 0 Z`;
+    }
+})();
 
-const ANCHO = 24;
-const ALTO_POR_NUDO = 16;
+/*
+ * Los nudos se distribuyen a espaciado parejo a lo largo del tramo: para N
+ * nudos, el nudo i (indexado desde 0) está en altura * (i+1) / (N+1).
+ * Así el primero no está en la cumbre del primer pixel ni el último en la
+ * cumbre del último: quedan incrustados dentro del tramo, simétricos.
+ */
+const posicionesNudo = Array.from({ length: nudosAVisualizar }, (_, indice) =>
+    (alto * (indice + 1)) / (nudosAVisualizar + 1)
+);
+
+const idMascara = `nudo-${id}`;
 ---
 
-{
-  /*
-   * Cuando la cantidad es cero o menor, no se renderiza ni un <svg> vacío:
-   * es la representación del cero en el quipu (ausencia de nudo = cero
-   * historias esa semana). Que no exista marcado es más limpio y explícito
-   * que un SVG sin contenido.
-   */
-  nudosAVisualizar > 0 && (
-    <svg
-        class="nudo-de-quipu"
-        viewBox={`0 0 ${ANCHO} ${ALTO_POR_NUDO * nudosAVisualizar}`}
-        fill="currentColor"
-        aria-hidden="true"
-    >
-        {Array.from({ length: nudosAVisualizar }).map((_, indice) => (
-            <ellipse
-                cx={ANCHO / 2}
-                cy={ALTO_POR_NUDO * indice + ALTO_POR_NUDO / 2}
-                rx="8"
-                ry="5"
+<svg class="nudo-de-quipu" viewBox={`0 0 ${ANCHO} ${alto}`} preserveAspectRatio="none" aria-hidden="true">
+    <mask id={idMascara}>
+        <path d={contorno} fill="white" />
+        {posicionesNudo.map((y) => (
+            <rect
+                x={(ANCHO - ANCHO_NUDO) / 2}
+                y={y - ALTO_NUDO / 2}
+                width={ANCHO_NUDO}
+                height={ALTO_NUDO}
+                rx="1"
+                fill="black"
             />
         ))}
-    </svg>
-)}
+    </mask>
+    <path d={contorno} fill="currentColor" mask={`url(#${idMascara})`} />
+</svg>
 
 <style>
     /*
-     * El fill="currentColor" en el <svg> raíz es una propiedad heredable en SVG:
-     * las <ellipse> la heredan sin necesidad de repetirla. Así el dibujo cambia
-     * de color con el tema sin tocar el archivo, el mismo mecanismo de
-     * SimboloMistorias y PlantaDeLibros.
-     *
-     * Cada lazada es una elipse horizontal (rx > ry para sugerir el cordón
-     * engrosándose en el nudo, no un círculo genérico). El viewBox escala con
-     * la cantidad: no queda espacio vacío ni se recorta. Con cantidad <= 0, no
-     * se renderiza marcado alguno (ausencia = cero del quipu).
+     * `height: 100%` (no `auto`): esta cuerda llena exactamente el alto que
+     * le da su celda de grid en el padre, sin que tengamos que calcularlo de
+     * antemano. El padre desconoce el alto real, que depende del largo del
+     * texto de la semana. Con `preserveAspectRatio="none"` en el SVG, se
+     * estira sin respetar proporciones.
      */
     .nudo-de-quipu {
         display: block;
         width: 100%;
-        height: auto;
+        height: 100%;
     }
 </style>
