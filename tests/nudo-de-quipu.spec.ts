@@ -35,26 +35,26 @@ describe("NudoDeQuipu", () => {
     expect(huecoCount).toBe(8);
   });
 
-  it("cantidad: 1 → el único hueco tiene top: 50%", async () => {
+  it("cantidad: 1 → el único hueco tiene top: 36.25%", async () => {
     const html = await renderAstroComponent(NudoDeQuipu, {
       props: { cantidad: 1, redondeo: "ninguno" },
     });
-    expect(html).toContain("top: 50%");
+    expect(html).toContain("top: 36.25%");
   });
 
-  it("cantidad: 3 → los huecos tienen top: 25%, top: 50%, top: 75% en ese orden", async () => {
+  it("cantidad: 3 → los huecos tienen top: 22.083333333333332%, top: 50.41666666666667%, top: 78.75% en ese orden", async () => {
     const html = await renderAstroComponent(NudoDeQuipu, {
       props: { cantidad: 3, redondeo: "ninguno" },
     });
     // Verificar que los tres porcentajes aparecen en el html
-    expect(html).toContain("top: 25%");
-    expect(html).toContain("top: 50%");
-    expect(html).toContain("top: 75%");
+    expect(html).toContain("top: 22.083333333333332%");
+    expect(html).toContain("top: 50.41666666666667%");
+    expect(html).toContain("top: 78.75%");
     // Verificar que aparecen en ese orden
-    const idx25 = html.indexOf("top: 25%");
-    const idx50 = html.indexOf("top: 50%");
-    const idx75 = html.indexOf("top: 75%");
-    expect(idx25 < idx50 && idx50 < idx75).toBe(true);
+    const idx0 = html.indexOf("top: 22.083333333333332%");
+    const idx1 = html.indexOf("top: 50.41666666666667%");
+    const idx2 = html.indexOf("top: 78.75%");
+    expect(idx0 < idx1 && idx1 < idx2).toBe(true);
   });
 
   it('redondeo: "arriba" → class="nudo-de-quipu nudo-de-quipu--arriba"', async () => {
