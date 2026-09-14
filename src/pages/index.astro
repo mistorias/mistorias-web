@@ -39,6 +39,14 @@ const CICLO_DE_LOS_DATOS = "PISA 2025";
 // está el piso y el segundo le quita a quien lee la salida cómoda de «esto ya
 // lo sabíamos». Saber que estamos mal abajo no mueve a nadie; saber que lo
 // ganado en una década se perdió, sí.
+//
+// El segundo golpe se enuncia con el lenguaje de la propia OCDE —la caída
+// «revirtió cualquier avance logrado después de 2015»— y no como «el país
+// retrocedió diez años», que es lectura de prensa y la OCDE no firma. Por lo
+// mismo la frase habla del puntaje y no de las personas: PISA compara el
+// promedio de una promoción distinta en cada ciclo, no sigue a los mismos
+// estudiantes, así que «los de hoy leen peor que los de 2015» diría algo que
+// la prueba no mide.
 const datos = [
     {
         cifra: "Siete de cada diez",
@@ -48,11 +56,11 @@ const datos = [
         detalle: "Solo el 30 % de los estudiantes peruanos alcanzó el nivel 2 en Matemática, y ese nivel 2 es el mínimo para desenvolverse en el mundo actual. El promedio de la OCDE es 65 %. Lo mide un organismo externo, sin interés en el resultado peruano."
     },
     {
-        cifra: "Diez años",
-        resto: "es lo que retrocedió el país en lectura: quienes tienen quince hoy leen peor que los de 2015.",
-        fuente: `OCDE, ${CICLO_DE_LOS_DATOS} (Volumen I)`,
-        href: "https://www.oecd.org/en/publications/pisa-2025-results-volume-i_73451bc5-en/full-report/results-for-countries-and-economies_33854635.html",
-        detalle: "390 puntos en Lectura: 18 menos que en 2022 y 8 menos que en 2015. No es estancamiento: es la pérdida de lo que costó una década ganar."
+        cifra: "Diez años de avances",
+        resto: "se borraron en lectura: el puntaje de 2025 quedó por debajo del de 2015.",
+        fuente: `OCDE, ${CICLO_DE_LOS_DATOS} — nota de país: Perú`,
+        href: "https://www.oecd.org/en/publications/pisa-2025-results-volume-i-country-notes_2d4ff9ea-en/peru_0c319189-en.html",
+        detalle: "390 puntos en Lectura, por debajo de los 398 de 2015. La OCDE lo resume así: la caída reciente «revirtió cualquier avance logrado después de 2015». Cada ciclo mide a una promoción distinta, no a los mismos estudiantes."
     }
 ] as const;
 ---
