@@ -33,22 +33,26 @@ const hayTemas = historias.some((historia) => (historia.data.themes ?? []).lengt
 // MANTENIMIENTO: las dos cifras son del ciclo que nombra `CICLO_DE_LOS_DATOS`.
 // Cuando la OCDE publique el siguiente ciclo de PISA hay que revisarlas acá; es
 // el precio de usar datos duros dentro de un texto fijo.
-const CICLO_DE_LOS_DATOS = "PISA 2022";
+const CICLO_DE_LOS_DATOS = "PISA 2025";
 
+// La disonancia son dos golpes, no dos datos sueltos: el primero dice dónde
+// está el piso y el segundo le quita a quien lee la salida cómoda de «esto ya
+// lo sabíamos». Saber que estamos mal abajo no mueve a nadie; saber que lo
+// ganado en una década se perdió, sí.
 const datos = [
     {
-        cifra: "Uno de cada tres",
-        resto: "jóvenes peruanos de quince años alcanza el mínimo de matemática que la OCDE considera necesario para la vida adulta.",
-        fuente: `Minedu–UMC, ${CICLO_DE_LOS_DATOS}`,
-        href: "https://www.gob.pe/institucion/minedu/noticias/877904-pisa-2022-el-peru-mantiene-sus-resultados-en-las-competencias-de-lectura-y-ciencia",
-        detalle: "34 % de estudiantes peruanos alcanzó el nivel 2 o superior en Matemática, y ese nivel 2 es el mínimo para desenvolverse en el mundo actual. Lo publica el propio Estado evaluado."
+        cifra: "Siete de cada diez",
+        resto: "jóvenes peruanos de quince años no alcanzan el mínimo de matemática que la OCDE considera necesario para la vida adulta.",
+        fuente: `OCDE, ${CICLO_DE_LOS_DATOS} — nota de país: Perú`,
+        href: "https://www.oecd.org/en/publications/pisa-2025-results-volume-i-country-notes_2d4ff9ea-en/peru_0c319189-en.html",
+        detalle: "Solo el 30 % de los estudiantes peruanos alcanzó el nivel 2 en Matemática, y ese nivel 2 es el mínimo para desenvolverse en el mundo actual. El promedio de la OCDE es 65 %. Lo mide un organismo externo, sin interés en el resultado peruano."
     },
     {
-        cifra: "Solo el 1 %",
-        resto: "llega al nivel más alto en lectura.",
-        fuente: `OCDE, ${CICLO_DE_LOS_DATOS}`,
-        href: "https://www.oecd.org/en/publications/pisa-2022-results-volume-i-and-ii-country-notes_ed6fbcc5-en/peru_3e71791c-en.html",
-        detalle: "1 % de estudiantes peruanos en nivel 5 o superior, frente al 7 % del promedio de la OCDE. Lo mide un organismo externo, sin interés en el resultado peruano."
+        cifra: "Diez años",
+        resto: "es lo que retrocedió el país en lectura: quienes tienen quince hoy leen peor que los de 2015.",
+        fuente: `OCDE, ${CICLO_DE_LOS_DATOS} (Volumen I)`,
+        href: "https://www.oecd.org/en/publications/pisa-2025-results-volume-i_73451bc5-en/full-report/results-for-countries-and-economies_33854635.html",
+        detalle: "390 puntos en Lectura: 18 menos que en 2022 y 8 menos que en 2015. No es estancamiento: es la pérdida de lo que costó una década ganar."
     }
 ] as const;
 ---
