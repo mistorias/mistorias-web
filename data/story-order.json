@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-12T00:36:44.158Z",
-  "hash": "dd3f5e725f96ae8a707babe829c0fa49f549aa78027457b9211e4d35fe00aa24",
+  "generatedAt": "2026-09-19T18:12:38.785Z",
+  "hash": "684210159487694ebc54287dff672bb4fd40d363ed487610defda272ff388be6",
   "order": [
     "2026-07-24-el-aula-de-madera-donde-ximena-aprende",
     "2026-07-31-los-libros-tambien-llegan-a-cotahuasi",
@@ -10,7 +10,8 @@
     "2026-08-28-silvia-sostiene-su-escuela-entre-techos-bonos-pantallas",
     "2026-08-31-octavio-y-julio-construyen-juntos-la-educacion",
     "2026-09-04-cada-uno-tiene-sus-tiempos-certificado-retenido",
-    "2026-09-11-walter-aprende-a-defender-su-escuela"
+    "2026-09-11-walter-aprende-a-defender-su-escuela",
+    "2026-09-18-caylloma-estrena-universidad-pero-elias-se-va"
   ],
   "stories": {
     "2026-07-24-el-aula-de-madera-donde-ximena-aprende": {
@@ -47,6 +48,10 @@
     },
     "2026-09-11-walter-aprende-a-defender-su-escuela": {
       "previous": "2026-09-04-cada-uno-tiene-sus-tiempos-certificado-retenido",
+      "next": "2026-09-18-caylloma-estrena-universidad-pero-elias-se-va"
+    },
+    "2026-09-18-caylloma-estrena-universidad-pero-elias-se-va": {
+      "previous": "2026-09-11-walter-aprende-a-defender-su-escuela",
       "next": null
     }
   }
