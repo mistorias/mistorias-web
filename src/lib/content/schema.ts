@@ -26,22 +26,22 @@ export type Authorship = (typeof AUTHORSHIP_VALUES)[number];
  * haría fallar el build de historias ya publicadas. Cuando ninguna historia lo
  * declare, la clave `tags` y este respaldo se eliminan.
  *
- * `author` no es el nombre de quien firma sino una referencia a `authors/`:
+ * `author` no es el nombre de quien firma, sino una referencia a `authors/`:
  * así una firma sin ficha rompe el build en vez de publicarse huérfana, y el
  * nombre visible se edita en un solo archivo.
  */
 export const storySchema = z
   .object({
-    title: z.string().min(1),
-    summary: z.string().min(1),
+    title: z.string().min(15),
+    summary: z.string().min(50),
     date: z.coerce.date(),
     author: reference("authors"),
     authorship: z.enum(AUTHORSHIP_VALUES),
     themes: z.array(z.string()).optional(),
     tags: z.array(z.string()).optional(),
-    imageAlt: z.string().min(1).optional(),
-    imageCredit: z.string().min(1).optional(),
-    imageLicense: z.string().min(1).optional()
+    imageAlt: z.string().min(10).optional(),
+    imageCredit: z.string().min(5).optional(),
+    imageLicense: z.string().min(2).optional()
   })
   .transform(({ themes, tags, ...rest }) => ({
     ...rest,

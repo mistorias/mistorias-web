@@ -3,7 +3,7 @@ import { AUTHORSHIP_VALUES, storySchema } from "../src/lib/content/schema";
 
 const validFrontmatter = {
   title: "Historia validada",
-  summary: "Resumen breve de prueba",
+  summary: "Resumen breve de prueba que tiene que ser un poco largo",
   date: "2026-04-26",
   author: "mateo-salazar",
   authorship: "escrito-con-ia",
@@ -23,6 +23,30 @@ describe("storySchema", () => {
     const { title, ...withoutTitle } = validFrontmatter;
 
     expect(() => storySchema.parse(withoutTitle)).toThrow();
+  });
+
+  it.each([
+    {
+      title: "Título corto"
+    },
+    {
+      summary: "Resumen corto"
+    },
+    {
+      imageAlt: "N"
+    },
+    {
+      imageCredit: "N"
+    },
+    {
+      imageLicense: "N"
+    }
+  ])('rechaza el frontmatter cuando el texto de título tiene menor longitud a la permitida', (frontmatterWithShortTextAttribute) => {
+    const faultyFrontmatter = {
+      ...validFrontmatter,
+      ...frontmatterWithShortTextAttribute
+    };
+    expect(() => storySchema.parse(faultyFrontmatter)).toThrow();
   });
 
   it("asume una lista de temas vacía cuando no se declara", () => {
