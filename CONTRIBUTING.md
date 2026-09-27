@@ -85,11 +85,11 @@ nvm use
 
 **Para Windows:**
 
-Instala [nvm-windows](https://github.com/coreybutler/nvm-windows), luego:
+Instala [nvm-windows](https://github.com/coreybutler/nvm-windows), luego, en WSL, en GitBash u otro terminal Bash en tu máquina:
 
 ```bash
 nvm install $(cat .nvmrc)
-nvm use
+nvm use $(cat .nvmrc)
 ```
 
 ### Gestor de Paquetes (pnpm)
