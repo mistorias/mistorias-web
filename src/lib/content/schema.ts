@@ -26,6 +26,11 @@ export type Authorship = (typeof AUTHORSHIP_VALUES)[number];
  * haría fallar el build de historias ya publicadas. Cuando ninguna historia lo
  * declare, la clave `tags` y este respaldo se eliminan.
  *
+ * `readingTimeMinutes` es solo el número, con la unidad en el nombre: lo lee
+ * también quien consume el contenido sin pasar por este esquema. No se
+ * calcula acá; lo calcula y verifica el pipeline de mistorias-contenido
+ * (palabras de `## La historia` entre 200 por minuto, hacia arriba).
+ *
  * `author` no es el nombre de quien firma, sino una referencia a `authors/`:
  * así una firma sin ficha rompe el build en vez de publicarse huérfana, y el
  * nombre visible se edita en un solo archivo.
@@ -37,6 +42,7 @@ export const storySchema = z
     date: z.coerce.date(),
     author: reference("authors"),
     authorship: z.enum(AUTHORSHIP_VALUES),
+    readingTimeMinutes: z.number().int().positive(),
     themes: z.array(z.string()).optional(),
     tags: z.array(z.string()).optional(),
     imageAlt: z.string().min(10).optional(),
