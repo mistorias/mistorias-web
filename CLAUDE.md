@@ -189,7 +189,7 @@ As of issue #33, `.astro` components can be tested with Vitest using the `experi
 
 **Coverage:**
 
-- `coverage.config.ts` explicitly lists only the `.astro` files under test (not `src/**/*.astro`, which would count all untested components at 0%). Currently: `BaseLayout.astro`, `LogotipoMistorias.astro`, `SimboloMistorias.astro`, `TarjetaHistoria.astro`, `ListaTemas.astro`, `FirmaAutoria.astro`, `NavegacionHistorias.astro`, `CabeceraSitio.astro`, `PieSitio.astro`, `DatoConFuente.astro`, `PlantaDeLibros.astro`, `pages/acerca.astro`, `NudoDeQuipu.astro`, `QuipuDeHistorias.astro`. Keep this list in sync with `coverage.config.ts` — it is the file that decides, not this paragraph.
+- `coverage.config.ts` explicitly lists only the `.astro` files under test (not `src/**/*.astro`, which would count all untested components at 0%). Currently: `BaseLayout.astro`, `LogotipoMistorias.astro`, `SimboloMistorias.astro`, `TarjetaHistoria.astro`, `ListaTemas.astro`, `FirmaAutoria.astro`, `NavegacionHistorias.astro`, `CabeceraSitio.astro`, `PieSitio.astro`, `DatoConFuente.astro`, `PlantaDeLibros.astro`, `pages/acerca.astro`, `NudoDeQuipu.astro`, `QuipuDeHistorias.astro`, `TiempoDeLectura.astro`. Keep this list in sync with `coverage.config.ts` — it is the file that decides, not this paragraph.
 - The 90% coverage threshold applies to those files, plus every `.ts` under `src/` — `src/**/*.ts` is a glob, so a new helper in `src/lib/` must arrive with its tests or it drags coverage below the threshold.
 
 **Limitations:**

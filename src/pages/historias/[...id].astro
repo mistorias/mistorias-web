@@ -12,6 +12,7 @@ import FirmaAutoria from "../../components/FirmaAutoria.astro";
 import NavegacionHistorias from "../../components/NavegacionHistorias.astro";
 import OpinionHistoria from "../../components/OpinionHistoria.astro";
 import SimboloMistorias from "../../components/SimboloMistorias.astro";
+import TiempoDeLectura from "../../components/TiempoDeLectura.astro";
 import { dateForAttribute, readableDate } from "../../lib/dates";
 import { authorRoute, themesRoute } from "../../lib/routes";
 import { getStoryImage } from "../../lib/content/story-images";
@@ -87,6 +88,8 @@ if (autor === undefined) {
                     {readableDate(story.data.date)}
                 </time>
             </p>
+
+            <TiempoDeLectura minutos={story.data.readingTimeMinutes} />
 
             <p class="historia__resumen">{story.data.summary}</p>
         </header>
