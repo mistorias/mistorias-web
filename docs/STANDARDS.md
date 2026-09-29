@@ -99,6 +99,7 @@ que el control no se apague en silencio.
 - Preferir `type` sobre `interface`, salvo que se necesite comportamiento tipo clase
 - Evitar `any` — usar `unknown` si es necesario, y luego acotar el tipo
 - Usar Zod para la validación en tiempo de ejecución de datos externos (como en `storySchema`)
+- Un campo del frontmatter con unidad la lleva en el nombre (`readingTimeMinutes`) y su valor es solo el número. La regla completa está en [mistorias-contenido](https://github.com/mistorias/mistorias-contenido/blob/main/docs/convenciones-del-frontmatter.md)
 
 ### Sin Abstracciones Prematuras
 
