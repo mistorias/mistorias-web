@@ -8,6 +8,7 @@ interface StoryFixtureOverrides {
   date?: Date;
   authorId?: string;
   authorship?: Authorship;
+  readingTimeMinutes?: number;
   themes?: string[];
   imageAlt?: string;
   imageCredit?: string;
@@ -31,6 +32,7 @@ export function buildStoryFixture(
         id: overrides?.authorId ?? "mateo-salazar"
       },
       authorship: overrides?.authorship ?? "escrito-con-ia",
+      readingTimeMinutes: overrides?.readingTimeMinutes ?? 5,
       themes: overrides?.themes ?? ["educacion"],
       imageAlt: overrides?.imageAlt,
       imageCredit: overrides?.imageCredit,

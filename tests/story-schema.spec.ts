@@ -7,6 +7,7 @@ const validFrontmatter = {
   date: "2026-04-26",
   author: "mateo-salazar",
   authorship: "escrito-con-ia",
+  readingTimeMinutes: 4,
   themes: ["educacion", "comunidad"]
 };
 
@@ -18,6 +19,28 @@ describe("storySchema", () => {
     expect(parsed.date).toBeInstanceOf(Date);
     expect(parsed.themes).toEqual(["educacion", "comunidad"]);
   });
+
+  it("conserva el tiempo de lectura en minutos", () => {
+    expect(storySchema.parse(validFrontmatter).readingTimeMinutes).toBe(4);
+  });
+
+  it("rechaza el frontmatter sin tiempo de lectura", () => {
+    const { readingTimeMinutes, ...withoutReadingTime } = validFrontmatter;
+
+    expect(() => storySchema.parse(withoutReadingTime)).toThrow();
+  });
+
+  // El campo lo calcula un script de mistorias-contenido y es solo el número:
+  // "4 min" o "4" obligaría a cada cliente a interpretar la unidad, y 0 o un
+  // decimal no son un tiempo de lectura que el sitio pueda mostrar.
+  it.each([0, -1, 2.5, "4", "4 min"])(
+    "rechaza %j como tiempo de lectura",
+    (readingTimeMinutes) => {
+      expect(() =>
+        storySchema.parse({ ...validFrontmatter, readingTimeMinutes })
+      ).toThrow();
+    }
+  );
 
   it("rechaza el frontmatter sin título", () => {
     const { title, ...withoutTitle } = validFrontmatter;
