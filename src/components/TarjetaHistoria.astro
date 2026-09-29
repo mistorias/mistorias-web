@@ -5,6 +5,7 @@ import ListaTemas from "./ListaTemas.astro";
 import SimboloMistorias from "./SimboloMistorias.astro";
 import { dateForAttribute, readableDate } from "../lib/dates";
 import { storyRoute } from "../lib/routes";
+import { compactReadingTime, fullReadingTime } from "../lib/reading-time";
 import { getStoryImage } from "../lib/content/story-images";
 
 type Props = {
@@ -18,7 +19,8 @@ type Props = {
 // nombre llega ya resuelto desde la página para que la tarjeta no tenga que
 // leer la colección: así sigue siendo un componente puro y testeable.
 const { historia, nombreAutor, destacada = false, nivelTitulo = 2 } = Astro.props;
-const { title, summary, date, themes, imageAlt } = historia.data;
+const { title, summary, date, themes, imageAlt, readingTimeMinutes } =
+    historia.data;
 const enlace = storyRoute(import.meta.env.BASE_URL, historia.id);
 const imagen = getStoryImage(historia.id);
 
@@ -60,6 +62,13 @@ const Titulo = `h${nivelTitulo}` as const;
         <time datetime={dateForAttribute(date)}>{readableDate(date)}</time>
         <span aria-hidden="true">·</span>
         {nombreAutor}
+        <span aria-hidden="true">·</span>
+        {/* El apóstrofo suelto no dice "minutos" en un lector de pantalla: la
+            forma compacta se oculta y el texto completo va en `sr-only`. */}
+        <span aria-hidden="true">{compactReadingTime(readingTimeMinutes)}</span>
+        <span class="sr-only">
+            {fullReadingTime(readingTimeMinutes)} de lectura
+        </span>
     </p>
 
     <p class="tarjeta__resumen">{summary}</p>
