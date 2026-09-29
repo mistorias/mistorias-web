@@ -130,6 +130,46 @@ describe("TarjetaHistoria", () => {
     expect(html).toContain("abril");
   });
 
+  // La forma compacta (`5'`) va en la misma línea que la fecha y quien firma.
+  // Un apóstrofo suelto no dice "minutos" en un lector de pantalla, así que la
+  // forma visual se oculta y el texto completo va en `sr-only`.
+  describe("tiempo de lectura", () => {
+    const metadataLine = (html: string): string =>
+      html.match(/<p class="tarjeta__metadatos"[^>]*>([\s\S]*?)<\/p>/)?.[1] ?? "";
+
+    it("muestra el tiempo en forma compacta, en la línea de fecha y autoría", async () => {
+      const historia = buildStoryFixture({ readingTimeMinutes: 5 });
+      const html = await renderAstroComponent(TarjetaHistoria, {
+        props: { historia, nombreAutor: "Mateo Salazar" },
+      });
+
+      const line = metadataLine(html);
+      expect(line).toContain("<time");
+      expect(line).toContain("Mateo Salazar");
+      expect(line).toMatch(/<span aria-hidden="true"[^>]*>5(?:'|&#39;)<\/span>/);
+    });
+
+    it("lo anuncia completo a los lectores de pantalla", async () => {
+      const historia = buildStoryFixture({ readingTimeMinutes: 5 });
+      const html = await renderAstroComponent(TarjetaHistoria, {
+        props: { historia, nombreAutor: "Mateo Salazar" },
+      });
+
+      expect(metadataLine(html)).toMatch(
+        /<span class="sr-only"[^>]*>5 minutos de lectura<\/span>/
+      );
+    });
+
+    it("dice un minuto en singular", async () => {
+      const historia = buildStoryFixture({ readingTimeMinutes: 1 });
+      const html = await renderAstroComponent(TarjetaHistoria, {
+        props: { historia, nombreAutor: "Mateo Salazar" },
+      });
+
+      expect(metadataLine(html)).toContain("1 minuto de lectura");
+    });
+  });
+
   // La tarjeta muestra el nombre pero no lo enlaza: tiene un solo destino
   // estirado sobre toda su superficie (ADR 0015) y un segundo enlace le daría
   // al lector de pantalla dos destinos por cada historia listada.
