@@ -25,11 +25,8 @@ const storiesDir = resolve(
 
 const FRONTMATTER_DELIMITER = "---";
 
-// `themes` es la clave vigente; `tags` es la vieja y storySchema
-// (src/lib/content/schema.ts) la sigue aceptando mientras el contenido migra.
-// Este script acepta las dos por la misma razón.
-const THEMES_KEY = /^(themes|tags):/;
-const INLINE_THEMES = /^(?:themes|tags):\s*\[(.*)\]\s*$/;
+const THEMES_KEY = /^themes:/;
+const INLINE_THEMES = /^themes:\s*\[(.*)\]\s*$/;
 
 const findMarkdownFiles = (dir) => {
   const entries = readdirSync(dir);
