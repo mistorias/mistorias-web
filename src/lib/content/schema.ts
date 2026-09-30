@@ -21,10 +21,8 @@ export type Authorship = (typeof AUTHORSHIP_VALUES)[number];
 /**
  * Frontmatter de una historia.
  *
- * `themes` es la clave vigente. `tags` es el nombre viejo y se sigue
- * aceptando mientras el submódulo `mistorias-contenido` migra: rechazarlo hoy
- * haría fallar el build de historias ya publicadas. Cuando ninguna historia lo
- * declare, la clave `tags` y este respaldo se eliminan.
+ * `themes` es la clave de los temas de la historia. El nombre viejo, `tags`,
+ * ya no se lee: `mistorias-contenido` migró todas sus historias.
  *
  * `readingTimeMinutes` es solo el número, con la unidad en el nombre: lo lee
  * también quien consume el contenido sin pasar por este esquema. No se
@@ -35,24 +33,18 @@ export type Authorship = (typeof AUTHORSHIP_VALUES)[number];
  * así una firma sin ficha rompe el build en vez de publicarse huérfana, y el
  * nombre visible se edita en un solo archivo.
  */
-export const storySchema = z
-  .object({
-    title: z.string().min(15),
-    summary: z.string().min(50),
-    date: z.coerce.date(),
-    author: reference("authors"),
-    authorship: z.enum(AUTHORSHIP_VALUES),
-    readingTimeMinutes: z.number().int().positive(),
-    themes: z.array(z.string()).optional(),
-    tags: z.array(z.string()).optional(),
-    imageAlt: z.string().min(10).optional(),
-    imageCredit: z.string().min(5).optional(),
-    imageLicense: z.string().min(2).optional()
-  })
-  .transform(({ themes, tags, ...rest }) => ({
-    ...rest,
-    themes: themes ?? tags ?? []
-  }));
+export const storySchema = z.object({
+  title: z.string().min(15),
+  summary: z.string().min(50),
+  date: z.coerce.date(),
+  author: reference("authors"),
+  authorship: z.enum(AUTHORSHIP_VALUES),
+  readingTimeMinutes: z.number().int().positive(),
+  themes: z.array(z.string()).default([]),
+  imageAlt: z.string().min(10).optional(),
+  imageCredit: z.string().min(5).optional(),
+  imageLicense: z.string().min(2).optional()
+});
 
 export type StoryFrontmatter = z.infer<typeof storySchema>;
 
