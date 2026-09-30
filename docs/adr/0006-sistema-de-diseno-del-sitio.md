@@ -156,7 +156,7 @@ solo por color; y 44px de blanco de toque en fichas de etiqueta y enlaces del pi
 ## Riesgos abiertos
 
 - **La política de etiquetas se contradice con el contenido publicado.**
-  `TAGS.md` del repositorio de contenido marca `educacion` y `arequipa` como
+  `TAGS.md` (hoy `TEMAS.md`) del repositorio de contenido marca `educacion` y `arequipa` como
   excluidas siempre, pero la historia actual las declara. Al volverse navegables,
   el sitio publica `/etiquetas/educacion/` y `/etiquetas/arequipa/`, que según esa
   política no deberían existir. Se corrige en el repositorio de contenido.
