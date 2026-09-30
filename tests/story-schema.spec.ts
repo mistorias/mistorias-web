@@ -78,25 +78,14 @@ describe("storySchema", () => {
     expect(storySchema.parse(withoutThemes).themes).toEqual([]);
   });
 
-  // Respaldo temporal: las historias ya publicadas en mistorias-contenido
-  // todavía declaran `tags`. Esta prueba se borra junto con el respaldo.
-  it("lee `tags` como temas mientras el contenido migra a `themes`", () => {
+  it("ya no lee `tags` como temas", () => {
     const { themes, ...withoutThemes } = validFrontmatter;
     const parsed = storySchema.parse({
       ...withoutThemes,
       tags: ["junin", "docentes"]
     });
 
-    expect(parsed.themes).toEqual(["junin", "docentes"]);
-  });
-
-  it("prefiere `themes` cuando la historia declara las dos claves", () => {
-    const parsed = storySchema.parse({
-      ...validFrontmatter,
-      tags: ["clave-vieja"]
-    });
-
-    expect(parsed.themes).toEqual(["educacion", "comunidad"]);
+    expect(parsed.themes).toEqual([]);
   });
 
   it("no exige imageAlt/imageCredit/imageLicense cuando no hay imagen", () => {
