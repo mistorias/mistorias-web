@@ -20,27 +20,27 @@ describe("PieSitio", () => {
 
   it("pone las redes en la franja de la marca, rotuladas por la invitación", async () => {
     const html = await renderAstroComponent(PieSitio);
-    const franja = html.slice(
+    const band = html.slice(
       html.indexOf('class="pie__franja'),
       html.indexOf("<nav")
     );
 
-    expect(franja).toContain('aria-labelledby="pie-invitacion"');
-    for (const perfil of SOCIAL_PROFILES) {
-      expect(franja).toContain(`href="${perfil.url}"`);
+    expect(band).toContain('aria-labelledby="pie-invitacion"');
+    for (const profile of SOCIAL_PROFILES) {
+      expect(band).toContain(`href="${profile.url}"`);
     }
   });
 
   it("conserva los cuatro enlaces del pie", async () => {
     const html = await renderAstroComponent(PieSitio);
 
-    for (const texto of [
+    for (const text of [
       "Contenido editorial",
       "Código del sitio",
       "Esencia de marca",
       "Reportar un problema",
     ]) {
-      expect(html).toMatch(new RegExp(`class="pie__enlace"[^>]*>\\s*${texto}`));
+      expect(html).toMatch(new RegExp(`class="pie__enlace"[^>]*>\\s*${text}`));
     }
   });
 });
