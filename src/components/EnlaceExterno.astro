@@ -81,6 +81,13 @@ const valoresRel = [...(rel ? rel.split(/\s+/) : []), "noopener", "noreferrer"]
         white-space: nowrap;
     }
 
+    /* En el enlace de ícono la flecha es una insignia absoluta: su envoltura
+       no debe existir como caja, o un enlace en rejilla (el aro de las redes)
+       la cuenta como un elemento más y corre el dibujo de su centro. */
+    .enlace-externo--icono .enlace-externo__cola {
+        display: contents;
+    }
+
     /* `base.css` pone todo `svg` en bloque; acá tiene que ir en la línea. */
     .enlace-externo--texto .enlace-externo__flecha {
         display: inline-block;

@@ -49,7 +49,7 @@ const GLIFOS: Record<SocialNetwork, { viewBox: string; d: string }> = {
                     }
                 >
                     <svg
-                        class="redes__glifo"
+                        class={`redes__glifo redes__glifo--${perfil.network}`}
                         viewBox={GLIFOS[perfil.network].viewBox}
                         fill="currentColor"
                         aria-hidden="true"
@@ -97,12 +97,19 @@ const GLIFOS: Record<SocialNetwork, { viewBox: string; d: string }> = {
             color 150ms ease;
     }
 
-    /* El alto, no el ancho, iguala los tres: el viewBox de cada glifo va
-       recortado a su dibujo, así que la "f" (angosta) y los dos cuadrados
-       quedan a la misma altura óptica. */
+    /* Alto y ancho explícitos, nunca `width: auto`: WebKit (Safari, iPhone)
+       no deduce el ancho de un svg solo con su `viewBox` dentro de una rejilla
+       y lo estira o lo colapsa. Cada ancho sale del `viewBox` de su glifo
+       (alto 1.125rem): la "f", angosta, y los dos cuadrados quedan a la misma
+       altura óptica. */
     .redes__glifo {
+        flex: none;
+        width: 1.125rem;
         height: 1.125rem;
-        width: auto;
+    }
+
+    .redes__glifo--facebook {
+        width: 0.632rem; /* 1.125rem × 10.941 / 19.47 */
     }
 
     /* El anillo de foco global redondea con `--radio`; sobre un círculo eso

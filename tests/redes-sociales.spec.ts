@@ -35,7 +35,7 @@ describe("RedesSociales", () => {
 
   it("oculta los dibujos al lector de pantalla y al foco", async () => {
     const html = await renderSocialLinks();
-    const glyphs = html.match(/<svg[^>]*class="redes__glifo"[^>]*>/g) ?? [];
+    const glyphs = html.match(/<svg[^>]*class="redes__glifo [^"]*"[^>]*>/g) ?? [];
 
     expect(glyphs).toHaveLength(SOCIAL_PROFILES.length);
     for (const svg of glyphs) {
@@ -82,5 +82,15 @@ describe("RedesSociales", () => {
 
     expect(html).not.toMatch(/fill="#/);
     expect(html).toContain('fill="currentColor"');
+  });
+});
+
+describe("RedesSociales, tamaño de los glifos", () => {
+  it("marca cada glifo con su red para darle ancho y alto explícitos (WebKit no deduce el ancho de un svg con width: auto)", async () => {
+    const html = await renderSocialLinks();
+
+    for (const profile of SOCIAL_PROFILES) {
+      expect(html).toContain(`redes__glifo--${profile.network}`);
+    }
   });
 });
