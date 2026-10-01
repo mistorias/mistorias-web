@@ -6,6 +6,7 @@ import {
     reportRoute,
     siteCodeRoute
 } from "../lib/routes";
+import RedesSociales from "./RedesSociales.astro";
 
 const base = import.meta.env.BASE_URL;
 const inicio = homeRoute(base);
@@ -20,7 +21,9 @@ const inicio = homeRoute(base);
 //
 // La nota junto al nombre de la marca ya no habla de fuentes ni de historial
 // —eso quedó cubierto por los enlaces de abajo— sino que cierra la visita con
-// la misión del proyecto (issue #32).
+// la misión del proyecto (issue #32). Desde el issue #148 esa misma nota
+// termina invitando a seguir a Mistorias en redes, con los íconos al lado: la
+// invitación llega cuando la lectura ya terminó, sin taparla. Ver ADR 0021.
 const enlaces = [
     { texto: "Contenido editorial", href: editorialContentRoute(base) },
     { texto: "Código del sitio", href: siteCodeRoute(base) },
@@ -32,12 +35,19 @@ const enlaces = [
 <footer class="pie">
     <div class="contenedor pie__interior">
         <div class="pie__marca">
-            <a class="pie__logo" href={inicio}>Mistorias</a>
+            <div class="pie__franja">
+                <a class="pie__logo" href={inicio}>Mistorias</a>
 
-            <p class="pie__nota">
-                No queremos solo informarte. Queremos que veas, entiendas y
-                quieras transformar la educación.
-            </p>
+                <p class="pie__nota">
+                    No queremos solo informarte: cada semana, una historia para
+                    que veas, entiendas y quieras transformar la educación.{" "}
+                    <span id="pie-invitacion" class="pie__invitacion">
+                        Síguenos y no te pierdas la próxima.
+                    </span>
+                </p>
+
+                <RedesSociales etiquetadoPor="pie-invitacion" />
+            </div>
         </div>
 
         <nav aria-label="Enlaces del pie">
@@ -74,23 +84,39 @@ const enlaces = [
         padding-block: var(--esp-l);
     }
 
-    /* Sin `align-items` propio: el `stretch` por defecto de flexbox iguala
-       el alto del enlace y el de la nota, cualquiera sea el más alto —así
-       "el mismo tamaño vertical" no depende de un número fijo. */
+    /* La franja de marca: nombre, nota y redes, separada de los enlaces por
+       la misma línea que separa el pie del contenido.
+
+       Es un contenedor (`container-type`) porque lo que decide si sus tres
+       piezas caben en fila es su propio ancho, no el de un dispositivo
+       (ADR 0006). ADR 0012 descartó las container queries en la portada
+       porque `contain: layout` desancla el panel `position: fixed` de
+       `DatoConFuente`; el pie no contiene nada fijo, así que acá no aplica.
+       Ver ADR 0021. */
     .pie__marca {
-        display: flex;
-        gap: var(--esp-xs);
+        container: pie-marca / inline-size;
+        padding-block-end: var(--esp-m);
+        border-block-end: 1px solid var(--color-borde);
+    }
+
+    /* Tres columnas: nombre, nota y redes. `align-items: center` centra el
+       nombre y el bloque de redes contra el alto de la nota, cualquiera sea
+       su número de líneas: con dos, los íconos caen entre la primera y la
+       segunda; con tres, en la segunda. Como cada pieza vive en su propia
+       columna, la nota crece hacia abajo y nunca se mete bajo los íconos. */
+    .pie__franja {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: var(--esp-s) var(--esp-m);
     }
 
     /* El nombre de la marca, no el logotipo completo: solo texto, en el
        mismo tratamiento que la palabra dentro de LogotipoMistorias (Lora
-       600, --color-acento). `flex` + `align-items: center` lo centra
-       verticalmente dentro del alto que le da el `stretch` del padre;
-       `min-height` es el mismo piso de blanco de toque que ya usan
-       `.pie__enlace` y `.cabecera__enlace`, para cuando la nota es corta. */
+       600, --color-acento). `min-height` es el mismo piso de blanco de toque
+       que ya usan `.pie__enlace` y `.cabecera__enlace`. */
     .pie__logo {
         display: flex;
-        flex: none;
         align-items: center;
         min-height: 44px;
         font-family: var(--fuente-narrativa);
@@ -101,18 +127,35 @@ const enlaces = [
         white-space: nowrap;
     }
 
+    /* Pegada a las redes (`justify-self: end`) y alineada a la derecha, de
+       modo que la invitación con que termina queda junto a los íconos a los
+       que apunta. */
     .pie__nota {
-        /* El margen automático consume el espacio libre de la fila antes
-           del elemento, así su borde derecho llega al borde derecho de
-           `.pie__marca` (ya 100% del pie) en vez de quedar pegado a
-           `.pie__logo`. En viewports angostos, sin espacio libre, se
-           resuelve a 0 y el comportamiento es el de siempre. */
-        margin-inline-start: auto;
+        justify-self: end;
         max-width: 42ch;
         font-size: var(--paso--1);
         color: var(--color-metadato);
-        /* A la derecha, contra el nombre de marca a su izquierda. */
         text-align: right;
+    }
+
+    .pie__invitacion {
+        font-weight: 600;
+        color: var(--color-acento);
+    }
+
+    /* Bajo 36rem las tres columnas ya no caben: a 390px a la nota le
+       quedarían ~110px, unos 15 caracteres por línea. Ahí se apila todo y
+       se centra, y la nota recupera el ancho completo. */
+    @container pie-marca (width < 36rem) {
+        .pie__franja {
+            grid-template-columns: 1fr;
+            justify-items: center;
+        }
+
+        .pie__nota {
+            justify-self: center;
+            text-align: center;
+        }
     }
 
     .pie__lista {

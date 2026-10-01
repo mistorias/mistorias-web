@@ -27,6 +27,7 @@ export const coverageConfig = {
     "src/components/NudoDeQuipu.astro",
     "src/components/QuipuDeHistorias.astro",
     "src/components/TiempoDeLectura.astro",
+    "src/components/RedesSociales.astro",
   ],
   reporter: ["text", ["text-summary", { file: "cobertura.txt" }]] as Array<
     "text" | ["text-summary", { file: string }]
