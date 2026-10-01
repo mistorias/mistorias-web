@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import NotaDeFuente from "../src/components/NotaDeFuente.astro";
 import { renderAstroComponent } from "./support/render-astro-component";
+import { visibleText } from "./support/visible-text";
 
 const props = {
   fuente: "el README del repositorio del sitio",
@@ -12,7 +13,7 @@ describe("NotaDeFuente", () => {
     const html = await renderAstroComponent(NotaDeFuente, { props });
 
     expect(html).toContain(`href="${props.href}"`);
-    expect(html).toContain(props.fuente);
+    expect(visibleText(html)).toContain(props.fuente);
   });
 
   it("abre el documento en una pestaña nueva avisándolo, como todo enlace externo", async () => {

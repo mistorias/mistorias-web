@@ -156,6 +156,16 @@ const { fuente, href, detalle, grupo } = Astro.props;
         text-decoration: underline;
     }
 
+    /*
+     * El panel se desplaza (`overflow-y: auto`), y el aviso del puntero de
+     * `EnlaceExterno` se dibuja fuera del enlace: dentro de este panel quedaría
+     * recortado por su borde. Acá solo quedan la flecha y el texto para lector
+     * de pantalla (ADR 0022).
+     */
+    .dato__fuente :global(.enlace-externo:hover .enlace-externo__aviso) {
+        display: none;
+    }
+
     .dato[open] .dato__fuente {
         opacity: 1;
         translate: 0 0;

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import EnlaceExterno from "../src/components/EnlaceExterno.astro";
 import { renderAstroComponent } from "./support/render-astro-component";
+import { visibleText } from "./support/visible-text";
 
 // La Container API renderiza en Node: se verifica el marcado. Que el aviso
 // aparezca al instante y solo con puntero se comprueba en navegador
@@ -34,7 +35,7 @@ describe("EnlaceExterno", () => {
   it("muestra el contenido que recibe", async () => {
     const html = await renderLink({}, "Informe PISA");
 
-    expect(html).toContain("Informe PISA");
+    expect(visibleText(html)).toContain("Informe PISA");
   });
 
   it("avisa a lector de pantalla que se abre una pestaña nueva", async () => {
@@ -79,5 +80,27 @@ describe("EnlaceExterno", () => {
     const html = await renderLink({ class: "redes__enlace" });
 
     expect(html).toMatch(/class="[^"]*\benlace-externo\b[^"]*\bredes__enlace\b/);
+  });
+});
+
+describe("EnlaceExterno, flecha en texto", () => {
+  it("une la flecha a la última palabra para que no quede sola en otra línea", async () => {
+    const html = await renderLink({}, "el reporte privado de GitHub");
+
+    expect(html).toMatch(
+      /el reporte privado de <span class="enlace-externo__cola"[^>]*>GitHub<svg/
+    );
+  });
+
+  it("deja sola la flecha en su envoltura cuando el texto termina en una etiqueta", async () => {
+    const html = await renderLink({}, "la <em>política</em>");
+
+    expect(html).toMatch(/<\/em><span class="enlace-externo__cola"[^>]*><svg/);
+  });
+
+  it("no toca el contenido del enlace de ícono", async () => {
+    const html = await renderLink({ variante: "icono" }, "<svg></svg>");
+
+    expect(html).toMatch(/<svg><\/svg><span class="enlace-externo__cola"[^>]*><svg/);
   });
 });
