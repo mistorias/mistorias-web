@@ -29,6 +29,15 @@ const {
     avisoAlineado = "centro"
 } = Astro.props;
 
+// La flecha no puede quedar sola al principio de otra línea. Ningún carácter
+// de unión lo impide en Chromium (corta antes de un elemento en línea), así
+// que se la pega a la última palabra del texto dentro de un `nowrap`. Si el
+// texto termina en una etiqueta, la flecha queda suelta en su envoltura.
+const contenido = await Astro.slots.render("default");
+const [, antes = "", ultimaPalabra = ""] =
+    variante === "texto" ? (contenido.match(/^([\s\S]*?)([^\s<>]+)$/) ?? []) : [];
+const textoPrevio = variante === "texto" && ultimaPalabra ? antes : contenido;
+
 const valoresRel = [...(rel ? rel.split(/\s+/) : []), "noopener", "noreferrer"]
     .filter(Boolean)
     .join(" ");
@@ -45,7 +54,7 @@ const valoresRel = [...(rel ? rel.split(/\s+/) : []), "noopener", "noreferrer"]
     target="_blank"
     rel={valoresRel}
 >
-    <slot />{variante === "texto" && "\u2060"}<svg
+    <Fragment set:html={textoPrevio} /><span class="enlace-externo__cola"><Fragment set:html={ultimaPalabra} /><svg
         class="enlace-externo__flecha"
         viewBox="0 0 24 24"
         fill="none"
@@ -55,22 +64,26 @@ const valoresRel = [...(rel ? rel.split(/\s+/) : []), "noopener", "noreferrer"]
         stroke-linejoin="round"
         aria-hidden="true"
         focusable="false"
-    ><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg><span class="sr-only">(se abre en una pestaña nueva)</span><span class="enlace-externo__aviso" aria-hidden="true">Se abre en una pestaña nueva</span>
+    ><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></span><span class="sr-only">(se abre en una pestaña nueva)</span><span class="enlace-externo__aviso" aria-hidden="true">Se abre en una pestaña nueva</span>
 </a>
 
 <style>
-    /* Sin espacios entre el texto, la flecha y lo que sigue al enlace (una
-       coma, un punto): el texto y la flecha van unidos por una
-       unión de palabras (U+2060, que no ocupa lugar ni se subraya) y nada
-       viene entre la flecha y lo que sigue, para que no se parta la línea
-       entre ellos y quede la flecha sola en la siguiente.
+    /* La última palabra y la flecha no se parten (ver el frontmatter). Sin
+       blancos entre la flecha y lo que sigue al enlace, para que tampoco se
+       despegue una coma o un punto.
 
        `relative` es el ancla del aviso y de la insignia. */
     .enlace-externo {
         position: relative;
     }
 
+    .enlace-externo__cola {
+        white-space: nowrap;
+    }
+
+    /* `base.css` pone todo `svg` en bloque; acá tiene que ir en la línea. */
     .enlace-externo--texto .enlace-externo__flecha {
+        display: inline-block;
         width: 0.8em;
         margin-inline-start: 0.2em;
         height: 0.8em;

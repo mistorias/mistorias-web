@@ -78,5 +78,8 @@ borde final en vez de centrarlo; las redes lo usan en el último ícono.
   porque eso exige JavaScript y la CSP es `script-src 'none'`. Se asume porque el
   aviso solo repite lo que el lector de pantalla y la flecha ya comunican, no es
   información exclusiva, y desaparece al mover el puntero.
+- Dentro del panel de fuente de `DatoConFuente` el aviso del puntero no se muestra:
+  el panel se desplaza (`overflow-y: auto`) y lo recortaría. Ahí quedan la flecha y
+  el texto para lector de pantalla.
 - El aviso no se muestra al enfocar con teclado: la flecha y el texto para lector
   de pantalla ya cubren a esa persona.
