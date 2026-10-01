@@ -37,6 +37,26 @@ este patrón (issue #41); `src/components/ListaTemas.astro` es el ejemplo del
 punto 3. El razonamiento completo está en
 [ADR 0015](adr/0015-tarjeta-como-enlace-unico-accesible.md).
 
+## Enlaces externos
+
+Un enlace que lleva fuera de Mistorias **no se escribe a mano con `<a href>`**:
+usa `src/components/EnlaceExterno.astro`. Abre en pestaña nueva, para que quien lee
+no pierda su lugar, y lo avisa con texto para lector de pantalla, una flecha
+visible y un aviso al pasar el puntero. Lleva siempre `rel="noopener noreferrer"`.
+
+```astro
+<EnlaceExterno href="https://example.org/informe">Informe PISA</EnlaceExterno>
+```
+
+- `variante="icono"` cuando el enlace es solo un dibujo: la flecha pasa a una
+  insignia en la esquina.
+- `avisoAlineado="fin"` si el enlace está pegado al borde derecho de la página y
+  el aviso centrado se saldría.
+- `rel="me"` y otros valores se suman a los de seguridad.
+
+El razonamiento completo está en
+[ADR 0022](adr/0022-enlaces-externos-en-pestana-nueva-con-aviso.md).
+
 ## Enlaces internos
 
 Nunca se escribe un `href` interno a mano: `base` cambia según el destino de

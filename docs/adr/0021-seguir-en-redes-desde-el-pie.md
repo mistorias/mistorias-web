@@ -43,9 +43,11 @@ mantiene la transparencia que el sitio promete.
 - La "f" de Facebook es solo la letra. El ícono original es un disco relleno con la
   letra calada, y dentro del aro se habría visto como un botón macizo al lado de dos
   trazos.
-- Los enlaces se abren en la misma pestaña (sin aviso, abrir pestañas nuevas
-  desorienta; WCAG G201) y llevan `rel="me"`, que declara que esos perfiles son de
-  Mistorias.
+- Los enlaces llevan `rel="me"`, que declara que esos perfiles son de Mistorias, y
+  abren en una pestaña nueva avisándolo: es el estándar de todo enlace externo del
+  sitio, en el [ADR 0022](0022-enlaces-externos-en-pestana-nueva-con-aviso.md). La
+  primera versión de este ADR los abría en la misma pestaña; se cambió porque quien
+  sigue a Mistorias desde el pie no debe perder su lugar en la historia.
 
 ### Cómo se ve: aros en `--color-acento`
 
@@ -56,8 +58,8 @@ blanco que mencionaba el issue desaparece sobre el fondo claro.
 
 - Al pasar el puntero, el aro se rellena y el glifo toma `--color-superficie`.
 - El anillo de foco global sigue el círculo.
-- Cada enlace se anuncia como «Mistorias en Instagram» (`.sr-only`), y la lista va
-  rotulada por la frase que invita.
+- Cada enlace se anuncia como «Mistorias en Instagram» (`.sr-only`) seguido del
+  aviso de pestaña nueva, y la lista va rotulada por la frase que invita.
 
 ### Qué dice: la misión y la invitación, en una sola nota
 
