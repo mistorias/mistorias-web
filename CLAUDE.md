@@ -55,7 +55,7 @@ When Claude runs `git push` in a session, the hook validates the branch:
 
 ### Standards Review (before committing)
 
-Hooks can only run commands, so this one is a step Claude does itself: after modifying code and **before** `git commit`, run the `revisor-de-estandares` subagent (`.claude/agents/revisor-de-estandares.md`) over the diff and fix what it reports. It checks language boundaries, hand-written links, brand hexes outside `tokens.css`, CSP, coverage-list sync, documentation size and commit conventions against the written docs, and it only reads — it never edits. Renames it asks for go in their own commit (see [docs/IDIOMA.md](docs/IDIOMA.md#estado-actual)).
+Hooks can only run commands, so this one is a step Claude does itself: after modifying code and **before** `git commit`, run the `revisor-de-estandares` subagent (`.claude/agents/revisor-de-estandares.md`) over the diff and fix what it reports. It only reads; it never edits. The rules it applies are the ones in the documents this file already links, which it reads on every run — so a rule is added, changed or removed in those documents and nowhere else. A rename it asks for goes in its own commit.
 
 ### Disabling Hooks (if needed)
 If a hook times out or interferes with Claude's work in a session, it can be skipped:
