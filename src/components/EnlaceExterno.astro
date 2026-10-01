@@ -100,7 +100,11 @@ const relCompleto = [...(rel ? rel.split(/\s+/) : []), "noopener", "noreferrer"]
        un token nuevo. `display: none` y no `opacity`: oculto no ocupa lugar
        y, sobre todo, no agranda el área desplazable de la página. Aparece al
        instante, sin transición, y solo donde hay puntero: en táctil no hay
-       "encima", y el aviso quedaría pegado después del toque. */
+       "encima", y el aviso quedaría pegado después del toque.
+
+       Angosto a propósito (dos líneas): centrado sobre un ícono de 44px, uno
+       de una sola línea (~12rem) se salía de la pantalla junto al borde
+       derecho y creaba scroll horizontal. */
     .enlace-externo__aviso {
         display: none;
         position: absolute;
@@ -108,7 +112,7 @@ const relCompleto = [...(rel ? rel.split(/\s+/) : []), "noopener", "noreferrer"]
         inset-inline-start: 50%;
         z-index: 20;
         width: max-content;
-        max-width: 12rem;
+        max-width: 7.5rem;
         padding: 0.3rem 0.6rem;
         transform: translateX(-50%);
         border-radius: var(--radio);
@@ -122,6 +126,7 @@ const relCompleto = [...(rel ? rel.split(/\s+/) : []), "noopener", "noreferrer"]
         line-height: 1.3;
         text-align: center;
         text-decoration: none;
+        text-wrap: balance;
         white-space: normal;
         /* El aviso solo informa: no recibe el puntero ni estorba el clic. */
         pointer-events: none;

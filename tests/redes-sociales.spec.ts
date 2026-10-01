@@ -35,23 +35,45 @@ describe("RedesSociales", () => {
 
   it("oculta los dibujos al lector de pantalla y al foco", async () => {
     const html = await renderizar();
-    const svgs = html.match(/<svg[^>]*>/g) ?? [];
+    const glifos = html.match(/<svg[^>]*class="redes__glifo"[^>]*>/g) ?? [];
 
-    expect(svgs).toHaveLength(SOCIAL_PROFILES.length);
-    for (const svg of svgs) {
+    expect(glifos).toHaveLength(SOCIAL_PROFILES.length);
+    for (const svg of glifos) {
       expect(svg).toContain('aria-hidden="true"');
       expect(svg).toContain('focusable="false"');
     }
   });
 
-  it("declara los perfiles como propios y no abre pestañas nuevas", async () => {
+  it("declara los perfiles como propios y los abre en una pestaña nueva con seguridad", async () => {
     const html = await renderizar();
     const enlaces = html.match(/<a[^>]*>/g) ?? [];
 
     expect(enlaces).toHaveLength(SOCIAL_PROFILES.length);
     for (const enlace of enlaces) {
-      expect(enlace).toContain('rel="me"');
-      expect(enlace).not.toContain("target=");
+      expect(enlace).toMatch(/rel="[^"]*\bme\b[^"]*"/);
+      expect(enlace).toMatch(/rel="[^"]*\bnoopener\b[^"]*"/);
+      expect(enlace).toContain('target="_blank"');
+    }
+  });
+
+  it("avisa de la pestaña nueva en cada enlace, como el resto de los externos", async () => {
+    const html = await renderizar();
+
+    expect(html.match(/\(se abre en una pestaña nueva\)/g)).toHaveLength(
+      SOCIAL_PROFILES.length
+    );
+    expect(html.match(/class="enlace-externo__aviso"/g)).toHaveLength(
+      SOCIAL_PROFILES.length
+    );
+  });
+
+  it("ancla el aviso del último ícono a su borde final para que no se salga de la pantalla", async () => {
+    const html = await renderizar();
+    const enlaces = html.match(/<a[^>]*>/g) ?? [];
+
+    expect(enlaces.at(-1)).toContain("enlace-externo--aviso-fin");
+    for (const enlace of enlaces.slice(0, -1)) {
+      expect(enlace).toContain("enlace-externo--aviso-centro");
     }
   });
 
