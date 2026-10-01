@@ -28,6 +28,11 @@ como `grupos` o `enlace`—. Ese vocabulario es el mismo de
 [CONTEXT.md](../CONTEXT.md), y traducirlo solo dentro del componente partiría en dos
 el lenguaje con que se habla de la misma cosa.
 
+Dentro de un componente en castellano no hace falta que cada variable sea un
+término del dominio: `enlace`, `grupos`, `cantidad` o `indice` están bien. Lo que
+sigue prohibido es mezclar idiomas dentro de un mismo identificador (ver más
+abajo).
+
 El límite es `src/lib/`: la lógica que no da la cara al lector se escribe en
 inglés, y en la frontera el componente en castellano consume funciones en inglés
 (`storyRoute`, `groupByTheme`).
