@@ -19,7 +19,7 @@ Code is written in English — identifiers, filenames, frontmatter keys, build e
 
 New documents go in `docs/`. The repository root is reserved for files GitHub or tooling expects to find there (`README.md`, `LICENSE`, `CONTRIBUTING.md`, `SECURITY.md`, `CLAUDE.md`, `CONTEXT.md`); anything else needs a reason stated in the PR. ADRs go in `docs/adr/` as `NNNN-titulo-en-kebab-case.md`.
 
-A document is large past **300 lines**. At that point don't keep appending: extract a whole, self-contained topic into a new document under `docs/`, link to it instead of copying it, and leave a pointer where the section was. ADRs are exempt — one ADR is one decision; an oversized one usually means a second ADR is due. Full rules in [docs/STANDARDS.md](docs/STANDARDS.md#estándares-de-documentación).
+A document is large past **300 lines**. At that point don't keep appending: extract a whole, self-contained topic into a new document under `docs/`, link to it instead of copying it, and leave a pointer where the section was. ADRs are exempt — one ADR is one decision; an oversized one usually means a second ADR is due. Full rules in [docs/DOCUMENTACION.md](docs/DOCUMENTACION.md).
 
 ## Quick Start
 
