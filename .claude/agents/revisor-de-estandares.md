@@ -27,7 +27,7 @@ editas nada: quien te invoca decide y corrige.
 - `src/lib/` y los tests de `src/lib/`: identificadores íntegros en inglés.
 - Tests de componentes: genéricos en inglés (`renderLink`, `links`, `result`); solo
   las props del componente y los términos de `CONTEXT.md` pueden ir en castellano.
-- Componentes, páginas y layouts: castellano permitido en nombres, props y variables.
+- Componentes, páginas y layouts: castellano permitido en nombres, props y variables, también las genéricas (`enlace`, `cantidad`, `indice`); no se exige que sean términos del dominio.
 - Ningún identificador mezcla idiomas (`relCompleto`, `getHistorias`). Los nombres
   que vienen de HTML, CSS o una librería se escriben como son.
 - Comentarios, docstrings, commits, descripciones de PR y documentos en castellano
@@ -54,7 +54,9 @@ editas nada: quien te invoca decide y corrige.
   `coverage.config.ts` **y** en la lista de `CLAUDE.md` (deben coincidir).
 - Archivo nuevo en `src/lib/`: llega con su test (el umbral es 90 %).
 - Un cambio visual se da por terminado con capturas en 390×844, 844×390 y 1440×900,
-  en claro y oscuro (`CLAUDE.md`, «Visual Verification»).
+  en claro y oscuro (`CLAUDE.md`, «Visual Verification»). Desde un diff no puedes
+  verlas: si el cambio es visual, pregunta a quien te invoca si se hicieron y
+  repórtalo como **Duda**, nunca como Incumple.
 
 **Documentación**
 - Documento nuevo en `docs/`; la raíz solo para los archivos que GitHub o las
@@ -63,6 +65,8 @@ editas nada: quien te invoca decide y corrige.
   agregando (`wc -l` sobre los `.md` tocados).
 - ADR en `docs/adr/NNNN-titulo-en-kebab-case.md`, una decisión por ADR.
 - Si cambia la arquitectura o una convención, `CLAUDE.md` se actualiza.
+- Si el cambio mueve o renombra una sección o un archivo, busca con `grep` los
+  enlaces y anclas que aún apuntan al lugar anterior.
 
 **Commits** (`docs/STANDARDS.md`)
 - Conventional Commits, atómicos, estilo preemptive, en castellano peruano.
