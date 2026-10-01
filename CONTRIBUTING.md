@@ -15,58 +15,14 @@ El proyecto escribe en dos idiomas y cada uno tiene su lugar. La regla corta:
 **el código se lee en inglés; todo lo que explica el código se lee en
 castellano peruano.**
 
-### Código: inglés
+- **Inglés:** identificadores, nombres de archivos, claves de frontmatter,
+  mensajes de error del build, y todo `src/lib/` y los tests.
+- **Castellano, por excepción:** componentes, páginas y layouts de Astro (incluidas
+  sus props y variables), las rutas públicas y el texto que ve quien lee.
+- **Castellano peruano:** comentarios, commits, PR y documentos.
 
-Se escriben en inglés los identificadores (variables, funciones, tipos,
-constantes), los nombres de archivos y módulos, las claves de frontmatter
-(`title`, `summary`, `date`, `author`, `themes`) y los mensajes de error de las
-validaciones del build.
-
-No se mezclan idiomas dentro de un mismo identificador: `getStories` sí,
-`getHistorias` no.
-
-### Excepción: los componentes de Astro
-
-Los componentes en `src/components/`, las páginas y los layouts se escriben en
-castellano cuando nombran un elemento de la marca o del dominio editorial:
-`LogotipoMistorias.astro`, `TarjetaHistoria.astro`, `CabeceraSitio.astro`. Son
-el borde del sistema que da la cara al lector, y ahí el nombre del dominio
-comunica mejor que su traducción.
-
-La excepción no se queda en el nombre del archivo: alcanza también a lo que vive
-adentro —props como `historia`, `temaTextual` o `nivelTitulo`, y variables
-como `grupos` o `enlace`—. Ese vocabulario es el mismo de
-[CONTEXT.md](CONTEXT.md), y traducirlo solo dentro del componente partiría en dos
-el lenguaje con que se habla de la misma cosa.
-
-El límite es `src/lib/`: la lógica que no da la cara al lector se escribe en
-inglés, y en la frontera el componente en castellano consume funciones en inglés
-(`storyRoute`, `groupByTheme`).
-
-### Excepción: lenguaje de cara al lector
-
-Las rutas públicas (`/historias/`, `/temas/`) y todo el texto que ve
-quien lee el sitio siguen en castellano. Son parte del lenguaje ubicuo del
-proyecto, no del código — ver [CONTEXT.md](CONTEXT.md).
-
-### Comentarios y documentación: castellano peruano
-
-Los comentarios, los docstrings, los mensajes de commit, las descripciones de
-PR y los documentos del repositorio se escriben en castellano peruano. Los
-comentarios explican el *por qué*, no el *qué* (ver
-[docs/STANDARDS.md](docs/STANDARDS.md#principios-fundamentales)).
-
-### Estado actual
-
-`src/lib/` está íntegramente en inglés: ahí viven `dates.ts`, `stories.ts`,
-`themes.ts`, `routes.ts`, `deployment.ts` y los gates de `content/` y `brand/`.
-Los componentes, las páginas y los layouts siguen en castellano por la
-excepción de arriba, y eso no es deuda pendiente: no se traducen.
-
-Si aparece un nombre en castellano fuera de esa excepción, se corrige antes de
-que se acumule: no se espera a que el archivo se toque por otra razón. El
-renombrado va en un commit aparte del cambio funcional, para que se pueda
-revisar y revertir solo.
+El detalle, los ejemplos y el criterio para los tests están en
+[docs/IDIOMA.md](docs/IDIOMA.md).
 
 ## Requisitos Previos
 

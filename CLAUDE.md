@@ -13,7 +13,7 @@ Claude Code must commit atomically while working on this repo, so each commit is
 
 ### Language
 
-Code is written in English — identifiers, filenames, frontmatter keys, build error messages. Astro components, pages and layouts stay in Spanish when they name a brand or editorial concept (`LogotipoMistorias.astro`, `TarjetaHistoria.astro`) — filenames and the props and variables inside them alike — and so do public routes and reader-facing text. Comments, docstrings, commit messages, PR descriptions and docs are written in Peruvian Spanish. The boundary is `src/lib/`, which is fully in English: a Spanish component consumes English helpers (`storyRoute`, `groupByTheme`). Full rules in [CONTRIBUTING.md](CONTRIBUTING.md#idioma).
+Code is written in English — identifiers, filenames, frontmatter keys, build error messages. Astro components, pages and layouts stay in Spanish when they name a brand or editorial concept (`LogotipoMistorias.astro`, `TarjetaHistoria.astro`) — filenames and the props and variables inside them alike — and so do public routes and reader-facing text. Comments, docstrings, commit messages, PR descriptions and docs are written in Peruvian Spanish. The boundary is `src/lib/`, which is fully in English: a Spanish component consumes English helpers (`storyRoute`, `groupByTheme`). Tests follow the same boundary as the code they test (English helpers and variables; a component's own Spanish props and domain terms are fine when a test passes them by name), and no identifier mixes languages. Full rules in [docs/IDIOMA.md](docs/IDIOMA.md).
 
 ### Documentation
 
