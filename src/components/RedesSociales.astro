@@ -1,5 +1,6 @@
 ---
 import { SOCIAL_PROFILES, type SocialNetwork } from "../lib/social/profiles";
+import EnlaceExterno from "./EnlaceExterno.astro";
 
 type Props = {
     // `id` del texto que invita a seguir: la lista se rotula con él para que
@@ -36,9 +37,17 @@ const GLIFOS: Record<SocialNetwork, { viewBox: string; d: string }> = {
 
 <ul class="redes" role="list" aria-labelledby={etiquetadoPor}>
     {
-        SOCIAL_PROFILES.map((perfil) => (
+        SOCIAL_PROFILES.map((perfil, indice) => (
             <li>
-                <a class="redes__enlace" href={perfil.url} rel="me">
+                <EnlaceExterno
+                    class="redes__enlace"
+                    href={perfil.url}
+                    rel="me"
+                    variante="icono"
+                    avisoAlineado={
+                        indice === SOCIAL_PROFILES.length - 1 ? "fin" : "centro"
+                    }
+                >
                     <svg
                         class="redes__glifo"
                         viewBox={GLIFOS[perfil.network].viewBox}
@@ -49,7 +58,7 @@ const GLIFOS: Record<SocialNetwork, { viewBox: string; d: string }> = {
                         <path d={GLIFOS[perfil.network].d} />
                     </svg>
                     <span class="sr-only">Mistorias en {perfil.label}</span>
-                </a>
+                </EnlaceExterno>
             </li>
         ))
     }
@@ -66,12 +75,16 @@ const GLIFOS: Record<SocialNetwork, { viewBox: string; d: string }> = {
         list-style: none;
     }
 
-    /* El aro es el borde del propio enlace, no parte del dibujo: así el área
+    /* El `<a>` lo pinta `EnlaceExterno` (ADR 0022), no este componente: sus
+       reglas llegan con `:global` acotado bajo `.redes`, para que no se
+       escape a otros enlaces.
+
+       El aro es el borde del propio enlace, no parte del dibujo: así el área
        que se toca es el círculo entero de 44px (el mismo piso táctil que
        `.pie__enlace`) y no solo el trazo del glifo. Fondo transparente y
        línea en `--color-acento`: vino en modo claro, su tinte aclarado en
        oscuro, sin token nuevo. */
-    .redes__enlace {
+    .redes :global(.redes__enlace) {
         display: grid;
         place-items: center;
         width: 2.75rem;
@@ -94,7 +107,7 @@ const GLIFOS: Record<SocialNetwork, { viewBox: string; d: string }> = {
 
     /* El anillo de foco global redondea con `--radio`; sobre un círculo eso
        lo volvería un cuadrado de esquinas suaves. Acá sigue al aro. */
-    .redes__enlace:focus-visible {
+    .redes :global(.redes__enlace:focus-visible) {
         border-radius: 50%;
     }
 
@@ -103,7 +116,7 @@ const GLIFOS: Record<SocialNetwork, { viewBox: string; d: string }> = {
        dos temas. Solo con puntero real, para que un toque no lo deje
        "pegado" en pantallas táctiles. */
     @media (hover: hover) {
-        .redes__enlace:hover {
+        .redes :global(.redes__enlace:hover) {
             background-color: var(--color-acento);
             color: var(--color-superficie);
         }
