@@ -45,9 +45,7 @@ const valoresRel = [...(rel ? rel.split(/\s+/) : []), "noopener", "noreferrer"]
     target="_blank"
     rel={valoresRel}
 >
-    <slot />{" "}
-    <span class="sr-only">(se abre en una pestaña nueva)</span>
-    <svg
+    <slot />{variante === "texto" && "\u2060"}<svg
         class="enlace-externo__flecha"
         viewBox="0 0 24 24"
         fill="none"
@@ -57,24 +55,25 @@ const valoresRel = [...(rel ? rel.split(/\s+/) : []), "noopener", "noreferrer"]
         stroke-linejoin="round"
         aria-hidden="true"
         focusable="false"
-    >
-        <path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path>
-    </svg>
-    <span class="enlace-externo__aviso" aria-hidden="true">
-        Se abre en una pestaña nueva
-    </span>
+    ><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg><span class="sr-only">(se abre en una pestaña nueva)</span><span class="enlace-externo__aviso" aria-hidden="true">Se abre en una pestaña nueva</span>
 </a>
 
 <style>
-    /* `relative` es el ancla del aviso y de la insignia. */
+    /* Sin espacios entre el texto, la flecha y lo que sigue al enlace (una
+       coma, un punto): el texto y la flecha van unidos por una
+       unión de palabras (U+2060, que no ocupa lugar ni se subraya) y nada
+       viene entre la flecha y lo que sigue, para que no se parta la línea
+       entre ellos y quede la flecha sola en la siguiente.
+
+       `relative` es el ancla del aviso y de la insignia. */
     .enlace-externo {
         position: relative;
     }
 
     .enlace-externo--texto .enlace-externo__flecha {
         width: 0.8em;
+        margin-inline-start: 0.2em;
         height: 0.8em;
-        margin-inline-start: 0.15em;
         vertical-align: -0.02em;
     }
 
