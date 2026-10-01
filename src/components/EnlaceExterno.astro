@@ -1,0 +1,141 @@
+---
+type Props = {
+    href: string;
+    // Clase del sitio que le da su aspecto propio (por ejemplo, el aro de las
+    // redes). Se suma a la del estándar, no la reemplaza.
+    class?: string;
+    // Valores de `rel` adicionales (por ejemplo, "me"). Los de seguridad van
+    // siempre, los pida o no quien lo usa.
+    rel?: string;
+    // "texto": la flecha va a continuación del texto del enlace.
+    // "icono": el enlace es solo un dibujo, y la flecha va como insignia en su
+    // esquina para no meterse dentro del dibujo.
+    variante?: "texto" | "icono";
+    // Dónde se ancla el aviso del puntero. "fin" para un enlace pegado al borde
+    // derecho de la página: centrado, el aviso (más ancho que el ícono) se
+    // saldría de la pantalla.
+    avisoAlineado?: "centro" | "fin";
+};
+
+// El estándar de todo enlace que lleva fuera de Mistorias (ADR 0022): quien
+// lee se queda en el sitio, y la pestaña nueva se avisa de tres maneras
+// —lector de pantalla, flecha visible y aviso al pasar el puntero— para que
+// nadie la descubra por sorpresa. Los enlaces internos no pasan por acá.
+const {
+    href,
+    class: clase,
+    rel,
+    variante = "texto",
+    avisoAlineado = "centro"
+} = Astro.props;
+
+const relCompleto = [...(rel ? rel.split(/\s+/) : []), "noopener", "noreferrer"]
+    .filter(Boolean)
+    .join(" ");
+---
+
+<a
+    class:list={[
+        "enlace-externo",
+        `enlace-externo--${variante}`,
+        `enlace-externo--aviso-${avisoAlineado}`,
+        clase
+    ]}
+    href={href}
+    target="_blank"
+    rel={relCompleto}
+>
+    <slot />{" "}
+    <span class="sr-only">(se abre en una pestaña nueva)</span>
+    <svg
+        class="enlace-externo__flecha"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+        focusable="false"
+    >
+        <path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path>
+    </svg>
+    <span class="enlace-externo__aviso" aria-hidden="true">
+        Se abre en una pestaña nueva
+    </span>
+</a>
+
+<style>
+    /* `relative` es el ancla del aviso y de la insignia. */
+    .enlace-externo {
+        position: relative;
+    }
+
+    .enlace-externo--texto .enlace-externo__flecha {
+        width: 0.8em;
+        height: 0.8em;
+        margin-inline-start: 0.15em;
+        vertical-align: -0.02em;
+    }
+
+    /* Insignia en la esquina del ícono. Su color es propio (no `currentColor`)
+       porque el enlace invierte el suyo al pasar el puntero, y una flecha del
+       color de la superficie sobre un disco del color de la superficie se
+       perdería. */
+    .enlace-externo--icono .enlace-externo__flecha {
+        position: absolute;
+        inset-block-start: -0.25rem;
+        inset-inline-end: -0.25rem;
+        box-sizing: border-box;
+        width: 1.1rem;
+        height: 1.1rem;
+        padding: 0.2rem;
+        border-radius: 50%;
+        background-color: var(--color-superficie);
+        color: var(--color-acento);
+    }
+
+    /* El aviso del puntero: texto del color del fondo sobre el color del
+       texto, que se invierte solo en modo oscuro (14.4:1 en los dos temas) sin
+       un token nuevo. `display: none` y no `opacity`: oculto no ocupa lugar
+       y, sobre todo, no agranda el área desplazable de la página. Aparece al
+       instante, sin transición, y solo donde hay puntero: en táctil no hay
+       "encima", y el aviso quedaría pegado después del toque. */
+    .enlace-externo__aviso {
+        display: none;
+        position: absolute;
+        inset-block-end: calc(100% + 0.5rem);
+        inset-inline-start: 50%;
+        z-index: 20;
+        width: max-content;
+        max-width: 12rem;
+        padding: 0.3rem 0.6rem;
+        transform: translateX(-50%);
+        border-radius: var(--radio);
+        background-color: var(--color-texto);
+        color: var(--color-fondo);
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        font-style: normal;
+        font-weight: 400;
+        letter-spacing: 0;
+        line-height: 1.3;
+        text-align: center;
+        text-decoration: none;
+        white-space: normal;
+        /* El aviso solo informa: no recibe el puntero ni estorba el clic. */
+        pointer-events: none;
+    }
+
+    .enlace-externo--aviso-fin .enlace-externo__aviso {
+        inset-inline-start: auto;
+        inset-inline-end: 0;
+        transform: none;
+    }
+
+    @media (hover: hover) {
+        .enlace-externo:hover .enlace-externo__aviso {
+            display: block;
+        }
+    }
+</style>
