@@ -60,3 +60,12 @@ describe("DatoConFuente", () => {
     expect(html).toMatch(/<span[^>]*aria-hidden="true"[^>]*>\s*fuente\s*<\/span>/);
   });
 });
+
+describe("DatoConFuente, enlace a la fuente", () => {
+  it("abre la fuente en una pestaña nueva avisándolo, como todo enlace externo", async () => {
+    const html = await renderAstroComponent(DatoConFuente, { props, slots });
+
+    expect(html).toContain('target="_blank"');
+    expect(html).toContain("(se abre en una pestaña nueva)");
+  });
+});

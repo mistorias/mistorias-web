@@ -1,6 +1,7 @@
 ---
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import EnlaceExterno from "../../components/EnlaceExterno.astro";
 import TarjetaHistoria from "../../components/TarjetaHistoria.astro";
 import { aboutRoute } from "../../lib/routes";
 import { sortByDateDescending } from "../../lib/stories";
@@ -54,9 +55,9 @@ const base = import.meta.env.BASE_URL;
                         mantiene por su cuenta: es lo que permite verificar que
                         existe sin que Mistorias publique un dato suyo que
                         después no pueda retirar. */}
-                    <a href={autor.data.link} rel="me noopener" target="_blank">
+                    <EnlaceExterno href={autor.data.link} rel="me">
                         {autor.data.linkLabel}
-                    </a>
+                    </EnlaceExterno>
                 </p>
             )
         }

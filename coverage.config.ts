@@ -29,6 +29,7 @@ export const coverageConfig = {
     "src/components/TiempoDeLectura.astro",
     "src/components/RedesSociales.astro",
     "src/components/EnlaceExterno.astro",
+    "src/components/NotaDeFuente.astro",
   ],
   reporter: ["text", ["text-summary", { file: "cobertura.txt" }]] as Array<
     "text" | ["text-summary", { file: string }]
