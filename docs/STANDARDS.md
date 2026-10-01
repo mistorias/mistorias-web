@@ -17,7 +17,7 @@ Esto se traduce en código **centrado en las personas**, **transparente**, **que
 
 El idioma en que se escribe cada cosa —código en inglés, comentarios y
 documentación en castellano peruano, con sus excepciones— está definido en
-[CONTRIBUTING.md](IDIOMA.md).
+[docs/IDIOMA.md](IDIOMA.md).
 
 ### Principios Fundamentales
 
