@@ -29,7 +29,7 @@ const {
     avisoAlineado = "centro"
 } = Astro.props;
 
-const relCompleto = [...(rel ? rel.split(/\s+/) : []), "noopener", "noreferrer"]
+const valoresRel = [...(rel ? rel.split(/\s+/) : []), "noopener", "noreferrer"]
     .filter(Boolean)
     .join(" ");
 ---
@@ -43,7 +43,7 @@ const relCompleto = [...(rel ? rel.split(/\s+/) : []), "noopener", "noreferrer"]
     ]}
     href={href}
     target="_blank"
-    rel={relCompleto}
+    rel={valoresRel}
 >
     <slot />{" "}
     <span class="sr-only">(se abre en una pestaña nueva)</span>
