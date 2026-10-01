@@ -29,7 +29,7 @@ en cada conversación.
 2. **En el código: `theme`.** `src/lib/themes.ts` con `groupByTheme`,
    `normalizeTheme` y `ThemeGroup`; `themesRoute` y `themeRoute` en
    `routes.ts`; `ListaTemas.astro` con props `temas` y `temaTextual`, según la
-   frontera inglés/castellano de [CONTRIBUTING.md](../IDIOMA.md).
+   frontera inglés/castellano de [docs/IDIOMA.md](../IDIOMA.md).
 3. **En el frontmatter: `themes`, con `tags` como respaldo.**
    > **Actualizado:** `mistorias-contenido` ya migró todas sus historias a
    > `themes` (issue #17 de ese repositorio) y el respaldo se eliminó; `tags`
