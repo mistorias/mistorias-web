@@ -64,10 +64,12 @@ borde final en vez de centrarlo; las redes lo usan en el último ícono.
 ## Consecuencias
 
 - Quien lee no pierde su lugar en la historia al seguir un enlace externo.
-- Los enlaces externos que ya existen (`contenido`, `reportar`, `codigo`, `marca`,
-  `DatoConFuente`, `NotaDeFuente` y el perfil de autoría) todavía no usan el
-  componente: se migran en un cambio aparte, para no mezclar cambios visuales de
-  siete páginas con el issue de las redes.
+- Los enlaces externos de las páginas (`contenido`, `reportar`, `codigo`, `marca`,
+  `DatoConFuente`, `NotaDeFuente` y el perfil de autoría) pasan por el componente.
+  `tests/enlaces-externos-de-paginas.spec.ts` falla si `contenido`, `reportar`,
+  `codigo` o `marca` vuelven a escribir un `<a href="https://…">` a mano, y los tests
+  de `DatoConFuente` y `NotaDeFuente` cubren los suyos. El perfil de autoría depende
+  de la colección de autores y no se renderiza en tests: queda sin red.
 - Los enlaces dentro del texto de las historias (Markdown) tampoco pasan por el
   componente, y como el sitio rechaza HTML en ellas no pueden usarlo. Aplicarles el
   estándar requiere un plugin de rehype en `astro.config.mjs` que genere el mismo

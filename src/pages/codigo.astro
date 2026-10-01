@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import EnlaceExterno from "../components/EnlaceExterno.astro";
 import NotaDeFuente from "../components/NotaDeFuente.astro";
 import { editorialContentRoute } from "../lib/routes";
 
@@ -87,8 +88,8 @@ const garantias = [
         <p>
             Si programas y quieres ver cómo está hecho —o proponer una mejora—,
             el proyecto usa Astro y cada decisión técnica está documentada en
-            el <a href="https://github.com/mistorias/mistorias-web"
-                >repositorio del sitio</a
+            el <EnlaceExterno href="https://github.com/mistorias/mistorias-web"
+                >repositorio del sitio</EnlaceExterno
             >.
         </p>
 

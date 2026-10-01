@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import EnlaceExterno from "../components/EnlaceExterno.astro";
 import NotaDeFuente from "../components/NotaDeFuente.astro";
 import AvisoSoloNetlify from "../components/AvisoSoloNetlify.astro";
 
@@ -103,9 +104,9 @@ const accion = gratitudeRoute(base);
             Este caso va por otro camino. <strong
                 >No lo reportes en un espacio público</strong
             >: eso expondría el hallazgo antes de que exista una corrección. Usa
-            el <a
+            el <EnlaceExterno
                 href="https://github.com/mistorias/mistorias-web/security/advisories/new"
-                >reporte privado de GitHub</a
+                >reporte privado de GitHub</EnlaceExterno
             >, que llega directo a quienes mantienen el sitio.
         </p>
 
