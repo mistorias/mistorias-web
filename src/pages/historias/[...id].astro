@@ -7,6 +7,7 @@ import {
     type CollectionEntry
 } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import CompartirHistoria from "../../components/CompartirHistoria.astro";
 import ListaTemas from "../../components/ListaTemas.astro";
 import FirmaAutoria from "../../components/FirmaAutoria.astro";
 import NavegacionHistorias from "../../components/NavegacionHistorias.astro";
@@ -14,8 +15,9 @@ import OpinionHistoria from "../../components/OpinionHistoria.astro";
 import SimboloMistorias from "../../components/SimboloMistorias.astro";
 import TiempoDeLectura from "../../components/TiempoDeLectura.astro";
 import { dateForAttribute, readableDate } from "../../lib/dates";
-import { authorRoute, themesRoute } from "../../lib/routes";
+import { authorRoute, storyRoute, themesRoute } from "../../lib/routes";
 import { getStoryImage } from "../../lib/content/story-images";
+import { resolveOgImage } from "../../lib/social/og-image";
 import { orderStoriesByDate } from "../../lib/content/story-order";
 import { resolveNeighbors } from "../../lib/content/story-order-cache";
 
@@ -59,6 +61,15 @@ const { story, historiaAnterior, historiaSiguiente } = Astro.props;
 const { Content } = await render(story);
 const base = import.meta.env.BASE_URL;
 const imagen = getStoryImage(story.id);
+const imagenOg = imagen ? { src: imagen, alt: story.data.imageAlt! } : undefined;
+
+// Compartir necesita URLs absolutas: las lee otro sitio. `Astro.site` siempre
+// existe en un build real, porque `astro.config.mjs` lo fija por destino.
+const urlHistoria = new URL(storyRoute(base, story.id), Astro.site);
+const urlImagenCompartida = new URL(
+    (await resolveOgImage(base, imagenOg)).src,
+    Astro.site
+).toString();
 
 // `reference("authors")` ya garantiza que la ficha existe; el chequeo está
 // para que el tipo lo refleje y para que un contenido a medio sincronizar
@@ -75,9 +86,16 @@ if (autor === undefined) {
 <BaseLayout
     title={`${story.data.title} | Mistorias`}
     description={story.data.summary}
-    ogImage={imagen ? { src: imagen, alt: story.data.imageAlt! } : undefined}
+    ogImage={imagenOg}
 >
     <article class="historia">
+        <CompartirHistoria
+            urlHistoria={urlHistoria}
+            titulo={story.data.title}
+            resumen={story.data.summary}
+            urlImagen={urlImagenCompartida}
+        />
+
         <header class="columna historia__cabecera">
             <h1>{story.data.title}</h1>
 
