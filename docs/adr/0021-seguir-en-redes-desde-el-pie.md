@@ -38,7 +38,7 @@ mantiene la transparencia que el sitio promete.
 
 - Las URLs viven solo en `src/lib/social/profiles.ts`. Los glifos vienen de
   [Simple Icons](https://simpleicons.org) (CC0) y se escriben como markup de
-  `RedesSociales.astro`, no con `set:html`, así que no hay archivo que pasar por
+  `RedesSociales.astro` (luego movidos a `GlifoRed.astro`, issue #151), no con `set:html`, así que no hay archivo que pasar por
   `inline-svg-gate.ts`.
 - La "f" de Facebook es solo la letra. El ícono original es un disco relleno con la
   letra calada, y dentro del aro se habría visto como un botón macizo al lado de dos
@@ -92,7 +92,7 @@ Esa razón no aplica aquí: el pie no contiene nada fijo. **Quien agregue algo
 
 - El pie gana una franja que ocupa algo más de alto que la nota sola.
 - Cambiar el usuario de una red se corrige en `profiles.ts`.
-- Agregar una red requiere su glifo en `RedesSociales.astro` y su entrada en
+- Agregar una red requiere su glifo en `GlifoRed.astro` (antes en `RedesSociales.astro`) y su entrada en
   `profiles.ts`. El tipo `SocialNetwork` obliga a hacer las dos cosas.
 - La nota de misión y la invitación ahora son un solo texto. Para editar una hay que
   leer la otra.

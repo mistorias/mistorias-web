@@ -28,6 +28,7 @@ export const coverageConfig = {
     "src/components/QuipuDeHistorias.astro",
     "src/components/TiempoDeLectura.astro",
     "src/components/RedesSociales.astro",
+    "src/components/GlifoRed.astro",
     "src/components/EnlaceExterno.astro",
     "src/components/NotaDeFuente.astro",
   ],
