@@ -3,6 +3,7 @@ import fixtureImage from "./fixtures/principal.jpg";
 import {
   defaultOgImage,
   ogImageFromStoryImage,
+  resolveOgImage,
 } from "../src/lib/social/og-image";
 
 // Cubre el armado del objeto OgImage; el render de las etiquetas <meta> que
@@ -41,6 +42,24 @@ describe("og-image", () => {
       const resultado = defaultOgImage("/");
 
       expect(resultado.src).toBe("/imagenes/og-default.jpg");
+    });
+  });
+
+  describe("resolveOgImage", () => {
+    it("recorta la cabecera de la historia cuando la página la trae", async () => {
+      const result = await resolveOgImage("/", {
+        src: fixtureImage,
+        alt: "Descripción de prueba",
+      });
+
+      expect(result.alt).toBe("Descripción de prueba");
+      expect(result.src).not.toContain("og-default.jpg");
+    });
+
+    it("cae en la ilustración por defecto, bajo la base, cuando no hay cabecera", async () => {
+      const result = await resolveOgImage("/mistorias-web/");
+
+      expect(result).toEqual(defaultOgImage("/mistorias-web/"));
     });
   });
 });
