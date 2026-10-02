@@ -29,6 +29,7 @@ export const coverageConfig = {
     "src/components/TiempoDeLectura.astro",
     "src/components/RedesSociales.astro",
     "src/components/GlifoRed.astro",
+    "src/components/CompartirHistoria.astro",
     "src/components/EnlaceExterno.astro",
     "src/components/NotaDeFuente.astro",
   ],
