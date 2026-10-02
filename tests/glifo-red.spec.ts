@@ -22,10 +22,16 @@ describe("GlifoRed", () => {
   });
 
   it("marca cada glifo con su red para darle ancho y alto explícitos (WebKit no deduce el ancho de un svg con width: auto)", async () => {
-    for (const profile of SOCIAL_PROFILES) {
-      const html = await renderGlyph(profile.network);
+    const networks = [
+      ...SOCIAL_PROFILES.map((profile) => profile.network),
+      "pinterest",
+      "linkedin",
+    ];
 
-      expect(html).toContain(`glifo-red--${profile.network}`);
+    for (const network of networks) {
+      const html = await renderGlyph(network);
+
+      expect(html).toContain(`glifo-red--${network}`);
     }
   });
 
@@ -33,5 +39,14 @@ describe("GlifoRed", () => {
     const html = await renderGlyph("facebook");
 
     expect(html).toContain('viewBox="6.627 4.486 10.941 19.47"');
+  });
+
+  it("dibuja la \"P\" de Pinterest y el \"in\" de LinkedIn sin su fondo macizo", async () => {
+    expect(await renderGlyph("pinterest")).toContain(
+      'viewBox="4.361 4.465 15.312 18.976"'
+    );
+    expect(await renderGlyph("linkedin")).toContain(
+      'viewBox="3.274 3.305 17.173 17.147"'
+    );
   });
 });

@@ -1,0 +1,238 @@
+---
+// Compartir la historia en redes sociales (issue #151), sin JavaScript: la
+// CSP del sitio declara `script-src 'none'`. Cada red es un enlace común a su
+// URL de compartir (ver `share-links.ts`), y el botón que los agrupa es un
+// `details` nativo, el mismo recurso de `DatoConFuente.astro`: el navegador
+// ya sabe abrirlo con un toque o con el teclado y anunciarlo como plegable.
+//
+// Se queda arriba a la derecha de la ventana mientras se lee. Ver el
+// comentario de `.compartir-ancla` para por qué es `sticky` y no `fixed`.
+import { buildShareLinks } from "../lib/social/share-links";
+import EnlaceExterno from "./EnlaceExterno.astro";
+import GlifoRed from "./GlifoRed.astro";
+
+type Props = {
+    // Absolutas: la URL viaja a otro sitio, donde una ruta relativa no
+    // apunta a nada.
+    urlHistoria: URL | string;
+    titulo: string;
+    resumen: string;
+    urlImagen: string;
+};
+
+const { urlHistoria, titulo, resumen, urlImagen } = Astro.props;
+
+const enlaces = buildShareLinks({
+    url: urlHistoria,
+    title: titulo,
+    summary: resumen,
+    imageUrl: urlImagen
+});
+---
+
+<div class="compartir-ancla">
+    <details class="compartir">
+        <summary class="compartir__boton">
+            <svg
+                class="compartir__icono"
+                viewBox="4 2 16 20"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+                focusable="false"
+            >
+                <path
+                    d="M12 15V3M7.5 7.5 12 3l4.5 4.5M8.5 10H6a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1h-2.5"
+                ></path>
+            </svg>
+            <span class="sr-only">Compartir esta historia</span>
+        </summary>
+
+        <ul class="compartir__redes" role="list" aria-label="Compartir en redes sociales">
+            {
+                enlaces.map((enlace) => (
+                    <li>
+                        <EnlaceExterno
+                            class="compartir__enlace"
+                            href={enlace.href}
+                            variante="icono"
+                        >
+                            <GlifoRed red={enlace.network} />
+                            <span class="sr-only">Compartir en {enlace.label}</span>
+                        </EnlaceExterno>
+                    </li>
+                ))
+            }
+        </ul>
+    </details>
+</div>
+
+<style>
+    /*
+     * El issue pide la sección fija arriba a la derecha. Con `position: fixed`
+     * puro, al abrir la página quedaría encima del enlace "Acerca de" de la
+     * cabecera. `sticky` dentro del artículo da lo mismo sin ese choque: al
+     * principio va justo debajo de la cabecera y, al bajar, se pega arriba a
+     * la derecha de la ventana hasta que termina la historia.
+     *
+     * Alto cero para no empujar el texto: el botón y la lista cuelgan de esta
+     * caja sin ocupar lugar en el flujo. `z-index` 5: debajo del enlace para
+     * saltar al contenido (10) y del aviso de los enlaces externos (20).
+     */
+    .compartir-ancla {
+        position: sticky;
+        inset-block-start: var(--esp-s);
+        z-index: 5;
+        display: flex;
+        justify-content: flex-end;
+        /* Sin esto el `details` se estira al alto cero de la caja y aplasta
+           el botón. */
+        align-items: flex-start;
+        height: 0;
+        padding-inline-end: var(--esp-s);
+    }
+
+    .compartir {
+        --dur-compartir: 150ms;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transform-origin: top right;
+        transition: scale var(--dur-compartir) ease;
+    }
+
+    /*
+     * Botón y redes comparten el aro de `RedesSociales.astro` (44px, borde en
+     * `--color-acento`), pero con fondo: acá flotan sobre el texto de la
+     * historia, y un aro transparente dejaría ver las letras por dentro. La
+     * sombra lo separa del texto en los dos temas: se calcula desde
+     * `--color-texto`, que es oscuro en claro y claro en oscuro.
+     */
+    .compartir__boton,
+    .compartir :global(.compartir__enlace) {
+        flex: none;
+        display: grid;
+        place-items: center;
+        width: 2.75rem;
+        height: 2.75rem;
+        border: 1.5px solid currentColor;
+        border-radius: 50%;
+        background-color: var(--color-superficie);
+        box-shadow: 0 1px 4px color-mix(in srgb, var(--color-texto) 25%, transparent);
+        color: var(--color-acento);
+        transition:
+            scale var(--dur-compartir) ease,
+            background-color var(--dur-compartir) ease,
+            color var(--dur-compartir) ease;
+    }
+
+    /* Sin el triángulo del navegador: el ícono ya dice qué hay adentro. */
+    .compartir__boton {
+        cursor: pointer;
+        list-style: none;
+    }
+
+    .compartir__boton::-webkit-details-marker {
+        display: none;
+    }
+
+    .compartir__icono {
+        width: 1rem;
+        height: 1.25rem;
+    }
+
+    /* El anillo de foco global redondea con `--radio`; sobre un círculo eso
+       lo volvería un cuadrado de esquinas suaves. Acá sigue al aro. */
+    .compartir__boton:focus-visible,
+    .compartir :global(.compartir__enlace:focus-visible) {
+        border-radius: 50%;
+    }
+
+    .compartir__redes {
+        display: flex;
+        flex-direction: column;
+        gap: var(--esp-2xs);
+        /* `padding` y no `margin`: el espacio entre el botón y la lista es
+           parte del `details`, y el puntero no lo "abandona" al cruzarlo. */
+        padding: var(--esp-2xs) 0 0;
+        margin: 0;
+        list-style: none;
+
+        /* Oculta con `visibility` y no con el cierre del navegador, por la
+           misma razón que en `DatoConFuente.astro`: así puede mostrarse
+           también al pasar el puntero, y cerrada sale del orden de
+           tabulación y del lector de pantalla. */
+        visibility: hidden;
+        opacity: 0;
+        translate: 0 calc(-1 * var(--esp-2xs));
+        transition:
+            opacity var(--dur-compartir) ease,
+            translate var(--dur-compartir) ease,
+            visibility 0s linear var(--dur-compartir);
+    }
+
+    .compartir[open] .compartir__redes {
+        visibility: visible;
+        opacity: 1;
+        translate: 0 0;
+        transition-delay: 0s;
+    }
+
+    /* Sin esto, un `details` cerrado oculta su contenido por su cuenta y el
+       puntero no podría mostrar la lista. Donde el navegador no conoce este
+       pseudoelemento, la lista se abre igual con un toque o un clic. */
+    .compartir::details-content {
+        content-visibility: visible;
+    }
+
+    /*
+     * Agrandar al apuntar: la sección entera un poco, y la red a la que se va
+     * un poco más. `:active` cubre el toque sostenido en pantallas táctiles;
+     * `:focus-visible`, a quien llega con el teclado.
+     */
+    .compartir[open] {
+        scale: 1.05;
+    }
+
+    .compartir :global(.compartir__enlace:active),
+    .compartir :global(.compartir__enlace:focus-visible) {
+        scale: 1.15;
+    }
+
+    /* Solo con puntero real: en táctil el hover se queda pegado después del
+       toque (misma razón que el bloque `hover: hover` de `base.css`). */
+    @media (hover: hover) {
+        .compartir:hover {
+            scale: 1.05;
+        }
+
+        .compartir:hover .compartir__redes {
+            visibility: visible;
+            opacity: 1;
+            translate: 0 0;
+            transition-delay: 0s;
+        }
+
+        .compartir :global(.compartir__enlace:hover) {
+            scale: 1.15;
+            background-color: var(--color-acento);
+            color: var(--color-superficie);
+        }
+    }
+
+    /*
+     * El aviso "Se abre en una pestaña nueva" de `EnlaceExterno` sale por
+     * encima del enlace, y en una columna eso tapa la red de arriba. Acá se
+     * abre a la izquierda, hacia el texto, donde hay lugar.
+     */
+    .compartir :global(.enlace-externo__aviso) {
+        inset-block-start: 50%;
+        inset-block-end: auto;
+        inset-inline-start: auto;
+        inset-inline-end: calc(100% + 0.5rem);
+        transform: translateY(-50%);
+    }
+</style>
