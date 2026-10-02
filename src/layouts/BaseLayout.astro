@@ -10,7 +10,7 @@ import CabeceraSitio from "../components/CabeceraSitio.astro";
 import PieSitio from "../components/PieSitio.astro";
 import { assetRoute } from "../lib/routes";
 import { isDevelopmentTarget } from "../lib/deployment";
-import { defaultOgImage, ogImageFromStoryImage } from "../lib/social/og-image";
+import { resolveOgImage } from "../lib/social/og-image";
 
 // GitHub Pages no permite configurar cabeceras HTTP, así que la CSP viaja en
 // un <meta>. Es la única barrera disponible en el entorno de desarrollo; en
@@ -69,9 +69,7 @@ const urlCanonica = Astro.site
 // La cabecera 16:9 de la historia (recortada a 1200×630) si la hay, o si no
 // la ilustración de portada pre-generada (issue #39): toda página emite un
 // og:image, nunca queda en blanco al compartirse.
-const imagenOg = ogImage
-    ? await ogImageFromStoryImage(ogImage.src, ogImage.alt)
-    : defaultOgImage(base);
+const imagenOg = await resolveOgImage(base, ogImage);
 
 // Igual que urlCanonica: sin Astro.site (fuera de un build real, como los
 // tests de este componente) no hay origen contra el cual armar una URL
