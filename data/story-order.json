@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-27T23:36:00.279Z",
-  "hash": "703fadf655ae8769acc4d11e4acc56f5144fae5b1e7cf15aca58d8cb9bb63344",
+  "generatedAt": "2026-10-04T00:23:38.899Z",
+  "hash": "d7c97cad6889c3d5966de3f22ee11810fa313cf329937bf5f37a0077c59be503",
   "order": [
     "2026-07-24-el-aula-de-madera-donde-ximena-aprende",
     "2026-07-31-los-libros-tambien-llegan-a-cotahuasi",
@@ -12,7 +12,8 @@
     "2026-09-04-cada-uno-tiene-sus-tiempos-certificado-retenido",
     "2026-09-11-walter-aprende-a-defender-su-escuela",
     "2026-09-18-caylloma-estrena-universidad-pero-elias-se-va",
-    "2026-09-27-el-acoso-a-dani-sobrevive-gracias-a-quienes-miran-y-callan"
+    "2026-09-27-el-acoso-a-dani-sobrevive-gracias-a-quienes-miran-y-callan",
+    "2026-10-04-las-estrellas-de-calamina-que-un-profesor-quiere-devolver-a-su-sitio"
   ],
   "stories": {
     "2026-07-24-el-aula-de-madera-donde-ximena-aprende": {
@@ -57,6 +58,10 @@
     },
     "2026-09-27-el-acoso-a-dani-sobrevive-gracias-a-quienes-miran-y-callan": {
       "previous": "2026-09-18-caylloma-estrena-universidad-pero-elias-se-va",
+      "next": "2026-10-04-las-estrellas-de-calamina-que-un-profesor-quiere-devolver-a-su-sitio"
+    },
+    "2026-10-04-las-estrellas-de-calamina-que-un-profesor-quiere-devolver-a-su-sitio": {
+      "previous": "2026-09-27-el-acoso-a-dani-sobrevive-gracias-a-quienes-miran-y-callan",
       "next": null
     }
   }
