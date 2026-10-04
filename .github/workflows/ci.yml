@@ -66,7 +66,16 @@ jobs:
       # Bloqueante a propósito: una advisory nueva debe poner el CI en rojo
       # para que Dependabot tenga que resolverla antes de publicar.
       - name: Audit production dependencies
-        run: pnpm audit --prod
+        # GHSA-ch52-4w7c-c8xp: http-cache-semantics llega por astro y no tiene
+        # versión corregida. Se ignora solo hasta el 15 de octubre de 2026; desde
+        # esa fecha el audit vuelve a bloquear aunque nadie toque este archivo.
+        run: |
+          if [[ "$(date -u +%F)" < "2026-10-15" ]]; then
+            echo "::warning::Se ignora GHSA-ch52-4w7c-c8xp hasta el 2026-10-15 (sin versión corregida)."
+            pnpm audit --prod --ignore GHSA-ch52-4w7c-c8xp
+          else
+            pnpm audit --prod
+          fi
 
       # Mutation testing (issue #112): no bloqueante todavía —a diferencia
       # de la cobertura de líneas de arriba, que sí bloquea— porque solo da
