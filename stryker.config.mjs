@@ -12,10 +12,9 @@ const config = {
   plugins: ["@stryker-mutator/vitest-runner"],
   testRunner: "vitest",
   mutate: ["src/**/*.ts"],
-  // La mayoría de mutantes en este proyecto son estáticos (constantes,
-  // schemas Zod evaluados al importar el módulo): sin esto, Stryker corre
-  // toda la suite de tests por cada uno en vez de una sola vez.
-  ignoreStatic: true,
+  // No usar `ignoreStatic: true`: con @stryker-mutator/vitest-runner 10 y
+  // vitest 5 los mutantes quedan "sobrevivientes" sin correr ningún test
+  // ("Ran 0.00 tests per mutant") y el reporte sale en 0%. Ver ADR 0019 §6.
   htmlReporter: {
     fileName: "reports/mutation/index.html",
   },

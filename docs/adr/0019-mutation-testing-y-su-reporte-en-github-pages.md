@@ -111,14 +111,17 @@ Se evaluaron y descartaron:
   contenido editorial con herramienta de desarrollo, y requeriría gestionar
   credenciales de Netlify en un workflow nuevo sin necesidad real.
 
-### 6. `ignoreStatic: true`
+### 6. Sin `ignoreStatic`
 
-La mayoría de mutantes en este código son estáticos (constantes, schemas Zod
-evaluados al importar el módulo): sin esta opción, Stryker corre la suite de
-tests completa por cada uno de esos mutantes en vez de una sola vez. Es una
-recomendación estándar de Stryker para este patrón, no una optimización
-prematura: se confirmó localmente que sin ella un archivo pequeño (11
-mutantes, todos estáticos) disparaba una advertencia explícita de Stryker.
+Se había activado `ignoreStatic: true` porque la mayoría de mutantes son
+estáticos (constantes, schemas Zod evaluados al importar el módulo) y, sin la
+opción, Stryker corre la suite completa por cada uno. Con
+`@stryker-mutator/vitest-runner` 10 y vitest 5 esa opción rompe la fase de
+mutantes: ninguno ejecuta tests ("Ran 0.00 tests per mutant"), todos figuran
+como sobrevivientes y el reporte sale en 0% (743 sobrevivientes, 0 muertos).
+Sin la opción, la corrida completa tarda unos 2 minutos —lo mismo que antes—
+y da un puntaje real (≈20% al momento de corregirlo). Se vuelve a evaluar si
+una versión nueva del runner arregla la combinación.
 
 ## Consecuencias
 
