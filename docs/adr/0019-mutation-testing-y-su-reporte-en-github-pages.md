@@ -1,4 +1,4 @@
-# ADR 0019: Mutation testing con Stryker, no bloqueante, con reporte diario en GitHub Pages
+# ADR 0019: Mutation testing con Stryker, con reporte diario en GitHub Pages
 
 ## Estado
 
@@ -17,7 +17,7 @@ la cobertura no puede.
 El issue pide, en concreto:
 
 1. Correrlo en el pipeline solo sobre los archivos modificados, sin bloquear
-   el build todavía.
+   el build todavía (el umbral de la corrida nocturna llegó después, §2).
 2. Correrlo completo una vez al día (9pm UTC).
 3. Tener el reporte HTML disponible en un link, sin necesitar descomprimirlo.
 
@@ -40,12 +40,19 @@ sin esa línea, Stryker falla con «no TestRunner plugins were loaded».
 tiene un mutador para ese lenguaje, y `src/lib/` (donde vive casi toda la
 lógica no visual) es TypeScript puro.
 
-### 2. No bloqueante, todavía
+### 2. Umbral de 60% solo en la corrida nocturna
 
-`thresholds.break` no se define (queda en su default, `null`), así que un
-mutante sobreviviente no hace fallar nada. Es la lectura literal del issue:
-da visibilidad primero, la conversación sobre un umbral que sí bloquee es
-aparte y vendrá después de ver los primeros reportes reales.
+Al principio `thresholds.break` no se definía: un mutante sobreviviente no
+hacía fallar nada, para dar visibilidad primero. Esa falta de umbral dejó que
+el reporte saliera en 0% durante días sin que nadie lo notara (ver §6). Ahora
+`thresholds.break` es 60: un puntaje menor termina `pnpm mutation-test` con
+código 1. Con vitest 4.1 el puntaje total es ~85%, así que 60 deja margen.
+
+El workflow nocturno publica el reporte aunque el puntaje esté bajo el umbral
+y falla en su último paso, con el reporte ya publicado. La corrida por PR
+(§3) sigue sin bloquear, porque se mide sobre pocos archivos y un archivo
+pequeño con pocos mutantes puede bajar de 60% sin que el PR tenga la culpa
+(hoy `robots.ts` está en 50%).
 
 ### 3. En el pipeline: solo los `.ts` que cambiaron, vía `--mutate`
 
@@ -59,7 +66,7 @@ omite entero.
 
 Esto mantiene acotado el tiempo del pipeline —mutar todo `src/lib/` en cada
 PR sería correr la suite completa decenas de veces— y es no bloqueante
-(`continue-on-error: true`) por lo mismo del punto 2.
+(`continue-on-error: true`) por lo explicado en el punto 2.
 
 El reporte de esta corrida parcial se sube como artefacto normal de GitHub
 Actions (`actions/upload-artifact`). Sí requiere descomprimir para verlo: el
@@ -120,6 +127,22 @@ recomendación estándar de Stryker para este patrón, no una optimización
 prematura: se confirmó localmente que sin ella un archivo pequeño (11
 mutantes, todos estáticos) disparaba una advertencia explícita de Stryker.
 
+### 7. vitest fijado en 4.1 mientras el runner no soporte vitest 5
+
+`@stryker-mutator/vitest-runner` 10 no funciona con vitest 5: desde el bump a
+5.0.2 (`e842606`, corrida nocturna #23) todos los mutantes corren con 0 tests
+("Ran 0.00 tests per mutant"), sobreviven y el reporte sale en 0%. Se
+bisectó con los lockfiles de las 28 corridas nocturnas y se reprodujo en
+local: con vitest 4.1.9 `routes.ts` daba 100% y con 5.0.2, 0%, con la misma
+configuración y el mismo Stryker. En vitest 5 cambió el formato de
+`fullTestName` y la cobertura por test (ver stryker-js
+[#6240](https://github.com/stryker-mutator/stryker-js/issues/6240)).
+
+`ignoreStatic` no era la causa y su razón de ser (§6) sigue vigente. Se fijan
+`vitest` y `@vitest/coverage-v8` en `4.1.11` (la versión que el runner usa) y
+Dependabot ignora sus actualizaciones mayores. Se quita esa regla cuando el
+runner soporte vitest 5.
+
 ## Consecuencias
 
 ### Positivas
@@ -129,11 +152,12 @@ mutantes, todos estáticos) disparaba una advertencia explícita de Stryker.
   ejecutan.
 - El reporte completo diario da una fotografía del estado real de las
   pruebas sin que nadie tenga que acordarse de correrlo ni descomprimir nada.
-- Ninguno de los dos bloquea el pipeline: el equipo puede adoptar la
-  práctica antes de decidir un umbral.
+- La corrida nocturna falla si el puntaje baja de 60%, incluido el caso de un
+  runner roto que mida 0%.
 
 ### Costos
 
+- vitest queda atrasado una versión mayor hasta que Stryker lo soporte.
 - El workflow nocturno reconstruye y redespliega el sitio completo de GitHub
   Pages una vez al día, incluso si nadie publicó nada nuevo. El contenido no
   cambia (viene del mismo `main`), pero sí queda un despliegue nuevo por día
