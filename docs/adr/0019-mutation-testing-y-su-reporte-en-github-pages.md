@@ -17,7 +17,7 @@ la cobertura no puede.
 El issue pide, en concreto:
 
 1. Correrlo en el pipeline solo sobre los archivos modificados, sin bloquear
-   el build todavía (el umbral de la corrida nocturna llegó después, §2).
+   el build todavía (el umbral llegó después, §2).
 2. Correrlo completo una vez al día (9pm UTC).
 3. Tener el reporte HTML disponible en un link, sin necesitar descomprimirlo.
 
@@ -40,19 +40,23 @@ sin esa línea, Stryker falla con «no TestRunner plugins were loaded».
 tiene un mutador para ese lenguaje, y `src/lib/` (donde vive casi toda la
 lógica no visual) es TypeScript puro.
 
-### 2. Umbral de 60% solo en la corrida nocturna
+### 2. Umbral de 75%, también en el PR
 
 Al principio `thresholds.break` no se definía: un mutante sobreviviente no
 hacía fallar nada, para dar visibilidad primero. Esa falta de umbral dejó que
-el reporte saliera en 0% durante días sin que nadie lo notara (ver §6). Ahora
-`thresholds.break` es 60: un puntaje menor termina `pnpm mutation-test` con
-código 1. Con vitest 4.1 el puntaje total es ~85%, así que 60 deja margen.
+el reporte saliera en 0% durante días sin que nadie lo notara (ver §7). Ahora
+`thresholds.break` es 75: un puntaje menor termina `pnpm mutation-test` con
+código 1. Con vitest 4.1 el puntaje total es ~85%, así que 75 deja margen.
 
-El workflow nocturno publica el reporte aunque el puntaje esté bajo el umbral
-y falla en su último paso, con el reporte ya publicado. La corrida por PR
-(§3) sigue sin bloquear, porque se mide sobre pocos archivos y un archivo
-pequeño con pocos mutantes puede bajar de 60% sin que el PR tenga la culpa
-(hoy `robots.ts` está en 50%).
+El umbral bloquea en los dos lugares donde corre Stryker. El workflow
+nocturno publica el reporte aunque el puntaje esté bajo el umbral y falla en
+su último paso, con el reporte ya publicado. La corrida por PR (§3) falla en
+el paso mismo, y su reporte se sube igual como artefacto.
+
+Costo conocido: en el PR el puntaje se mide solo sobre los `.ts` que cambió,
+y un archivo pequeño con pocos mutantes baja de 75% con un solo mutante
+sobreviviente (hoy `robots.ts` está en 50%). Un PR que lo toque falla hasta
+que se refuercen sus tests.
 
 ### 3. En el pipeline: solo los `.ts` que cambiaron, vía `--mutate`
 
@@ -65,8 +69,8 @@ base del PR (o el commit anterior en un push a `main`) y se lo pasa a
 omite entero.
 
 Esto mantiene acotado el tiempo del pipeline —mutar todo `src/lib/` en cada
-PR sería correr la suite completa decenas de veces— y es no bloqueante
-(`continue-on-error: true`) por lo explicado en el punto 2.
+PR sería correr la suite completa decenas de veces—. Es bloqueante, por lo
+explicado en el punto 2.
 
 El reporte de esta corrida parcial se sube como artefacto normal de GitHub
 Actions (`actions/upload-artifact`). Sí requiere descomprimir para verlo: el
@@ -141,7 +145,10 @@ configuración y el mismo Stryker. En vitest 5 cambió el formato de
 `ignoreStatic` no era la causa y su razón de ser (§6) sigue vigente. Se fijan
 `vitest` y `@vitest/coverage-v8` en `4.1.11` (la versión que el runner usa) y
 Dependabot ignora sus actualizaciones mayores. Se quita esa regla cuando el
-runner soporte vitest 5.
+runner soporte vitest 5. Dependabot no permite que un `ignore` venza por
+fecha (su `cooldown` cuenta desde el lanzamiento de cada versión, y vitest
+5.0.0 ya salió hace más de cuatro semanas), así que la regla lleva en el
+archivo una fecha de revisión: 2026-11-02.
 
 ## Consecuencias
 
@@ -152,8 +159,8 @@ runner soporte vitest 5.
   ejecutan.
 - El reporte completo diario da una fotografía del estado real de las
   pruebas sin que nadie tenga que acordarse de correrlo ni descomprimir nada.
-- La corrida nocturna falla si el puntaje baja de 60%, incluido el caso de un
-  runner roto que mida 0%.
+- El pipeline falla si el puntaje baja de 75%, tanto en el PR como en la
+  corrida nocturna, incluido el caso de un runner roto que mida 0%.
 
 ### Costos
 
@@ -178,7 +185,9 @@ runner soporte vitest 5.
    artefacto `reporte-mutacion`.
 3. En un PR que no toque ningún `.ts`, ese paso no corre (el `id: cambios`
    queda vacío).
-4. Disparando `Mutation Testing Nocturno` manualmente (`workflow_dispatch`),
+4. En un PR que toque un archivo bajo 75% (p. ej. `robots.ts`), el paso
+   falla y el reporte se sube igual.
+5. Disparando `Mutation Testing Nocturno` manualmente (`workflow_dispatch`),
    el resumen del job termina con un link a
    `<url-del-sitio>/reporte-mutacion/` y esa URL abre el reporte
    directamente, sin descargar nada.

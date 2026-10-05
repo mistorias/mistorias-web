@@ -27,7 +27,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for full setup instructions.
 
 Node version and pnpm version are defined in `.nvmrc` and `package.json` respectively — they may differ from values documented elsewhere.
 
-Common commands: `pnpm dev`, `pnpm build`, `pnpm test`, `pnpm mutation-test` (mutation testing with Stryker — the nightly run fails below a 60% score, the per-PR run does not block; vitest is pinned to 4.1 until Stryker's runner supports vitest 5, see [ADR 0019](docs/adr/0019-mutation-testing-y-su-reporte-en-github-pages.md)). For dev container setup, Docker commands, and detailed development workflow, see [CONTRIBUTING.md](CONTRIBUTING.md).
+Common commands: `pnpm dev`, `pnpm build`, `pnpm test`, `pnpm mutation-test` (mutation testing with Stryker — both the nightly run and the per-PR run (changed files only) fail below a 75% score; vitest is pinned to 4.1 until Stryker's runner supports vitest 5, see [ADR 0019](docs/adr/0019-mutation-testing-y-su-reporte-en-github-pages.md)). For dev container setup, Docker commands, and detailed development workflow, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Developer Workflow & Hooks
 
