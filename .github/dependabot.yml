@@ -9,6 +9,14 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+    ignore:
+      # @stryker-mutator/vitest-runner 10 no funciona con vitest 5: todos los
+      # mutantes sobreviven con 0 tests y el puntaje sale en 0% (ADR 0019).
+      # Quitar esta regla cuando el runner soporte vitest 5.
+      - dependency-name: "vitest"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@vitest/coverage-v8"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "github-actions"
     directory: "/" # Scans .github/workflows/*.yml
