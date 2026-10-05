@@ -27,7 +27,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for full setup instructions.
 
 Node version and pnpm version are defined in `.nvmrc` and `package.json` respectively — they may differ from values documented elsewhere.
 
-Common commands: `pnpm dev`, `pnpm build`, `pnpm test`. For dev container setup, Docker commands, and detailed development workflow, see [CONTRIBUTING.md](CONTRIBUTING.md).
+For dev container setup, Docker commands, and detailed development workflow, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Developer Workflow & Hooks
 
@@ -35,23 +35,9 @@ Claude Code is configured with automated hooks (`.claude/settings.json`) to catc
 
 ⚠️ **Important:** These hooks run **only during Claude Code interactions**, not in your terminal's `git` commands. They gate Claude's own work, not manual git operations.
 
-### Post-Commit Hook
-When Claude runs `git commit` in a session, the hook automatically executes:
-```bash
-pnpm test --coverage && pnpm build
-```
-**What it does:** Verifies that tests pass, coverage meets the threshold, and the build succeeds. If any step fails, the commit exists but cannot be pushed — the issue must be fixed before Claude retries.
+The post-commit hook runs the test suite with coverage and the build; if either fails, the commit exists but cannot be pushed until fixed. The pre-push hook blocks pushes to `main`/`master`. Both are defined in `.claude/settings.json`.
 
-**Why:** Catches broken commits before Claude shares them. Aligns with atomic-commit practices (see [docs/STANDARDS.md](docs/STANDARDS.md#atomic-commits)) — every commit should be a safe, working checkpoint.
-
-### Pre-Push Hook
-When Claude runs `git push` in a session, the hook validates the branch:
-```bash
-# Prevents push to main or master
-```
-**What it does:** Blocks accidental pushes to `main` or `master`. Feature work must go through a pull request instead.
-
-**Why:** Protects the mainline branch from direct commits and enforces code review via PR.
+**Why:** Catches broken commits before Claude shares them, and keeps every commit a safe checkpoint (see [docs/STANDARDS.md](docs/STANDARDS.md#atomic-commits)); feature work goes through a PR.
 
 ### Disabling Hooks (if needed)
 If a hook times out or interferes with Claude's work in a session, it can be skipped:
@@ -74,25 +60,11 @@ git commit --no-verify  # Skips all hooks for this commit
 
 ### Content Loading
 
-Stories are loaded by Astro's Content Collections API. `src/content.config.ts` declares the `stories` collection with a `glob()` loader over `content/mistorias-contenido/stories/**/*.md`, validated against `storySchema` (`src/lib/content/schema.ts`). That loader is the single source of truth for parsing and validating frontmatter — do not add a second parser alongside it.
-
-`src/lib/content/raw-html-gate.ts` complements it with the raw-HTML gate: `assertStoriesHaveNoRawHtml()` scans every story file and rejects real HTML tags. It validates the full file text rather than re-parsing frontmatter, precisely so it cannot disagree with Astro's loader about what the file contains.
-
-The gate runs via `src/lib/content/no-raw-html-integration.ts`, an Astro integration registered in `astro.config.mjs`. Its `astro:config:setup` hook fires on both `astro dev` and `astro build`, so a story with executable HTML fails the build instead of being published. See [ADR 0004](docs/adr/0004-triaje-reportes-seguridad-github-pages.md) for why this exists.
-
-`src/lib/content/story-asset-folders.ts` is the sibling gate for the image folders nested under `stories/` (see [ADR 0005](docs/adr/0005-imagenes-en-historias.md)), registered the same way via `src/lib/content/story-asset-folders-integration.ts`. Both gates share directory-reading helpers from `src/lib/content/stories-directory.ts`.
-
-`src/lib/content/story-image-requirements.ts` complements that folder/filename gate with what it doesn't check: that `principal.jpg` decodes as a real JPEG (via `sharp().metadata()`, which sniffs by content, not extension) within size and pixel limits, and that its presence is consistent with the story's frontmatter — `imageAlt`, `imageCredit` and `imageLicense` must all be declared together when there's an image, and none of them when there isn't. Registered via `story-image-requirements-integration.ts`, which also hooks `astro:build:done` to run `assert-built-images-are-optimized.ts` — failing the build if any `<img src>` in the emitted HTML didn't come out of `astro:assets` (i.e. doesn't contain `/_astro/`). `src/lib/content/story-images.ts` is the only place that loads image files into the bundle, via a literal `import.meta.glob("/content/mistorias-contenido/stories/*/principal.jpg")`; `TarjetaHistoria.astro` and the story detail page call its `getStoryImage(storyId)` and render nothing (card: just the brand symbol) when a story has no image.
-
-`src/lib/brand/symbol-gate.ts` follows the same pattern for the brand symbol SVG (`src/assets/brand/symbol-mistorias.svg`): it rejects any fixed color (must stay `currentColor` so dark mode needs no second file) and anything beyond drawing markup (`<script>`, event handlers, `foreignObject`, external references), because the symbol is injected in line with `set:html`. Registered via `src/lib/brand/symbol-gate-integration.ts`. See [ADR 0007](docs/adr/0007-lockups-del-logo-y-alto-de-la-cabecera.md).
+Stories load through the `stories` collection in `src/content.config.ts` (`glob()` loader + `storySchema`); that loader is the single source of truth for frontmatter — do not add a second parser. The build gates (raw HTML, image folders and requirements, brand symbol) and their integrations are documented in [src/lib/content/CLAUDE.md](src/lib/content/CLAUDE.md).
 
 ### Pages & Routing
 
 - `src/layouts/BaseLayout.astro` — shared HTML skeleton; the `<meta>` Content-Security-Policy lives here and nowhere else. Also carries the header, the footer and the skip link, so every page shares them. It also resolves `og:image`: an `ogImage` prop (a story's header + alt) goes through `ogImageFromStoryImage()` for a build-time 1200×630 crop via `astro:assets`; no prop falls back to `defaultOgImage()`, the pre-generated risograph illustration at `public/imagenes/og-default.jpg` (regenerate with `pnpm og-default-image`). Both live in `src/lib/social/og-image.ts` — see [ADR 0013](docs/adr/0013-og-image-por-historia.md) for why this doesn't use Netlify's Image CDN despite the two-target build.
-- `src/pages/index.astro` — homepage: promise banner, featured story, older stories
-- `src/pages/historias/[...id].astro` — dynamic story detail pages (file-based routing)
-- `src/pages/temas/index.astro` and `src/pages/temas/[tema].astro` — theme index and per-theme listings
-- `src/pages/acerca.astro`, `src/pages/404.astro`
 
 Public URLs are in Spanish (`/historias/`, `/temas/`), matching the project's ubiquitous language. **Never hardcode an internal `href`**: `base` differs per deploy target, so a hand-written path silently breaks on GitHub Pages without failing the build. Build every internal link with the helpers in `src/lib/routes.ts`, which also own the section names.
 
@@ -136,11 +108,6 @@ This allows the same codebase to deploy to either platform with correct base pat
 `netlify.toml` declares the same target for whatever build Netlify runs on its side. `netlify deploy` rebuilds the site unless it is given `--no-build`, and that rebuild does not inherit the workflow's env — which is exactly how production ended up serving `/mistorias-web/…` links from mistorias.pe. The deploy workflow now passes `--no-build` and, before uploading, fails if the artifact still carries the GitHub Pages base.
 
 
-
-## TypeScript & Type Checking
-
-Configured in strict mode (`tsconfig.json` extends `astro/tsconfigs/strict`). `@astrojs/check` validates Astro-specific types. See CONTRIBUTING.md for how to run type checks.
-
 ## CI Deployments
 
 Two workflows in `.github/workflows/`:
@@ -166,21 +133,4 @@ See [ADR 0004](docs/adr/0004-triaje-reportes-seguridad-github-pages.md) for the 
 
 ## Testing Astro Components
 
-As of issue #33, `.astro` components can be tested with Vitest using the `experimental_AstroContainer` API from `astro/container`. Tests live in `tests/` alongside TS tests (e.g. `tests/logotipo-mistorias.spec.ts` for `src/components/LogotipoMistorias.astro`).
-
-**Patterns:**
-
-- Import and render a component via `renderAstroComponent(Component, { props: {...}, slots: {...} })` (defined in `tests/support/render-astro-component.ts`).
-- Assert on the HTML string it produces (no DOM API in Node tests, so use `.toContain()` for substrings).
-- For data fixtures (e.g. `CollectionEntry<"stories">`), use `buildStoryFixture(overrides?)` from `tests/support/story-fixture.ts`.
-- Stub environment variables with `vi.stubEnv("DEPLOY_TARGET", "netlify")` and clean up in `afterEach(() => vi.unstubAllEnvs())`.
-
-**Coverage:**
-
-- `coverage.config.ts` explicitly lists only the `.astro` files under test (not `src/**/*.astro`, which would count all untested components at 0%). Currently: `BaseLayout.astro`, `LogotipoMistorias.astro`, `TarjetaHistoria.astro`, `ListaTemas.astro`, `SimboloMistorias.astro`, `CabeceraSitio.astro`, `PieSitio.astro`.
-- The 90% coverage threshold applies to those files (108 tests as of now pass; ~89% branches still needs work on `Astro.site`-dependent code in future iterations).
-
-**Limitations:**
-
-- The Container API renders in a Node environment without a browser, so CSS media queries, viewport-dependent layouts, and DOM interactions can't be asserted. Test the *markup structure* (classes, attributes, text content) that these depend on instead.
-- `Astro.site` and `Astro.url` are not available (or undefined) in tests; features that need canonical URLs or depend on full site config should be deferred or tested differently.
+Container API patterns, coverage rules and limitations live in [tests/CLAUDE.md](tests/CLAUDE.md), loaded when working under `tests/`.
