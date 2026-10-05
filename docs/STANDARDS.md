@@ -189,27 +189,14 @@ Todo PR debe incluir:
 3. **Cómo verificarlo** — pasos para probar el cambio (correr tests, revisar una feature, etc.)
 4. **Issue relacionado** — enlace al issue si aplica (ej. `Closes #19`)
 
-**Plantilla:**
+La plantilla vive en [`.github/pull_request_template.md`](../.github/pull_request_template.md)
+y GitHub la carga sola al abrir un PR. Además de lo anterior, pide:
 
-```markdown
-## Qué
-
-[Resumen del cambio en una línea]
-
-## Por qué
-
-[Problema que resuelve o requerimiento. Enlazar contexto: issue, ADR, discusión.]
-
-## Cómo Verificar
-
-- [ ] Correr `pnpm test` — los tests pasan
-- [ ] Correr `pnpm build` — el build es exitoso
-- [ ] Navegar a http://localhost:4321 y [acción específica] funciona
-
-## Relacionado
-
-Closes #XX
-```
+- **Comprobaciones** de alcance, funcionalidad, accesibilidad y seguridad. En un
+  feature nuevo, la funcionalidad se describe en formato dado / cuando / entonces.
+- **Capturas** solo si cambia la UI, recortadas a lo que cambió: sin pestañas, barras
+  del navegador ni datos ajenos al cambio.
+- **Un PR pequeño**: hace una sola cosa y se lee de corrido.
 
 ### Antes de Solicitar Revisión
 
@@ -227,6 +214,9 @@ feat: el usuario puede filtrar historias por tema (issue #XX)
 fix: la fecha se valida correctamente en el formulario (issue #YY)
 docs: docs/STANDARDS.md es disponible íntegramente en castellano
 ```
+
+Un cambio que rompe compatibilidad se marca con `!` tras el tipo (`feat!: ...`) en el
+título de cada commit que lo introduce, y el título del PR lo hereda.
 
 ---
 
