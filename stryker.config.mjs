@@ -1,7 +1,8 @@
 // Mutation testing (issue #112): mide si los tests detectan cambios reales en
 // el código, no solo si lo ejecutan (lo que la cobertura de líneas no ve).
-// No define `thresholds.break` a propósito: por ahora no debe hacer fallar
-// el build, solo dar visibilidad del puntaje. `htmlReporter.fileName` usa
+// `thresholds.break` en 60: un puntaje menor falla `pnpm mutation-test` (con
+// vitest 4.1 el puntaje total es ~85%; con el runner roto por vitest 5 era 0%,
+// y nadie lo notó porque nada fallaba). `htmlReporter.fileName` usa
 // `index.html` para que el reporte quede en una URL de carpeta legible
 // cuando se publica en GitHub Pages.
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
@@ -16,6 +17,7 @@ const config = {
   // schemas Zod evaluados al importar el módulo): sin esto, Stryker corre
   // toda la suite de tests por cada uno en vez de una sola vez.
   ignoreStatic: true,
+  thresholds: { break: 60 },
   htmlReporter: {
     fileName: "reports/mutation/index.html",
   },
