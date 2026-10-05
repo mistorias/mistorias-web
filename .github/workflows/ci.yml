@@ -77,13 +77,11 @@ jobs:
             pnpm audit --prod
           fi
 
-      # Mutation testing (issue #112): no bloquea a propósito
-      # (`continue-on-error`) —a diferencia de la cobertura de líneas de
-      # arriba, que sí bloquea— porque se mide sobre pocos archivos y uno
-      # pequeño puede bajar de 60% sin que el PR tenga la culpa. El umbral
-      # de `stryker.config.mjs` solo corta la corrida nocturna. Se corre solo
-      # sobre los .ts modificados para mantener el tiempo del pipeline
-      # razonable; ver
+      # Mutation testing (issue #112): bloqueante, igual que la cobertura de
+      # líneas de arriba: si el puntaje de los .ts modificados queda bajo el
+      # umbral de `stryker.config.mjs`, el paso falla y el PR no pasa. El
+      # reporte se sube igual (`always()`). Se corre solo sobre los .ts
+      # modificados para mantener el tiempo del pipeline razonable; ver
       # docs/adr/0019-mutation-testing-y-su-reporte-en-github-pages.md.
       - name: Detectar archivos .ts modificados
         id: cambios
@@ -101,7 +99,6 @@ jobs:
 
       - name: Mutation testing en los archivos modificados
         if: steps.cambios.outputs.archivos != ''
-        continue-on-error: true
         run: pnpm mutation-test -- --mutate "${{ steps.cambios.outputs.archivos }}"
 
       - name: Publicar el reporte de mutation testing
