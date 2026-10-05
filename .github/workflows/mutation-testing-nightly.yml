@@ -42,9 +42,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # No bloqueante a propósito (ver stryker.config.mjs): todavía no hace
-      # fallar el build, solo genera el reporte que se publica más abajo.
+      # No corta el job acá para que el reporte se publique igual: si el
+      # puntaje queda bajo `thresholds.break` (stryker.config.mjs), el último
+      # paso del job falla con el reporte ya publicado.
       - name: Ejecutar mutation testing completo
+        id: mutacion
         run: pnpm mutation-test
         continue-on-error: true
 
@@ -78,3 +80,9 @@ jobs:
         if: hashFiles('reports/mutation/index.html') != ''
         run: |
           echo "## Reporte de mutation testing: ${{ steps.deployment.outputs.page_url }}reporte-mutacion/" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fallar si el mutation testing no alcanzó el umbral
+        if: steps.mutacion.outcome == 'failure'
+        run: |
+          echo "## Mutation testing falló: puntaje bajo el umbral o error del runner" >> "$GITHUB_STEP_SUMMARY"
+          exit 1
