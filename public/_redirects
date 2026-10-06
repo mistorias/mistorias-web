@@ -1,0 +1,18 @@
+# Redirecciones que aplica Netlify al servir mistorias.pe.
+#
+# `/etiquetas/` fue la ruta de los ejes editoriales hasta ADR 0009, que los
+# renombró a `/temas/` sin dejar redirección: el costo aceptado entonces era un
+# 404 para cualquier enlace externo. Los crawlers todavía piden esas URLs y
+# cada 404 le resta credibilidad al sitio real (issue #107). El slug del tema
+# no cambió —solo el nombre de la sección—, así que el mapeo es uno a uno.
+#
+# Las dos reglas son necesarias: el splat cubre `/etiquetas/<tema>/`, pero no
+# la sección a secas.
+#
+# Solo Netlify lee este archivo; en GitHub Pages viaja inerte, igual que
+# `_headers`. Ese destino es el build de trabajo en progreso, marcado
+# `noindex` y sin sitemap (ADR 0008 y 0015), así que no compite por estas
+# URLs. Ver ADR 0018.
+
+/etiquetas/*  /temas/:splat  301
+/etiquetas    /temas/        301

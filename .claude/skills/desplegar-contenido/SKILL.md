@@ -157,7 +157,7 @@ Comparar esa tabla contra lo que renderiza el sitio:
   llevar a `/temas`.
 
 Si algo no coincide, el problema casi siempre está en el frontmatter
-(`themes:`, o `tags:` si la historia todavía no migró) de la historia nueva,
+(`themes:`) de la historia nueva,
 no en el código del sitio — `groupByTheme` normaliza a minúsculas y recorta
 espacios, pero no corrige errores de tipeo ni singular/plural.
 

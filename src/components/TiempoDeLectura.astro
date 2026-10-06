@@ -1,0 +1,30 @@
+---
+import { fullReadingTime } from "../lib/reading-time";
+
+type Props = {
+    minutos: number;
+};
+
+// Forma completa del tiempo de lectura, para la página de la historia. En las
+// tarjetas va comprimido (TarjetaHistoria.astro); acá hay espacio para decirlo
+// entero. El valor lo calcula y verifica el pipeline de mistorias-contenido.
+const { minutos } = Astro.props;
+// El espacio entre la etiqueta y el valor es explícito (`{" "}`): el compilador
+// de Astro colapsa los saltos de línea de la plantilla y se leería pegado.
+---
+
+<p class="tiempo-de-lectura">
+    <strong>Tiempo de lectura:</strong>{" "}{fullReadingTime(minutos)}
+</p>
+
+<style>
+    /* Mismo tratamiento tipográfico que la línea de autoría y fecha que tiene
+       encima (`.historia__metadatos`): es otro metadato de la historia, no un
+       elemento propio. */
+    .tiempo-de-lectura {
+        margin-block-start: var(--esp-xs);
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        color: var(--color-metadato);
+    }
+</style>

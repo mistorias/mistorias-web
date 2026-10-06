@@ -12,6 +12,7 @@
 
 const STORIES_SECTION = "historias";
 const THEMES_SECTION = "temas";
+const AUTHORS_SECTION = "autores";
 const ABOUT_SECTION = "acerca";
 const EDITORIAL_CONTENT_SECTION = "contenido";
 const SITE_CODE_SECTION = "codigo";
@@ -50,6 +51,9 @@ export const assetRoute = (
 
 export const homeRoute = (base: string): string => buildRoute(base);
 
+export const storiesRoute = (base: string): string =>
+  buildRoute(base, STORIES_SECTION);
+
 export const storyRoute = (base: string, id: string): string =>
   buildRoute(base, STORIES_SECTION, id);
 
@@ -58,6 +62,16 @@ export const themesRoute = (base: string): string =>
 
 export const themeRoute = (base: string, theme: string): string =>
   buildRoute(base, THEMES_SECTION, theme);
+
+/**
+ * Ruta de la ficha de quien firma una historia.
+ *
+ * `slug` es el id de la entrada en `authors/`, que es también el nombre del
+ * archivo en el repositorio de contenido: la dirección pública y el archivo no
+ * se pueden desincronizar.
+ */
+export const authorRoute = (base: string, slug: string): string =>
+  buildRoute(base, AUTHORS_SECTION, slug);
 
 export const aboutRoute = (base: string): string =>
   buildRoute(base, ABOUT_SECTION);

@@ -62,3 +62,19 @@ export function defaultOgImage(base: string): OgImage {
         height: OG_IMAGE_HEIGHT
     };
 }
+
+/**
+ * La og:image que le toca a una página: el recorte de la cabecera de la
+ * historia si la trae, o si no la ilustración por defecto (issue #39). Es la
+ * única decisión entre las dos: la lee `BaseLayout` para las etiquetas
+ * `<meta>` y la historia para el `media` de Pinterest (issue #151), y así
+ * lo que se comparte nunca difiere de lo que anuncian las etiquetas.
+ */
+export async function resolveOgImage(
+    base: string,
+    storyImage?: { readonly src: ImageMetadata; readonly alt: string }
+): Promise<OgImage> {
+    return storyImage
+        ? ogImageFromStoryImage(storyImage.src, storyImage.alt)
+        : defaultOgImage(base);
+}

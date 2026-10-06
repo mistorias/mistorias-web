@@ -1,0 +1,85 @@
+---
+import { SOCIAL_PROFILES } from "../lib/social/profiles";
+import EnlaceExterno from "./EnlaceExterno.astro";
+import GlifoRed from "./GlifoRed.astro";
+
+type Props = {
+    // `id` del texto que invita a seguir: la lista se rotula con él para que
+    // el lector de pantalla anuncie el propósito antes de los tres enlaces.
+    etiquetadoPor: string;
+};
+
+const { etiquetadoPor } = Astro.props;
+---
+
+<ul class="redes" role="list" aria-labelledby={etiquetadoPor}>
+    {
+        SOCIAL_PROFILES.map((perfil, indice) => (
+            <li>
+                <EnlaceExterno
+                    class="redes__enlace"
+                    href={perfil.url}
+                    rel="me"
+                    variante="icono"
+                    avisoAlineado={
+                        indice === SOCIAL_PROFILES.length - 1 ? "fin" : "centro"
+                    }
+                >
+                    <GlifoRed red={perfil.network} />
+                    <span class="sr-only">Mistorias en {perfil.label}</span>
+                </EnlaceExterno>
+            </li>
+        ))
+    }
+</ul>
+
+<style>
+    /* Fila por defecto. `PieSitio` es quien decide dónde va el bloque y cómo
+       se alinea; acá solo se dibujan los tres aros. */
+    .redes {
+        display: flex;
+        gap: var(--esp-2xs);
+        padding: 0;
+        margin: 0;
+        list-style: none;
+    }
+
+    /* El `<a>` lo pinta `EnlaceExterno` (ADR 0022), no este componente: sus
+       reglas llegan con `:global` acotado bajo `.redes`, para que no se
+       escape a otros enlaces.
+
+       El aro es el borde del propio enlace, no parte del dibujo: así el área
+       que se toca es el círculo entero de 44px (el mismo piso táctil que
+       `.pie__enlace`) y no solo el trazo del glifo. Fondo transparente y
+       línea en `--color-acento`: vino en modo claro, su tinte aclarado en
+       oscuro, sin token nuevo. */
+    .redes :global(.redes__enlace) {
+        display: grid;
+        place-items: center;
+        width: 2.75rem;
+        height: 2.75rem;
+        border: 1.5px solid currentColor;
+        border-radius: 50%;
+        color: var(--color-acento);
+        transition:
+            background-color 150ms ease,
+            color 150ms ease;
+    }
+
+    /* El anillo de foco global redondea con `--radio`; sobre un círculo eso
+       lo volvería un cuadrado de esquinas suaves. Acá sigue al aro. */
+    .redes :global(.redes__enlace:focus-visible) {
+        border-radius: 50%;
+    }
+
+    /* Al pasar el puntero el aro se rellena y el glifo toma el color de la
+       superficie del pie: el mismo par de tokens invertido, legible en los
+       dos temas. Solo con puntero real, para que un toque no lo deje
+       "pegado" en pantallas táctiles. */
+    @media (hover: hover) {
+        .redes :global(.redes__enlace:hover) {
+            background-color: var(--color-acento);
+            color: var(--color-superficie);
+        }
+    }
+</style>

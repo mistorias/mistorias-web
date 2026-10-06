@@ -1,5 +1,8 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { authorRoute } from "../lib/routes";
+import { authorshipDescriptions } from "../lib/content/authorship";
+import { resolveSiteVersion } from "../lib/version";
 
 const pilares = [
     {
@@ -33,6 +36,18 @@ const ciclo = [
         descripcion: "La comprensión se convierte en algo concreto que hacer."
     }
 ] as const;
+
+// Las tres etiquetas de autoría se explican acá, una sola vez, con el mismo
+// texto que muestra el pie de cada historia: si divergen, la etiqueta del pie
+// deja de significar lo que esta página promete.
+const autorias = authorshipDescriptions();
+
+const base = import.meta.env.BASE_URL;
+
+// La versión hace concreto lo que promete la sección "Todo es público y tiene
+// historial": con este número se sabe exactamente qué build se está leyendo y
+// hasta dónde llega el historial que se puede revisar (issue #106).
+const version = resolveSiteVersion(process.env.SITE_VERSION);
 ---
 
 <BaseLayout
@@ -55,6 +70,18 @@ const ciclo = [
             falla por falta de datos, sino por falta de comprensión humana de
             esos datos.
         </p>
+
+        <h2>Quién está detrás</h2>
+
+        <p>
+            Mistorias es un <strong>proyecto personal</strong> de{" "}
+            <a href={authorRoute(base, "paolo-carrasco")}>Paolo Carrasco</a>.
+            Lo hace por su cuenta, en sus horas libres y sin fines de lucro. No
+            representa a ninguna empresa, institución ni empleador, y nada de
+            lo que se publica acá compromete a nadie más que a quien lo firma.
+        </p>
+
+        <p>Cada historia lleva su nombre y ese nombre lleva a su ficha.</p>
 
         <h2>Los tres pilares</h2>
 
@@ -109,6 +136,27 @@ const ciclo = [
             ese contexto puede seguir siendo engañoso.
         </p>
 
+        <h2>Cómo se usa la inteligencia artificial</h2>
+
+        <p>
+            Se usa, y por eso se dice. Cada historia declara al pie cuál de
+            estas tres cosas pasó al escribirla — cambia de una historia a otra,
+            así que no se declara una vez para todo el sitio. Lo que no cambia
+            es quién responde: una inteligencia artificial no puede hacerse
+            cargo de un dato mal citado, y la persona que firma sí.
+        </p>
+
+        <dl class="acerca__lista">
+            {
+                autorias.map((autoria) => (
+                    <div class="acerca__item">
+                        <dt>{autoria.label}</dt>
+                        <dd>{autoria.detail}</dd>
+                    </div>
+                ))
+            }
+        </dl>
+
         <h2>Todo es público y tiene historial</h2>
 
         <p>
@@ -118,6 +166,8 @@ const ciclo = [
             página. La transparencia acá no es una declaración: es que puedas
             revisar quién cambió qué y cuándo.
         </p>
+
+        <p class="acerca__version">Versión {version}</p>
     </div>
 </BaseLayout>
 
@@ -145,5 +195,13 @@ const ciclo = [
     .acerca__item dd {
         margin-inline-start: 0;
         margin-block-start: var(--esp-3xs);
+    }
+
+    /* Un pie de página, no una afirmación editorial: el mismo tratamiento de
+       metadato que ya usan las fechas y la nota del pie del sitio. */
+    .acerca__version {
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        color: var(--color-metadato);
     }
 </style>

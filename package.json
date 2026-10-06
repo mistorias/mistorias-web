@@ -1,6 +1,6 @@
 {
   "name": "mistorias-web",
-  "version": "0.1.0",
+  "version": "1.7.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,21 +9,24 @@
     "preview": "astro preview",
     "test": "vitest run",
     "story-order": "node scripts/generate-story-order-cache.ts",
-    "og-default-image": "node scripts/generate-default-og-image.ts"
+    "og-default-image": "node scripts/generate-default-og-image.ts",
+    "mutation-test": "stryker run"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.10",
     "@astrojs/sitemap": "^3.7.4",
     "@fontsource-variable/ibm-plex-sans": "^5.3.0",
     "@fontsource-variable/lora": "^5.3.0",
-    "astro": "^7.2.9",
-    "sharp": "^0.35.4"
+    "astro": "^7.3.5",
+    "sharp": "^0.35.5"
   },
   "devDependencies": {
-    "@types/node": "^26.4.0",
-    "@vitest/coverage-v8": "4.1.9",
+    "@stryker-mutator/core": "^10.0.0",
+    "@stryker-mutator/vitest-runner": "^10.0.0",
+    "@types/node": "^26.6.4",
+    "@vitest/coverage-v8": "4.1.11",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.9"
+    "vitest": "4.1.11"
   },
-  "packageManager": "pnpm@10.8.1"
+  "packageManager": "pnpm@12.8.2"
 }

@@ -4,12 +4,21 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import DatoConFuente from "../components/DatoConFuente.astro";
 import PlantaDeLibros from "../components/PlantaDeLibros.astro";
 import TarjetaHistoria from "../components/TarjetaHistoria.astro";
-import { reportRoute, themesRoute } from "../lib/routes";
+import { reportRoute, storiesRoute, themesRoute } from "../lib/routes";
 import { limitPreviousStories, sortByDateDescending } from "../lib/stories";
+import { authorNameFor, buildAuthorNameMap } from "../lib/content/authors";
 
 const historias = sortByDateDescending(
     await getCollection("stories"),
     (historia) => historia.data.date
+);
+
+// El nombre de quien firma se resuelve una sola vez por página: la tarjeta
+// recibe el nombre ya resuelto y no toca la colección de fichas.
+const nombresDeAutor = buildAuthorNameMap(
+    await getCollection("authors"),
+    (autor) => autor.id,
+    (autor) => autor.data.name
 );
 
 const [destacada, ...resto] = historias;
@@ -24,22 +33,34 @@ const hayTemas = historias.some((historia) => (historia.data.themes ?? []).lengt
 // MANTENIMIENTO: las dos cifras son del ciclo que nombra `CICLO_DE_LOS_DATOS`.
 // Cuando la OCDE publique el siguiente ciclo de PISA hay que revisarlas acá; es
 // el precio de usar datos duros dentro de un texto fijo.
-const CICLO_DE_LOS_DATOS = "PISA 2022";
+const CICLO_DE_LOS_DATOS = "PISA 2025";
 
+// La disonancia son dos golpes, no dos datos sueltos: el primero dice dónde
+// está el piso y el segundo le quita a quien lee la salida cómoda de «esto ya
+// lo sabíamos». Saber que estamos mal abajo no mueve a nadie; saber que lo
+// ganado en una década se perdió, sí.
+//
+// El segundo golpe se enuncia con el lenguaje de la propia OCDE —la caída
+// «revirtió cualquier avance logrado después de 2015»— y no como «el país
+// retrocedió diez años», que es lectura de prensa y la OCDE no firma. Por lo
+// mismo la frase habla del puntaje y no de las personas: PISA compara el
+// promedio de una promoción distinta en cada ciclo, no sigue a los mismos
+// estudiantes, así que «los de hoy leen peor que los de 2015» diría algo que
+// la prueba no mide.
 const datos = [
     {
-        cifra: "Uno de cada tres",
-        resto: "jóvenes peruanos de quince años alcanza el mínimo de matemática que la OCDE considera necesario para la vida adulta.",
-        fuente: `Minedu–UMC, ${CICLO_DE_LOS_DATOS}`,
-        href: "https://www.gob.pe/institucion/minedu/noticias/877904-pisa-2022-el-peru-mantiene-sus-resultados-en-las-competencias-de-lectura-y-ciencia",
-        detalle: "34 % de estudiantes peruanos alcanzó el nivel 2 o superior en Matemática, y ese nivel 2 es el mínimo para desenvolverse en el mundo actual. Lo publica el propio Estado evaluado."
+        cifra: "Siete de cada diez",
+        resto: "jóvenes peruanos de quince años no alcanzan el mínimo de matemática que la OCDE considera necesario para la vida adulta.",
+        fuente: `OCDE, ${CICLO_DE_LOS_DATOS} — nota de país: Perú`,
+        href: "https://www.oecd.org/en/publications/pisa-2025-results-volume-i-country-notes_2d4ff9ea-en/peru_0c319189-en.html",
+        detalle: "Solo el 30 % de los estudiantes peruanos alcanzó el nivel 2 en Matemática, y ese nivel 2 es el mínimo para desenvolverse en el mundo actual. El promedio de la OCDE es 65 %. Lo mide un organismo externo, sin interés en el resultado peruano."
     },
     {
-        cifra: "Solo el 1 %",
-        resto: "llega al nivel más alto en lectura.",
-        fuente: `OCDE, ${CICLO_DE_LOS_DATOS}`,
-        href: "https://www.oecd.org/en/publications/pisa-2022-results-volume-i-and-ii-country-notes_ed6fbcc5-en/peru_3e71791c-en.html",
-        detalle: "1 % de estudiantes peruanos en nivel 5 o superior, frente al 7 % del promedio de la OCDE. Lo mide un organismo externo, sin interés en el resultado peruano."
+        cifra: "Diez años de avances",
+        resto: "se borraron en lectura: el puntaje de 2025 quedó por debajo del de 2015.",
+        fuente: `OCDE, ${CICLO_DE_LOS_DATOS} — nota de país: Perú`,
+        href: "https://www.oecd.org/en/publications/pisa-2025-results-volume-i-country-notes_2d4ff9ea-en/peru_0c319189-en.html",
+        detalle: "390 puntos en Lectura, por debajo de los 398 de 2015. La OCDE lo resume así: la caída reciente «revirtió cualquier avance logrado después de 2015». Cada ciclo mide a una promoción distinta, no a los mismos estudiantes."
     }
 ] as const;
 ---
@@ -98,7 +119,11 @@ const datos = [
             <section class="destacada" aria-label="Última historia">
                 <div class="columna">
                     <p class="destacada__rotulo">Última historia</p>
-                    <TarjetaHistoria historia={destacada} destacada />
+                    <TarjetaHistoria
+                        historia={destacada}
+                        nombreAutor={authorNameFor(nombresDeAutor, destacada.data.author.id)}
+                        destacada
+                    />
                 </div>
             </section>
         )
@@ -114,6 +139,10 @@ const datos = [
                         {anteriores.map((historia) => (
                             <TarjetaHistoria
                                 historia={historia}
+                                nombreAutor={authorNameFor(
+                                    nombresDeAutor,
+                                    historia.data.author.id
+                                )}
                                 nivelTitulo={3}
                             />
                         ))}
@@ -135,10 +164,15 @@ const datos = [
     }
 
     {
-        hayTemas && (
+        destacada && (
             <section class="columna explorar">
-                <a href={themesRoute(import.meta.env.BASE_URL)}>
-                    Explorar las historias por tema
+                {hayTemas && (
+                    <a href={themesRoute(import.meta.env.BASE_URL)}>
+                        Explorar más historias por tema
+                    </a>
+                )}
+                <a href={storiesRoute(import.meta.env.BASE_URL)}>
+                    Recorrer las historias semana a semana
                 </a>
             </section>
         )
@@ -292,6 +326,12 @@ const datos = [
     .explorar,
     .feedback {
         padding-block-start: var(--esp-xl);
+    }
+
+    .explorar {
+        display: flex;
+        flex-direction: column;
+        gap: var(--esp-2xs);
     }
 
     .explorar a {

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import DatoConFuente from "../src/components/DatoConFuente.astro";
 import { renderAstroComponent } from "./support/render-astro-component";
+import { visibleText } from "./support/visible-text";
 
 // El componente envuelve una afirmación con dato duro en un <details> nativo
 // para que su fuente se abra sin JavaScript (issue #37 de gestión de producto).
@@ -27,7 +28,7 @@ describe("DatoConFuente", () => {
     const html = await renderAstroComponent(DatoConFuente, { props, slots });
 
     expect(html).toContain('href="https://www.oecd.org/peru"');
-    expect(html).toContain("OCDE, PISA 2022");
+    expect(visibleText(html)).toContain("OCDE, PISA 2022");
   });
 
   it("muestra el detalle que permite comprobar la cifra", async () => {
@@ -58,5 +59,14 @@ describe("DatoConFuente", () => {
     const html = await renderAstroComponent(DatoConFuente, { props, slots });
 
     expect(html).toMatch(/<span[^>]*aria-hidden="true"[^>]*>\s*fuente\s*<\/span>/);
+  });
+});
+
+describe("DatoConFuente, enlace a la fuente", () => {
+  it("abre la fuente en una pestaña nueva avisándolo, como todo enlace externo", async () => {
+    const html = await renderAstroComponent(DatoConFuente, { props, slots });
+
+    expect(html).toContain('target="_blank"');
+    expect(html).toContain("(se abre en una pestaña nueva)");
   });
 });

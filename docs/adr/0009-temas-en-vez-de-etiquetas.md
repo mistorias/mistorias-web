@@ -29,14 +29,24 @@ en cada conversación.
 2. **En el código: `theme`.** `src/lib/themes.ts` con `groupByTheme`,
    `normalizeTheme` y `ThemeGroup`; `themesRoute` y `themeRoute` en
    `routes.ts`; `ListaTemas.astro` con props `temas` y `temaTextual`, según la
-   frontera inglés/castellano de [CONTRIBUTING.md](../../CONTRIBUTING.md#idioma).
-3. **En el frontmatter: `themes`, con `tags` como respaldo.** `storySchema`
+   frontera inglés/castellano de [docs/IDIOMA.md](../IDIOMA.md).
+3. **En el frontmatter: `themes`, con `tags` como respaldo.**
+   > **Actualizado:** `mistorias-contenido` ya migró todas sus historias a
+   > `themes` (issue #17 de ese repositorio) y el respaldo se eliminó; `tags`
+   > ya no se lee. Lo que sigue describe la decisión original.
+
+   `storySchema`
    acepta las dos claves y expone solo `themes`. Las historias publicadas viven
    en el submódulo `mistorias-contenido` y todavía declaran `tags`: rechazarlo
    habría roto el build de contenido ya en línea por un renombre.
 4. **CONTEXT.md suma la entrada «Tema»**, con *Avoid: etiqueta, tag, categoría*.
 
 ### Sin redirecciones
+
+> **Actualizado por [ADR 0018](0018-redirecciones-de-etiquetas-a-temas.md):**
+> los crawlers siguieron pidiendo `/etiquetas/…` (issue #107), así que
+> mistorias.pe ahora responde 301 hacia `/temas/…`. GitHub Pages sigue
+> devolviendo 404, como describe esta sección.
 
 Las URLs `/etiquetas/…` dejan de existir y devuelven 404. No se agregan
 redirecciones porque GitHub Pages —el destino de desarrollo, ver
@@ -61,7 +71,7 @@ El sitio no tiene todavía enlaces externos conocidos hacia esa sección.
 
 - Cualquier enlace externo a `/etiquetas/…` se rompe. Es el costo aceptado de no
   sostener redirecciones que solo funcionarían en la mitad de los despliegues.
+  El costo se cobró (issue #107) y ADR 0018 lo revierte para mistorias.pe.
 - El frontmatter queda con dos claves válidas hasta que `mistorias-contenido`
-  migre a `themes`. El respaldo está marcado en `src/lib/content/schema.ts` y en
-  `check_theme_counts.mjs`, y se elimina —junto con su prueba— cuando ninguna
-  historia declare `tags`.
+  migre a `themes`. *(Cumplido: el respaldo y su prueba se eliminaron cuando
+  ninguna historia declaraba `tags`.)*

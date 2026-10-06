@@ -17,7 +17,7 @@ Esto se traduce en código **centrado en las personas**, **transparente**, **que
 
 El idioma en que se escribe cada cosa —código en inglés, comentarios y
 documentación en castellano peruano, con sus excepciones— está definido en
-[CONTRIBUTING.md](../CONTRIBUTING.md#idioma).
+[docs/IDIOMA.md](IDIOMA.md).
 
 ### Principios Fundamentales
 
@@ -99,10 +99,18 @@ que el control no se apague en silencio.
 - Preferir `type` sobre `interface`, salvo que se necesite comportamiento tipo clase
 - Evitar `any` — usar `unknown` si es necesario, y luego acotar el tipo
 - Usar Zod para la validación en tiempo de ejecución de datos externos (como en `storySchema`)
+- Un campo del frontmatter con unidad la lleva en el nombre (`readingTimeMinutes`) y su valor es solo el número. La regla completa está en [mistorias-contenido](https://github.com/mistorias/mistorias-contenido/blob/main/docs/convenciones-del-frontmatter.md)
 
 ### Sin Abstracciones Prematuras
 
 Tres líneas de código similares son preferibles a una función auxiliar creada antes de tiempo. Si un patrón se repite en distintos dominios, se extrae. Si está aislado, se deja tal cual.
+
+### Enlaces
+
+Texto descriptivo, un solo enlace accesible por tarjeta cuando hay una zona
+clicable extendida, y cómo estirar ese enlace con CSS puro sin duplicar el
+destino para quien navega con lector de pantalla: ver
+[docs/ENLACES.md](ENLACES.md).
 
 ---
 
@@ -181,27 +189,14 @@ Todo PR debe incluir:
 3. **Cómo verificarlo** — pasos para probar el cambio (correr tests, revisar una feature, etc.)
 4. **Issue relacionado** — enlace al issue si aplica (ej. `Closes #19`)
 
-**Plantilla:**
+La plantilla vive en [`.github/pull_request_template.md`](../.github/pull_request_template.md)
+y GitHub la carga sola al abrir un PR. Además de lo anterior, pide:
 
-```markdown
-## Qué
-
-[Resumen del cambio en una línea]
-
-## Por qué
-
-[Problema que resuelve o requerimiento. Enlazar contexto: issue, ADR, discusión.]
-
-## Cómo Verificar
-
-- [ ] Correr `pnpm test` — los tests pasan
-- [ ] Correr `pnpm build` — el build es exitoso
-- [ ] Navegar a http://localhost:4321 y [acción específica] funciona
-
-## Relacionado
-
-Closes #XX
-```
+- **Comprobaciones** de alcance, funcionalidad, accesibilidad y seguridad. En un
+  feature nuevo, la funcionalidad se describe en formato dado / cuando / entonces.
+- **Capturas** solo si cambia la UI, recortadas a lo que cambió: sin pestañas, barras
+  del navegador ni datos ajenos al cambio.
+- **Un PR pequeño**: hace una sola cosa y se lee de corrido.
 
 ### Antes de Solicitar Revisión
 
@@ -220,60 +215,17 @@ fix: la fecha se valida correctamente en el formulario (issue #YY)
 docs: docs/STANDARDS.md es disponible íntegramente en castellano
 ```
 
+Un cambio que rompe compatibilidad se marca con `!` tras el tipo (`feat!: ...`) en el
+título de cada commit que lo introduce, y el título del PR lo hereda.
+
 ---
 
 ## Estándares de Documentación
 
-### Dónde vive cada documento
-
-**Todo documento nuevo va en `docs/`.** Es el lugar por defecto y no requiere
-justificación.
-
-La raíz del repositorio se reserva para los archivos que GitHub o las
-herramientas esperan encontrar ahí, y solo para esos:
-
-| Archivo | Por qué vive en la raíz |
-| --- | --- |
-| `README.md` | GitHub lo muestra como portada del repositorio |
-| `LICENSE` | GitHub detecta la licencia por ubicación |
-| `CONTRIBUTING.md` | GitHub lo enlaza al abrir un issue o un PR |
-| `SECURITY.md` | GitHub lo enlaza desde la pestaña Security y desde el reporte privado |
-| `CLAUDE.md` | Claude Code lo carga desde la raíz del proyecto |
-| `CONTEXT.md` | Lenguaje ubicuo del proyecto; se lee antes que cualquier otro documento |
-
-Las decisiones arquitectónicas van en `docs/adr/`, con el formato
-`NNNN-titulo-en-kebab-case.md` y numeración correlativa.
-
-Si un documento nuevo necesita vivir en la raíz, la razón se explica en el PR
-que lo agrega. "Es importante" no es una razón: casi todo lo que se documenta
-lo es. La razón válida es que una herramienta externa lo busque ahí.
-
-### Tamaño
-
-**Un documento es grande cuando supera las 300 líneas** (`wc -l`).
-
-Al llegar a ese límite no se sigue agregando al final: se extrae contenido a
-un documento nuevo en `docs/`. Cómo se parte:
-
-- **Alta cohesión.** Se parte por tema completo, nunca por cantidad de líneas.
-  Lo que se va debe poder leerse solo y responder una pregunta entera; si al
-  extraer una sección hay que llevarse media sección vecina para que se
-  entienda, esa no era la frontera.
-- **DRY.** Se enlaza, no se copia. Cada tema se explica en un solo documento;
-  los demás apuntan a ese. Dos copias de una regla se contradicen apenas una
-  cambia, y quien la lee no sabe cuál manda.
-- **El documento original queda como punto de entrada.** En el lugar de la
-  sección extraída queda una línea que dice qué se fue y adónde, para que
-  quien buscaba ahí llegue igual.
-
-Las ADR son la excepción y no se parten: cada una registra una decisión y su
-contexto, y ese es su valor como registro histórico. Una ADR que pasa de 300
-líneas suele estar registrando más de una decisión — la señal ahí es abrir una
-segunda ADR, no partir la primera.
-
-Este mismo documento se rige por la regla: si cruza las 300 líneas, esta
-sección es la candidata natural a mudarse a `docs/DOCUMENTACION.md`, porque es
-la que menos depende del resto.
+Dónde vive cada documento, cuándo uno es demasiado grande y cómo se parte, y que
+`CLAUDE.md` se actualiza en el mismo PR que cambia lo que describe: ver
+[docs/DOCUMENTACION.md](DOCUMENTACION.md). Este tema se mudó a su propio documento
+al llegar este archivo al límite de 300 líneas.
 
 ---
 

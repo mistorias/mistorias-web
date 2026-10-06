@@ -13,13 +13,13 @@ Claude Code must commit atomically while working on this repo, so each commit is
 
 ### Language
 
-Code is written in English — identifiers, filenames, frontmatter keys, build error messages. Astro components, pages and layouts stay in Spanish when they name a brand or editorial concept (`LogotipoMistorias.astro`, `TarjetaHistoria.astro`) — filenames and the props and variables inside them alike — and so do public routes and reader-facing text. Comments, docstrings, commit messages, PR descriptions and docs are written in Peruvian Spanish. The boundary is `src/lib/`, which is fully in English: a Spanish component consumes English helpers (`storyRoute`, `groupByTheme`). Full rules in [CONTRIBUTING.md](CONTRIBUTING.md#idioma).
+Code is written in English — identifiers, filenames, frontmatter keys, build error messages. Astro components, pages and layouts stay in Spanish when they name a brand or editorial concept (`LogotipoMistorias.astro`, `TarjetaHistoria.astro`) — filenames and the props and variables inside them alike — and so do public routes and reader-facing text. Comments, docstrings, commit messages, PR descriptions and docs are written in Peruvian Spanish. The boundary is `src/lib/`, which is fully in English: a Spanish component consumes English helpers (`storyRoute`, `groupByTheme`). Tests follow the same boundary as the code they test (English helpers and variables; a component's own Spanish props and domain terms are fine when a test passes them by name), and no identifier mixes languages. Full rules in [docs/IDIOMA.md](docs/IDIOMA.md).
 
 ### Documentation
 
 New documents go in `docs/`. The repository root is reserved for files GitHub or tooling expects to find there (`README.md`, `LICENSE`, `CONTRIBUTING.md`, `SECURITY.md`, `CLAUDE.md`, `CONTEXT.md`); anything else needs a reason stated in the PR. ADRs go in `docs/adr/` as `NNNN-titulo-en-kebab-case.md`.
 
-A document is large past **300 lines**. At that point don't keep appending: extract a whole, self-contained topic into a new document under `docs/`, link to it instead of copying it, and leave a pointer where the section was. ADRs are exempt — one ADR is one decision; an oversized one usually means a second ADR is due. Full rules in [docs/STANDARDS.md](docs/STANDARDS.md#estándares-de-documentación).
+A document is large past **300 lines**. At that point don't keep appending: extract a whole, self-contained topic into a new document under `docs/`, link to it instead of copying it, and leave a pointer where the section was. ADRs are exempt — one ADR is one decision; an oversized one usually means a second ADR is due. Full rules in [docs/DOCUMENTACION.md](docs/DOCUMENTACION.md).
 
 ## Quick Start
 
@@ -27,7 +27,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for full setup instructions.
 
 Node version and pnpm version are defined in `.nvmrc` and `package.json` respectively — they may differ from values documented elsewhere.
 
-For dev container setup, Docker commands, and detailed development workflow, see [CONTRIBUTING.md](CONTRIBUTING.md).
+Common commands: `pnpm dev`, `pnpm build`, `pnpm test`, `pnpm mutation-test` (mutation testing with Stryker — both the nightly run and the per-PR run (changed files only) fail below a 75% score; vitest is pinned to 4.1 until Stryker's runner supports vitest 5, see [ADR 0019](docs/adr/0019-mutation-testing-y-su-reporte-en-github-pages.md)). For dev container setup, Docker commands, and detailed development workflow, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Developer Workflow & Hooks
 
@@ -38,6 +38,10 @@ Claude Code is configured with automated hooks (`.claude/settings.json`) to catc
 The post-commit hook runs the test suite with coverage and the build; if either fails, the commit exists but cannot be pushed until fixed. The pre-push hook blocks pushes to `main`/`master`. Both are defined in `.claude/settings.json`.
 
 **Why:** Catches broken commits before Claude shares them, and keeps every commit a safe checkpoint (see [docs/STANDARDS.md](docs/STANDARDS.md#atomic-commits)); feature work goes through a PR.
+
+### Standards Review (before committing)
+
+Hooks can only run commands, so this one is a step Claude does itself: after modifying code and **before** `git commit`, run the `revisor-de-estandares` subagent (`.claude/agents/revisor-de-estandares.md`) over the diff and fix what it reports. It only reads; it never edits. The rules it applies are the ones in the documents this file already links, which it reads on every run — so a rule is added, changed or removed in those documents and nowhere else. A rename it asks for goes in its own commit.
 
 ### Disabling Hooks (if needed)
 If a hook times out or interferes with Claude's work in a session, it can be skipped:
@@ -64,7 +68,13 @@ Stories load through the `stories` collection in `src/content.config.ts` (`glob(
 
 ### Pages & Routing
 
-- `src/layouts/BaseLayout.astro` — shared HTML skeleton; the `<meta>` Content-Security-Policy lives here and nowhere else. Also carries the header, the footer and the skip link, so every page shares them. It also resolves `og:image`: an `ogImage` prop (a story's header + alt) goes through `ogImageFromStoryImage()` for a build-time 1200×630 crop via `astro:assets`; no prop falls back to `defaultOgImage()`, the pre-generated risograph illustration at `public/imagenes/og-default.jpg` (regenerate with `pnpm og-default-image`). Both live in `src/lib/social/og-image.ts` — see [ADR 0013](docs/adr/0013-og-image-por-historia.md) for why this doesn't use Netlify's Image CDN despite the two-target build.
+- `src/layouts/BaseLayout.astro` — shared HTML skeleton; the `<meta>` Content-Security-Policy lives here and nowhere else. Also carries the header, the footer and the skip link, so every page shares them. It also resolves `og:image` through `resolveOgImage()` — the single decision point, also read by the story page for Pinterest's `media` — which delegates: an `ogImage` prop (a story's header + alt) goes through `ogImageFromStoryImage()` for a build-time 1200×630 crop via `astro:assets`; no prop falls back to `defaultOgImage()`, the pre-generated risograph illustration at `public/imagenes/og-default.jpg` (regenerate with `pnpm og-default-image`). Both live in `src/lib/social/og-image.ts` — see [ADR 0013](docs/adr/0013-og-image-por-historia.md) for why this doesn't use Netlify's Image CDN despite the two-target build.
+- `src/pages/index.astro` — homepage: promise banner, featured story, older stories
+- `src/pages/historias/[...id].astro` — dynamic story detail pages (file-based routing)
+- `src/pages/historias/index.astro` — the full archive, grouped into ISO weeks by `buildTimeline()` (`src/lib/weeks.ts`) and rendered by `QuipuDeHistorias.astro` as a quipu — see [ADR 0020](docs/adr/0020-navegacion-cronologica-como-quipu.md). Coexists with `[...id].astro` because that page's `getStaticPaths` only ever emits story ids, never the empty route.
+- `src/pages/temas/index.astro` and `src/pages/temas/[tema].astro` — theme index and per-theme listings
+- `src/pages/autores/[autor].astro` — author profile: bio, verification link, and the stories they signed. There is deliberately no `/autores/` index while there is a single author (ADR 0016)
+- `src/pages/acerca.astro`, `src/pages/404.astro`. `acerca.astro` cierra con la versión del sitio, resuelta por `resolveSiteVersion(process.env.SITE_VERSION)` (`src/lib/version.ts`): el tag del release cuando el build viene de uno, y `v` + la `version` de `package.json` cuando no — ver [ADR 0017](docs/adr/0017-version-visible-del-sitio.md)
 
 Public URLs are in Spanish (`/historias/`, `/temas/`), matching the project's ubiquitous language. **Never hardcode an internal `href`**: `base` differs per deploy target, so a hand-written path silently breaks on GitHub Pages without failing the build. Build every internal link with the helpers in `src/lib/routes.ts`, which also own the section names.
 
@@ -76,6 +86,7 @@ Derived from [Mistorias Esencia de Marca](https://github.com/mistorias/mistorias
 - `src/styles/base.css` — reset, element defaults, editorial prose, and the few media queries the site needs. Layout is intrinsically responsive (`min()`, `clamp()`, `auto-fit`), so breakpoints exist only where a real constraint does — never per device.
 - Typefaces are self-hosted via `@fontsource-variable` and served same-origin, so they fall under `default-src 'self'` and required no CSP change.
 - Contrast ratios are annotated next to each token. Both themes clear WCAG AA; `--color-vivo` is restricted to non-text use because it does not.
+- Keyboard navigation is a pursued attribute on every page, not a per-component afterthought — and the site's own constraint makes it cheaper than usual: `script-src 'none'` (see Security & Validation) rules out custom interactive widgets, so every interactive element is native (`<a>`, `<button>`, `<details>/<summary>`) and the browser already handles focus order, activation, and — for a closed `<details>` — skipping its content entirely, with no ARIA or `tabindex` to write or maintain. `--grosor-foco` gives every one of them the same visible focus ring. Tabbing end to end through a new interactive piece is part of reviewing it, not optional; see Visual Verification for UI Changes below for the same expectation applied to what a screenshot shows.
 - Story pages style prose uniformly and **do not** key off section titles: `storySchema` validates frontmatter only, so section names are editorial convention and a design that depends on them would break silently.
 - The homepage opens with `src/components/PlantaDeLibros.astro` beside the text:
   `flex-wrap: wrap-reverse` puts the illustration left when there is width and
@@ -95,6 +106,11 @@ Derived from [Mistorias Esencia de Marca](https://github.com/mistorias/mistorias
   the viewport: it doesn't push content and doesn't cover any statement. See
   [ADR 0010](docs/adr/0010-apertura-de-portada-con-datos-verificables.md).
 - The Mistorias logotype (`src/components/LogotipoMistorias.astro` + `SimboloMistorias.astro`) composes a `currentColor` SVG symbol with the word "Mistorias" in `--fuente-narrativa` (Lora 600) — the word is live text, never traced into the SVG, so `--fuente-narrativa` now also dresses the brand mark, not just narrative prose. It renders in three layouts (stacked, row, symbol-only) that respond to `max-height: 30rem`, the same short-viewport criterion ADR 0006 §6 already uses. `font-size` on the wrapping element is the only sizing knob; every call site reuses an existing `--paso-*` token rather than inventing a value. See [ADR 0007](docs/adr/0007-lockups-del-logo-y-alto-de-la-cabecera.md).
+- `TarjetaHistoria.astro` exposes exactly one real `<a>` per card (the "Leer la historia" link at the end), stretched over the whole card with a `::after` (`inset: 0` on a `position: relative` `.tarjeta`) — clicking the image, title or summary navigates, and no lector de pantalla hears the same destination twice. The card's hover/focus glow (`box-shadow` on `.tarjeta` itself, driven by `.tarjeta:hover`/`:has(.tarjeta__enlace:focus-visible)`) traces the whole card's contour, not just the image, and reuses `--color-acento` with no new token: that variable is dark in light mode and light in dark mode, so the same `color-mix()` reads as a shadow in one theme and a glow in the other. `ListaTemas.astro`'s `.temas__ficha` needs `position: relative; z-index: 1` to stay clickable above the stretched link — any other interactive element nested inside a stretched card needs the same. Link-writing conventions (why one link, not several) live in [docs/ENLACES.md](docs/ENLACES.md); the full trade-off is [ADR 0015](docs/adr/0015-tarjeta-como-enlace-unico-accesible.md).
+- `QuipuDeHistorias.astro` draws the chronological archive as a quipu: a dashed cord per year (`::before` on `.quipu-semanas`, full-height, positioned to run through the first grid column of every `.quipu-semana`) with `NudoDeQuipu.astro` drawing one knot-loop per story that week — the count *is* the drawing, not an illustration of it. A week with zero stories is a bare cord segment (`aria-hidden`, no knot: `NudoDeQuipu` renders nothing for `cantidad <= 0`), and `buildTimeline()`'s `GAP_THRESHOLD` collapses 3+ empty weeks in a row into one visible-text gap instead of drawing each one. A stepped-chevron band (`mask-image` over a `data:` SVG tile, `background-color: var(--color-analitico)`) separates years, same masking technique ADR 0011 used for the silhouette and for the same reason: a background image can't resolve against a theme token. Neither component goes through `src/lib/assets/`'s inline-SVG gate — `NudoDeQuipu` writes its `<ellipse>`s as component markup instead of `set:html` over a file, precisely because the drawing varies with a prop and there is no fixed file to gate. See [ADR 0020](docs/adr/0020-navegacion-cronologica-como-quipu.md).
+- `PieSitio.astro` opens with a band — brand name, the mission note, and `RedesSociales.astro` — separated from the footer links by a `--color-borde` line. The note ends in the follow invitation (`#pie-invitacion`, which also labels the icon list), and the icons are plain `<a>` rings in `--color-acento` whose profile URLs live only in `src/lib/social/profiles.ts`; no third-party follow widget, since `script-src 'none'`. The icons are `EnlaceExterno` links (see below). The glyphs are Simple Icons (CC0) written as component markup in `src/components/GlifoRed.astro` — the one place every network glyph and its explicit WebKit width/height live — not `set:html`, so like `NudoDeQuipu` they skip the inline-SVG gate. Layout is a 3-column grid with `align-items: center` (icons centered against however many lines the note takes, never overlapping it) that stacks and centers below `36rem` via a **container query on the band itself** — allowed here, unlike ADR 0012's homepage case, only because the footer holds nothing `position: fixed`. See [ADR 0021](docs/adr/0021-seguir-en-redes-desde-el-pie.md).
+- Story pages open with `src/components/CompartirHistoria.astro`: a native `<details>` share button (standard share icon) that reveals X, Facebook, Pinterest and LinkedIn links on tap, keyboard or pointer hover, with no JavaScript — each one is the network's own share URL, built by `buildShareLinks()` (`src/lib/social/share-links.ts`) with title, summary, `utm_source` and, for Pinterest, the og:image from `resolveOgImage()`. Instagram is deliberately absent: it has no web share URL. It sits in a zero-height `position: sticky` box at the top of the article rather than `position: fixed`, so it starts below the header instead of covering its nav link and then pins to the top-right corner. Network glyphs come from `GlifoRed.astro`. See [ADR 0023](docs/adr/0023-compartir-historias-sin-javascript.md).
+- Every link that leaves Mistorias goes through `src/components/EnlaceExterno.astro`, never a hand-written `<a href="https://…">`: it opens a new tab (`target="_blank"`, always `rel="noopener noreferrer"`, extra tokens like `me` are added via the `rel` prop) so a reader doesn't lose their place in a story, and announces that three ways — a `.sr-only` "(se abre en una pestaña nueva)", a visible arrow, and a tooltip on pointer hover. The tooltip is a real `aria-hidden` element, not `::after`/`attr()` (generated content is exposed to screen readers and would double the announcement), shown only under `@media (hover: hover)` and kept narrow (`7.5rem`) because a one-line tooltip overflowed the viewport next to the right edge; `avisoAlineado="fin"` anchors it for links flush against that edge. `variante="icono"` moves the arrow to a corner badge for icon-only links. The page links, `DatoConFuente`, `NotaDeFuente`, `CompartirHistoria` and the author profile already use it; the Markdown links inside stories (which would need a rehype plugin) have not been migrated yet. See [ADR 0022](docs/adr/0022-enlaces-externos-en-pestana-nueva-con-aviso.md) and [docs/ENLACES.md](docs/ENLACES.md).
 
 ### Build Variants (DEPLOY_TARGET)
 
@@ -104,6 +120,8 @@ The build behaves differently based on the `DEPLOY_TARGET` environment variable.
 - **Netlify** (`netlify`): `site: https://mistorias.pe`, `base: /`
 
 This allows the same codebase to deploy to either platform with correct base paths. CI workflows set this env var when building. An unrecognized value stops the build instead of falling back to the default target: a wrong-but-successful build publishes a site whose stylesheet and every link point at the other deploy's base, and nothing fails (issue #29).
+
+`public/_redirects` carries the Netlify-only redirect rules (today: `/etiquetas/…` → `/temas/…` with 301, [ADR 0018](docs/adr/0018-redirecciones-de-etiquetas-a-temas.md)). It lives in `public/` — like `_headers` — so it travels inside the artifact the workflow verifies and deploys with `--no-build`; on GitHub Pages it ships inert. `tests/redirects.spec.ts` keeps its destinations tied to `routes.ts`, since the file itself never goes through the build.
 
 `netlify.toml` declares the same target for whatever build Netlify runs on its side. `netlify deploy` rebuilds the site unless it is given `--no-build`, and that rebuild does not inherit the workflow's env — which is exactly how production ended up serving `/mistorias-web/…` links from mistorias.pe. The deploy workflow now passes `--no-build` and, before uploading, fails if the artifact still carries the GitHub Pages base.
 
@@ -116,6 +134,8 @@ Two workflows in `.github/workflows/`:
 2. **Netlify** (`deploy-netlify.yml`): Triggers on tag push or manual dispatch; uses `DEPLOY_TARGET=netlify`
 
 Both check out with `--recursive` (initializes submodules) and run `pnpm install --frozen-lockfile` before building.
+
+The Netlify workflow also passes the tag to the build as `SITE_VERSION`, and runs `scripts/check_release_version.sh` on a tag push: it fails the deploy if the tag is not `v` + the `version` in `package.json`. Cutting a release therefore means bumping `package.json` in the commit that precedes the tag. Keeping those two in sync is what stops `/acerca` from announcing a version that isn't what shipped (ADR 0017).
 
 ### Never deploy without an explicit instruction
 
@@ -134,3 +154,15 @@ See [ADR 0004](docs/adr/0004-triaje-reportes-seguridad-github-pages.md) for the 
 ## Testing Astro Components
 
 Container API patterns, coverage rules and limitations live in [tests/CLAUDE.md](tests/CLAUDE.md), loaded when working under `tests/`.
+
+## Visual Verification for UI Changes
+
+The previous section's own limitation is the reason this exists: the Container API asserts markup, never what a viewport actually renders. A change to layout, CSS, or a visual component is not done when its tests are green — it's done when a real screenshot has been looked at.
+
+Before reporting such a change as finished, render it in the pre-installed Chromium (`/opt/pw-browsers/chromium`; Playwright is already configured to find it — see the environment notes on not re-running `playwright install`) and capture it at:
+
+- **390×844** (portrait phone)
+- **844×390** (landscape phone — the case `max-height: 30rem` in `src/styles/base.css` exists for)
+- **1440×900** (desktop)
+
+each in both `prefers-color-scheme: light` and `dark`. Send the screenshots to the user with `SendUserFile` — described in a chat message is not enough, and neither is capturing only one theme or only one width: a layout that looks right in light mode at 1440px has failed nothing yet, since every constraint the codebase actually cares about (contrast tokens per theme, the short-viewport breakpoint, intrinsic responsiveness with no per-device breakpoints) lives in the combinations, not the single default view.

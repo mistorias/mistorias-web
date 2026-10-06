@@ -5,7 +5,8 @@ export const COBERTURA_MINIMA = 90.01;
 export const coverageConfig = {
   enabled: true,
   provider: "v8" as const,
-  // Incluye TypeScript + los componentes .astro con tests propios (issue #33).
+  // Incluye TypeScript + los .astro con tests propios (issue #33): componentes,
+  // y las páginas que tienen lógica más allá de su prosa.
   // No se usa src/**/*.astro porque incluiría todos los .astro sin tests,
   // arrastrando la cobertura promedio. En su lugar, listamos explícitamente
   // solo los que tenemos tests para, más sus hijos que se importan.
@@ -16,11 +17,21 @@ export const coverageConfig = {
     "src/components/SimboloMistorias.astro",
     "src/components/TarjetaHistoria.astro",
     "src/components/ListaTemas.astro",
+    "src/components/FirmaAutoria.astro",
     "src/components/NavegacionHistorias.astro",
     "src/components/CabeceraSitio.astro",
     "src/components/PieSitio.astro",
     "src/components/DatoConFuente.astro",
     "src/components/PlantaDeLibros.astro",
+    "src/pages/acerca.astro",
+    "src/components/NudoDeQuipu.astro",
+    "src/components/QuipuDeHistorias.astro",
+    "src/components/TiempoDeLectura.astro",
+    "src/components/RedesSociales.astro",
+    "src/components/GlifoRed.astro",
+    "src/components/CompartirHistoria.astro",
+    "src/components/EnlaceExterno.astro",
+    "src/components/NotaDeFuente.astro",
   ],
   reporter: ["text", ["text-summary", { file: "cobertura.txt" }]] as Array<
     "text" | ["text-summary", { file: string }]

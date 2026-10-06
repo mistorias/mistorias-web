@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   aboutRoute,
   assetRoute,
+  authorRoute,
   brandRoute,
   buildRoute,
   editorialContentRoute,
@@ -10,6 +11,7 @@ import {
   reportRoute,
   siteCodeRoute,
   storyRoute,
+  storiesRoute,
   themeRoute,
   themesRoute
 } from "../src/lib/routes";
@@ -101,6 +103,11 @@ describe("rutas con nombre", () => {
     expect(homeRoute(BASE_NETLIFY)).toBe("/");
   });
 
+  it("publica el índice de historias bajo /historias/", () => {
+    expect(storiesRoute(BASE_NETLIFY)).toBe("/historias/");
+    expect(storiesRoute(BASE_PAGES)).toBe("/mistorias-web/historias/");
+  });
+
   it("publica cada historia bajo /historias/", () => {
     expect(storyRoute(BASE_NETLIFY, "2026-08-07-como-se-mueve")).toBe(
       "/historias/2026-08-07-como-se-mueve/"
@@ -138,5 +145,19 @@ describe("rutas con nombre", () => {
   it("expone la página de agradecimiento tras enviar un formulario", () => {
     expect(gratitudeRoute(BASE_NETLIFY)).toBe("/gracias/");
     expect(gratitudeRoute(BASE_PAGES)).toBe("/mistorias-web/gracias/");
+  });
+});
+
+describe("authorRoute", () => {
+  it("arma la ficha de quien firma bajo /autores/", () => {
+    expect(authorRoute(BASE_NETLIFY, "mateo-salazar")).toBe(
+      "/autores/mateo-salazar/"
+    );
+  });
+
+  it("conserva la base de GitHub Pages", () => {
+    expect(authorRoute(BASE_PAGES, "mateo-salazar")).toBe(
+      "/mistorias-web/autores/mateo-salazar/"
+    );
   });
 });

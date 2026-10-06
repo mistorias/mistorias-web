@@ -1,0 +1,302 @@
+---
+import type { CollectionEntry } from "astro:content";
+import NudoDeQuipu from "./NudoDeQuipu.astro";
+import type { Redondeo } from "./NudoDeQuipu.astro";
+import type { TimelineYear } from "../lib/weeks";
+import { readableWeekRange } from "../lib/dates";
+import { storyRoute } from "../lib/routes";
+
+type Props = {
+    anos: readonly TimelineYear<CollectionEntry<"stories">>[];
+};
+
+const { anos } = Astro.props;
+const base = import.meta.env.BASE_URL;
+
+// Mismo criterio de pluralización que temas/index.astro: no se extrae a un
+// helper compartido en src/lib/ porque es una sola línea que vive en dos
+// archivos, no en tres o más (STANDARDS.md, sin abstracciones prematuras).
+const cuentaHistorias = (cantidad: number) =>
+    cantidad === 1 ? "1 historia" : `${cantidad} historias`;
+
+/*
+ * El redondeo de cada tramo depende de su posición en la lista de semanas
+ * del año, no de qué tipo de entrada es: la primera fila del año redondea
+ * arriba (linda con el resumen), la última redondea abajo (linda con el
+ * siguiente año), las del medio quedan rectas, y si el año tiene una sola
+ * entrada, esa entrada es primera y última a la vez.
+ */
+const redondeoDe = (indice: number, total: number): Redondeo => {
+    const esPrimera = indice === 0;
+    const esUltima = indice === total - 1;
+    if (esPrimera && esUltima) return "ambos";
+    if (esPrimera) return "arriba";
+    if (esUltima) return "abajo";
+    return "ninguno";
+};
+---
+
+<ol class="quipu-anos">
+    {
+        anos.map((anio, indice) => (
+            // El año abierto es el primero de la lista, no el año calendario
+            // actual: buildTimeline (src/lib/weeks.ts) ya entrega los años en
+            // orden descendente, así que el índice 0 es siempre el más
+            // reciente del contenido. Es el mismo criterio de determinismo
+            // que usa el propio buildTimeline para anclar el rango.
+            <li>
+                <details open={indice === 0}>
+                    <summary class="quipu-anio__resumen">
+                        <h2>{anio.year}</h2>
+                        <span class="quipu-anio__cuenta">
+                            {cuentaHistorias(anio.storyCount)}
+                        </span>
+                        <span class="quipu-anio__greca" aria-hidden="true" />
+                    </summary>
+                    <ol class="quipu-semanas">
+                        {
+                            anio.entries.map((entrada, indiceEntrada) => {
+                                const redondeo = redondeoDe(
+                                    indiceEntrada,
+                                    anio.entries.length
+                                );
+
+                                return entrada.kind === "gap" ? (
+                                    // Hueco colapsado (3+ semanas seguidas sin
+                                    // historia, GAP_THRESHOLD en weeks.ts):
+                                    // cuerda sólida sin nudos, con el texto
+                                    // visible al lado.
+                                    <li class="quipu-hueco">
+                                        <span class="quipu-semana__cuerda">
+                                            <NudoDeQuipu
+                                                cantidad={0}
+                                                redondeo={redondeo}
+                                            />
+                                        </span>
+                                        <p class="quipu-hueco__texto">
+                                            {entrada.weeks} semanas sin historia
+                                        </p>
+                                    </li>
+                                ) : entrada.stories.length === 0 ? (
+                                    // Semana sin historia: cuerda sólida sin
+                                    // nudos — es el cero del quipu, ausencia y
+                                    // no un símbolo aparte. aria-hidden porque
+                                    // no aporta nada navegable y ensuciaría el
+                                    // recorrido de quien usa lector de
+                                    // pantalla.
+                                    <li
+                                        class="quipu-semana quipu-semana--vacia"
+                                        aria-hidden="true"
+                                    >
+                                        <span class="quipu-semana__cuerda">
+                                            <NudoDeQuipu
+                                                cantidad={0}
+                                                redondeo={redondeo}
+                                            />
+                                        </span>
+                                        <div class="quipu-semana__contenido" />
+                                    </li>
+                                ) : (
+                                    <li class="quipu-semana">
+                                        <span class="quipu-semana__cuerda">
+                                            <NudoDeQuipu
+                                                cantidad={entrada.stories.length}
+                                                redondeo={redondeo}
+                                            />
+                                        </span>
+                                        <div class="quipu-semana__contenido">
+                                            <h3>
+                                                <time datetime={entrada.key}>
+                                                    Semana{" "}
+                                                    {readableWeekRange(
+                                                        entrada.start,
+                                                        entrada.end
+                                                    )}
+                                                </time>
+                                            </h3>
+                                            <ul class="quipu-historias">
+                                                {entrada.stories.map((historia) => (
+                                                    <li>
+                                                        <a
+                                                            href={storyRoute(
+                                                                base,
+                                                                historia.id
+                                                            )}
+                                                        >
+                                                            {historia.data.title}
+                                                        </a>
+                                                        <p>{historia.data.summary}</p>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    </li>
+                                );
+                            })
+                        }
+                    </ol>
+                </details>
+            </li>
+        ))
+    }
+</ol>
+
+<style>
+    /*
+     * `var(--medida)` y no un ancho a mano: es la misma medida de lectura
+     * (65ch) que usa el resto del sitio.
+     */
+    .quipu-anos {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        max-width: var(--medida);
+    }
+
+    .quipu-anos > li + li {
+        margin-block-start: var(--esp-l);
+    }
+
+    /*
+     * Resumen del año: el número, el conteo, y la greca escalonada corriendo
+     * al costado — ya no separa un año del siguiente, acompaña a cada año, el
+     * más reciente incluido. Usa el mismo color que la cuerda
+     * (--color-metadato): son el mismo material, la cuerda principal y su
+     * remate.
+     */
+    .quipu-anio__resumen {
+        display: flex;
+        align-items: center;
+        gap: var(--esp-s);
+        min-height: 44px;
+        cursor: pointer;
+    }
+
+    .quipu-anio__resumen h2 {
+        margin: 0;
+        white-space: nowrap;
+    }
+
+    .quipu-anio__cuenta {
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        color: var(--color-metadato);
+        white-space: nowrap;
+    }
+
+    /*
+     * Misma altura que el texto del conteo a su izquierda: atada al mismo
+     * token (--paso--1), no a un valor propio que se pueda desincronizar si
+     * ese token cambia.
+     */
+    .quipu-anio__greca {
+        flex: 1 1 auto;
+        align-self: center;
+        height: var(--paso--1);
+        min-width: 2rem;
+        background-color: var(--color-metadato);
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 8'%3E%3Crect x='0' y='6' width='4' height='2'/%3E%3Crect x='4' y='4' width='4' height='4'/%3E%3Crect x='8' y='2' width='4' height='6'/%3E%3Crect x='12' y='0' width='4' height='8'/%3E%3C/svg%3E");
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 8'%3E%3Crect x='0' y='6' width='4' height='2'/%3E%3Crect x='4' y='4' width='4' height='4'/%3E%3Crect x='8' y='2' width='4' height='6'/%3E%3Crect x='12' y='0' width='4' height='8'/%3E%3C/svg%3E");
+        -webkit-mask-repeat: repeat-x;
+        mask-repeat: repeat-x;
+        -webkit-mask-size: calc(var(--paso--1) * 2) var(--paso--1);
+        mask-size: calc(var(--paso--1) * 2) var(--paso--1);
+    }
+
+    .quipu-semanas {
+        list-style: none;
+        margin: var(--esp-s) 0 0;
+        padding: 0;
+    }
+
+    .quipu-semana {
+        display: grid;
+        grid-template-columns: 1.25rem 1fr;
+        column-gap: var(--esp-s);
+    }
+
+    /*
+     * Sin margen entre filas: los tramos de cuerda de cada fila se tocan sin
+     * espacio y así se leen como una cuerda continua, no como piezas
+     * apiladas. `NudoDeQuipu` resuelve el redondeo de cada tramo según su
+     * posición (primera, última, del medio) justamente para que este
+     * contacto sin margen no deje una hendidura visible.
+     */
+    .quipu-semana + .quipu-semana {
+        margin-block-start: 0;
+    }
+
+    .quipu-semana__cuerda {
+        grid-column: 1;
+        color: var(--color-metadato);
+    }
+
+    .quipu-semana__contenido {
+        grid-column: 2;
+        min-width: 0;
+        padding-block: var(--esp-2xs) 0;
+    }
+
+    /*
+     * `--fuente-info` en vez del Lora que trae h3 por defecto (base.css): el
+     * rótulo de semana es navegación/metadato, no narrativa — mismo criterio
+     * que separa `--fuente-info` (información) de `--fuente-narrativa`
+     * (historias) en identidad-visual.md. El título de la historia, que sí es
+     * contenido editorial, se deja en el Lora que trae por herencia.
+     */
+    .quipu-semana__contenido h3 {
+        margin: 0 0 var(--esp-2xs);
+        font-family: var(--fuente-info);
+        font-size: var(--paso-0);
+        font-weight: 600;
+        color: var(--color-texto);
+    }
+
+    .quipu-historias {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: var(--esp-2xs);
+    }
+
+    .quipu-historias a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        font-family: var(--fuente-narrativa);
+        font-weight: 600;
+        color: var(--color-acento);
+        text-decoration: none;
+    }
+
+    @media (hover: hover) {
+        .quipu-historias a:hover {
+            text-decoration: underline;
+        }
+    }
+
+    .quipu-historias p {
+        margin: 0 0 var(--esp-xs);
+        color: var(--color-texto);
+        font-size: var(--paso--1);
+    }
+
+    .quipu-semana--vacia .quipu-semana__contenido {
+        min-height: 1.5rem;
+    }
+
+    .quipu-hueco {
+        display: grid;
+        grid-template-columns: 1.25rem 1fr;
+        column-gap: var(--esp-s);
+    }
+
+    .quipu-hueco__texto {
+        grid-column: 2;
+        align-self: center;
+        color: var(--color-metadato);
+        font-size: var(--paso--1);
+        font-style: italic;
+    }
+</style>

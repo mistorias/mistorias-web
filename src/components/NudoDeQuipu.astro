@@ -1,0 +1,100 @@
+---
+export type Redondeo = "arriba" | "abajo" | "ambos" | "ninguno";
+
+type Props = {
+    cantidad: number;
+    redondeo: Redondeo;
+};
+
+const { cantidad, redondeo } = Astro.props;
+const nudosAVisualizar = Math.max(0, cantidad);
+
+/*
+ * La fila no es solo la lista de historias: arranca con el rótulo de la
+ * semana (<h3>), y recién debajo va el título de cada historia seguido de su
+ * resumen. Repartir los nudos a espacio parejo en toda la fila (como hacía
+ * antes) los deja más cerca del resumen que del título con el que van —
+ * RESERVA_ENCABEZADO destina el primer tramo de la fila al rótulo, y dentro
+ * de lo que queda, SESGO_HACIA_TITULO ubica cada nudo hacia el comienzo de
+ * su historia (donde está el título) en vez de en el centro (que cae más
+ * cerca del resumen). Los dos números salen de comparar contra la posición
+ * real del título en un prototipo, no de una fórmula exacta — no hay forma
+ * de calcular el alto real del texto sin JavaScript, así que esto es una
+ * aproximación deliberada, no una medición.
+ */
+const RESERVA_ENCABEZADO = 15;
+const SESGO_HACIA_TITULO = 0.25;
+
+const posiciones = Array.from(
+    { length: nudosAVisualizar },
+    (_, indice) =>
+        RESERVA_ENCABEZADO +
+        ((indice + SESGO_HACIA_TITULO) / nudosAVisualizar) * (100 - RESERVA_ENCABEZADO)
+);
+---
+
+<span
+    class:list={["nudo-de-quipu", `nudo-de-quipu--${redondeo}`]}
+    aria-hidden="true"
+>
+    {posiciones.map((porcentaje) => (
+        <span class="nudo-de-quipu__hueco" style={`top: ${porcentaje}%`} />
+    ))}
+</span>
+
+<style>
+    /*
+     * El tramo de cuerda es un simple rectángulo de color, no un dibujo: no
+     * hace falta SVG para una barra sólida. El redondeo depende de la
+     * posición de este tramo en la lista de semanas del año -- la primera
+     * fila redondea arriba (linda con el resumen del año), la última
+     * redondea abajo (linda con el año siguiente), y las del medio quedan
+     * rectas para que el empalme entre dos tramos consecutivos sea liso.
+     */
+    .nudo-de-quipu {
+        position: relative;
+        display: block;
+        width: 100%;
+        height: 100%;
+        background-color: currentColor;
+    }
+
+    .nudo-de-quipu--arriba {
+        border-radius: 3px 3px 0 0;
+    }
+
+    .nudo-de-quipu--abajo {
+        border-radius: 0 0 3px 3px;
+    }
+
+    .nudo-de-quipu--ambos {
+        border-radius: 3px;
+    }
+
+    /*
+     * Ancho fijo, relativo al ancho de la cuerda (que no cambia de una fila
+     * a otra) y NUNCA relativo a su alto (que sí cambia, según cuánto texto
+     * tenga la semana, y que no podemos calcular de antemano sin
+     * JavaScript). Si el hueco escalara con el alto de la fila, una semana
+     * con título y resumen largos —que envuelven varias líneas— estiraría el
+     * hueco hasta verse como una ranura vertical en vez de un hueco parecido
+     * a un cuadrado. Con `top` en porcentaje pero `width`/`aspect-ratio`
+     * fijos, la POSICIÓN se adapta al alto real de la fila y el TAMAÑO no.
+     *
+     * 38% y la proporción 1.27:1 son la medida en píxeles del hueco superior
+     * del símbolo de marca (public/android-chrome-512x512.png). `max-height`
+     * es el tope explícito: aunque `aspect-ratio` ya lo mantiene acotado
+     * porque el ancho no crece, es la garantía escrita de que nunca se
+     * estira más allá de eso.
+     */
+    .nudo-de-quipu__hueco {
+        position: absolute;
+        left: 50%;
+        width: 38%;
+        aspect-ratio: 1.27 / 1;
+        max-height: 0.5rem;
+        background-color: var(--color-fondo);
+        border-radius: 1px;
+        transform: translate(-50%, -50%);
+    }
+</style>

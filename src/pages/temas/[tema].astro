@@ -5,6 +5,7 @@ import TarjetaHistoria from "../../components/TarjetaHistoria.astro";
 import { themesRoute } from "../../lib/routes";
 import { sortByDateDescending } from "../../lib/stories";
 import { groupByTheme } from "../../lib/themes";
+import { authorNameFor, buildAuthorNameMap } from "../../lib/content/authors";
 
 export async function getStaticPaths() {
     const historias = sortByDateDescending(
@@ -26,6 +27,12 @@ type Props = {
 
 const { tema } = Astro.params;
 const { historias } = Astro.props;
+
+const nombresDeAutor = buildAuthorNameMap(
+    await getCollection("authors"),
+    (autor) => autor.id,
+    (autor) => autor.data.name
+);
 ---
 
 <BaseLayout
@@ -45,7 +52,13 @@ const { historias } = Astro.props;
         <div class="tema__rejilla">
             {
                 historias.map((historia) => (
-                    <TarjetaHistoria historia={historia} />
+                    <TarjetaHistoria
+                        historia={historia}
+                        nombreAutor={authorNameFor(
+                            nombresDeAutor,
+                            historia.data.author.id
+                        )}
+                    />
                 ))
             }
         </div>
