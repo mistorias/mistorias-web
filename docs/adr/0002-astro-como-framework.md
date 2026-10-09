@@ -52,7 +52,7 @@ Las razones técnicas y de marca que sostienen esta decisión son:
    necesitar plataforma de login adicional.
 
 4. **Soporte nativo de internacionalización.** La audiencia principal
-   es hispanohablante (Arequipa, Perú, América Latina). El español es
+   es hispanohablante (Perú, América Latina). El español es
    el idioma canónico. Un campo `lang` en el esquema de contenido con
    prefijos de ruta (`/es/`, `/en/`, `/pt/`) permite añadir traducciones
    cuando la capacidad lo permita, sin rediseño estructural.
