@@ -128,7 +128,7 @@ This allows the same codebase to deploy to either platform with correct base pat
 
 ## CI Deployments
 
-Two workflows in `.github/workflows/`:
+Three workflows in `.github/workflows/` (two deploy, one content sync):
 
 1. **GitHub Pages** (`deploy-github-pages.yml`): Triggers on push to `main` or manual dispatch; uses `DEPLOY_TARGET=development`
 2. **Netlify** (`deploy-netlify.yml`): Triggers on tag push or manual dispatch; uses `DEPLOY_TARGET=netlify`
