@@ -18,6 +18,13 @@ content_path="${1:-${CONTENT_PATH:-content/mistorias-contenido}}"
 output="${GITHUB_OUTPUT:-/dev/stdout}"
 summary="${GITHUB_STEP_SUMMARY:-/dev/stdout}"
 
+# actions/checkout trae el submódulo con --depth=1. Sin historia,
+# merge-base --is-ancestor no puede probar la ascendencia y respondería "no
+# desciende" aunque el puntero esté avanzando con normalidad.
+if [[ "$(git -C "$content_path" rev-parse --is-shallow-repository)" == "true" ]]; then
+    git -C "$content_path" fetch --unshallow --quiet origin
+fi
+
 anterior=$(git -C "$content_path" rev-parse HEAD)
 git submodule update --remote "$content_path"
 nuevo=$(git -C "$content_path" rev-parse HEAD)
