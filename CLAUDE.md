@@ -133,7 +133,9 @@ Two workflows in `.github/workflows/`:
 1. **GitHub Pages** (`deploy-github-pages.yml`): Triggers on push to `main` or manual dispatch; uses `DEPLOY_TARGET=development`
 2. **Netlify** (`deploy-netlify.yml`): Triggers on tag push or manual dispatch; uses `DEPLOY_TARGET=netlify`
 
-Both check out with `--recursive` (initializes submodules) and run `pnpm install --frozen-lockfile` before building.
+A third workflow, `actualizar-contenido.yml`, runs daily (and on demand): it advances the content submodule to the latest `mistorias-contenido`, regenerates `data/story-order.json`, checks that `pnpm build` passes, and opens or updates a single PR on the `contenido/actualizar` branch. It never merges or tags — publishing stays a human decision (see below). With only `GITHUB_TOKEN` the PR opens but GitHub does not trigger CI on it; add a `CONTENT_SYNC_TOKEN` secret (PAT or GitHub App token) so it does.
+
+Both deploy workflows check out with `--recursive` (initializes submodules) and run `pnpm install --frozen-lockfile` before building.
 
 The Netlify workflow also passes the tag to the build as `SITE_VERSION`, and runs `scripts/check_release_version.sh` on a tag push: it fails the deploy if the tag is not `v` + the `version` in `package.json`. Cutting a release therefore means bumping `package.json` in the commit that precedes the tag. Keeping those two in sync is what stops `/acerca` from announcing a version that isn't what shipped (ADR 0017).
 
