@@ -11,8 +11,8 @@
 
 set -euo pipefail
 
-anterior="${1:?Falta el commit anterior}"
-nuevo="${2:?Falta el commit nuevo}"
+previous="${1:?Falta el commit anterior}"
+next="${2:?Falta el commit nuevo}"
 content_path="${3:-${CONTENT_PATH:-content/mistorias-contenido}}"
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -20,7 +20,7 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cat <<MD
 ## Qué
 
-El submódulo \`$content_path\` avanza a \`${nuevo:0:7}\` (antes \`${anterior:0:7}\`) y el orden cronológico de historias queda al día.
+El submódulo \`$content_path\` avanza a \`${next:0:7}\` (antes \`${previous:0:7}\`) y el orden cronológico de historias queda al día.
 
 ## Por qué
 
@@ -28,7 +28,7 @@ Hay contenido nuevo en [mistorias-contenido](https://github.com/mistorias/mistor
 
 MD
 
-git -C "$content_path" log --no-merges --format='- %s (`%h`)' "$anterior..$nuevo"
+git -C "$content_path" log --no-merges --format='- %s (`%h`)' "$previous..$next"
 
 cat <<'MD'
 

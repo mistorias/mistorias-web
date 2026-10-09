@@ -13,25 +13,25 @@
 
 set -euo pipefail
 
-nuevo="${1:?Falta el commit nuevo}"
+next="${1:?Falta el commit nuevo}"
 body_file="${2:?Falta el archivo con el cuerpo del PR}"
 base="${3:?Falta la rama base}"
 branch="${BRANCH:?Falta BRANCH}"
 content_path="${CONTENT_PATH:-content/mistorias-contenido}"
 
-titulo="chore(contenido): el sitio incluye el contenido de \`${nuevo:0:7}\`"
+title="chore(contenido): el sitio incluye el contenido de \`${next:0:7}\`"
 
 git config user.name "github-actions[bot]"
 git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
 git checkout -B "$branch"
 git add "$content_path" data/story-order.json
-git commit -m "$titulo"
+git commit -m "$title"
 git push --force origin "$branch"
 
 if gh pr view "$branch" --json state --jq '.state' 2>/dev/null | grep -qx OPEN; then
-    gh pr edit "$branch" --title "$titulo" --body-file "$body_file"
+    gh pr edit "$branch" --title "$title" --body-file "$body_file"
 else
     gh pr create --head "$branch" --base "$base" \
-        --title "$titulo" --body-file "$body_file"
+        --title "$title" --body-file "$body_file"
 fi
