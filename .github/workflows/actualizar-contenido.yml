@@ -79,7 +79,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       # El build no escribe data/story-order.json: quien trae contenido nuevo
-      # lo regenera y lo commitea (ADR 0012).
+      # lo regenera y lo commitea (docs/adr/0012-cache-versionado-orden-cronologico-historias.md).
       - name: Regenerar el orden cronológico de historias
         if: steps.contenido.outputs.hay_cambios == 'true'
         run: pnpm story-order
