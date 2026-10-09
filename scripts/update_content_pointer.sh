@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+#
+# Avanza el submódulo de contenido al último commit de mistorias-contenido y
+# dice, vía $GITHUB_OUTPUT, si hubo cambios (hay_cambios) y entre qué commits
+# (anterior, nuevo). Lo llama .github/workflows/actualizar-contenido.yml.
+#
+# Falla si el commit nuevo no desciende del fijado: el puntero debe avanzar,
+# no retroceder. Si main de contenido quedó atrás, es una reescritura de
+# historia y una persona tiene que mirarla.
+#
+# Uso: scripts/update_content_pointer.sh [ruta-al-submodulo]
+# Por defecto usa $CONTENT_PATH, o content/mistorias-contenido si no existe.
+# Sin $GITHUB_OUTPUT (corrida local) imprime las salidas en la consola.
+
+set -euo pipefail
+
+content_path="${1:-${CONTENT_PATH:-content/mistorias-contenido}}"
+output="${GITHUB_OUTPUT:-/dev/stdout}"
+summary="${GITHUB_STEP_SUMMARY:-/dev/stdout}"
+
+anterior=$(git -C "$content_path" rev-parse HEAD)
+git submodule update --remote "$content_path"
+nuevo=$(git -C "$content_path" rev-parse HEAD)
+
+if [[ "$anterior" == "$nuevo" ]]; then
+    echo "El contenido ya está al día ($anterior)." >> "$summary"
+    echo "hay_cambios=false" >> "$output"
+    exit 0
+fi
+
+if ! git -C "$content_path" merge-base --is-ancestor "$anterior" "$nuevo"; then
+    echo "::error::El commit nuevo ($nuevo) no desciende del fijado ($anterior). Revisar a mano."
+    exit 1
+fi
+
+{
+    echo "hay_cambios=true"
+    echo "anterior=$anterior"
+    echo "nuevo=$nuevo"
+} >> "$output"
