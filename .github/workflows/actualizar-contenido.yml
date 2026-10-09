@@ -1,0 +1,154 @@
+name: Actualizar contenido
+
+# Trae lo último de mistorias-contenido y abre (o actualiza) un PR con el
+# nuevo puntero del submódulo. Solo prepara el cambio: publicar es fusionar
+# ese PR a main, y eso lo decide una persona (ver CLAUDE.md, "Never deploy
+# without an explicit instruction"). Este workflow nunca fusiona ni etiqueta.
+
+on:
+  schedule:
+    - cron: "17 13 * * *" # 08:17 hora de Lima; sin cambios, termina sin hacer nada
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+# Una sola corrida a la vez: dos corridas empujando la misma rama se pisarían.
+concurrency:
+  group: actualizar-contenido
+  cancel-in-progress: false
+
+env:
+  CONTENT_PATH: content/mistorias-contenido
+  BRANCH: contenido/actualizar
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    steps:
+      # Con GITHUB_TOKEN el PR se abre, pero GitHub no dispara los workflows
+      # (CI incluido) sobre eventos creados con él. Si existe el secreto
+      # CONTENT_SYNC_TOKEN (PAT o token de GitHub App con contents y
+      # pull-requests en escritura), se usa ese y el PR sí recibe CI.
+      - name: Checkout repository and content
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
+          token: ${{ secrets.CONTENT_SYNC_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Traer el último commit de mistorias-contenido
+        id: contenido
+        run: |
+          anterior=$(git -C "$CONTENT_PATH" rev-parse HEAD)
+          git submodule update --remote "$CONTENT_PATH"
+          nuevo=$(git -C "$CONTENT_PATH" rev-parse HEAD)
+
+          if [ "$anterior" = "$nuevo" ]; then
+            echo "El contenido ya está al día ($anterior)." >> "$GITHUB_STEP_SUMMARY"
+            echo "hay_cambios=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # El puntero debe avanzar, no retroceder: si main de contenido
+          # quedó atrás del commit fijado, es un reescrito de historia y
+          # una persona tiene que mirarlo.
+          if ! git -C "$CONTENT_PATH" merge-base --is-ancestor "$anterior" "$nuevo"; then
+            echo "::error::El commit nuevo ($nuevo) no desciende del fijado ($anterior). Revisar a mano."
+            exit 1
+          fi
+
+          {
+            echo "hay_cambios=true"
+            echo "anterior=$anterior"
+            echo "nuevo=$nuevo"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Set up Node.js
+        if: steps.contenido.outputs.hay_cambios == 'true'
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install pnpm
+        if: steps.contenido.outputs.hay_cambios == 'true'
+        run: corepack enable
+
+      - name: Install dependencies
+        if: steps.contenido.outputs.hay_cambios == 'true'
+        run: pnpm install --frozen-lockfile
+
+      # El build no escribe data/story-order.json: quien trae contenido nuevo
+      # lo regenera y lo commitea (ADR 0012).
+      - name: Regenerar el orden cronológico de historias
+        if: steps.contenido.outputs.hay_cambios == 'true'
+        run: pnpm story-order
+
+      # Es el filtro del schema y de los gates de seguridad (HTML crudo,
+      # carpetas de imágenes). Si falla, el workflow falla y no se abre PR:
+      # contenido que no compila no debe llegar a revisión como si estuviera listo.
+      - name: Validar que el contenido compila
+        if: steps.contenido.outputs.hay_cambios == 'true'
+        run: pnpm build
+
+      - name: Armar la descripción del PR
+        if: steps.contenido.outputs.hay_cambios == 'true'
+        env:
+          ANTERIOR: ${{ steps.contenido.outputs.anterior }}
+          NUEVO: ${{ steps.contenido.outputs.nuevo }}
+        run: |
+          {
+            echo "## Qué"
+            echo
+            echo "El submódulo \`$CONTENT_PATH\` avanza a \`${NUEVO:0:7}\` (antes \`${ANTERIOR:0:7}\`) y el orden cronológico de historias queda al día."
+            echo
+            echo "## Por qué"
+            echo
+            echo "Hay contenido nuevo en [mistorias-contenido](https://github.com/mistorias/mistorias-contenido) que todavía no está en el sitio. Cambios que entran:"
+            echo
+            git -C "$CONTENT_PATH" log --no-merges --format='- %s (`%h`)' "$ANTERIOR..$NUEVO"
+            echo
+            echo "## Cómo verificar"
+            echo
+            echo "- [x] \`pnpm build\` pasó en el workflow (schema y gates de seguridad)"
+            echo "- [ ] La historia más reciente aparece como destacada en la portada"
+            echo "- [ ] Los conteos de \`/temas\` coinciden con la tabla de abajo; un tema mal escrito no falla el build, crea un tema nuevo con una sola historia"
+            echo
+            echo "<details><summary>Conteo esperado por tema</summary>"
+            echo
+            echo '```'
+            node .claude/skills/desplegar-contenido/scripts/check_theme_counts.mjs
+            echo '```'
+            echo
+            echo "</details>"
+            echo
+            echo "Fusionar este PR a \`main\` publica en GitHub Pages. Mistorias.pe se publica aparte, con un tag."
+            echo
+            echo "---"
+            echo "_Abierto por el workflow \`Actualizar contenido\`._"
+          } > "$RUNNER_TEMP/cuerpo-pr.md"
+
+      - name: Abrir o actualizar el PR
+        if: steps.contenido.outputs.hay_cambios == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.CONTENT_SYNC_TOKEN || secrets.GITHUB_TOKEN }}
+          NUEVO: ${{ steps.contenido.outputs.nuevo }}
+        run: |
+          titulo="chore(contenido): el sitio incluye el contenido de \`${NUEVO:0:7}\`"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # La rama es del bot: se rehace desde main en cada corrida, así
+          # siempre refleja el último contenido y no acumula commits viejos.
+          git checkout -B "$BRANCH"
+          git add "$CONTENT_PATH" data/story-order.json
+          git commit -m "$titulo"
+          git push --force origin "$BRANCH"
+
+          if gh pr view "$BRANCH" --json state --jq '.state' 2>/dev/null | grep -qx OPEN; then
+            gh pr edit "$BRANCH" --title "$titulo" --body-file "$RUNNER_TEMP/cuerpo-pr.md"
+          else
+            gh pr create --head "$BRANCH" --base "${{ github.event.repository.default_branch }}" \
+              --title "$titulo" --body-file "$RUNNER_TEMP/cuerpo-pr.md"
+          fi
