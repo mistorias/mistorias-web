@@ -10,9 +10,9 @@ on:
     - cron: "17 13 * * *" # 08:17 hora de Lima; sin cambios, termina sin hacer nada
   workflow_dispatch:
 
+# Las escrituras (push y PR) las hace el token del App; GITHUB_TOKEN solo lee.
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 # Una sola corrida a la vez: dos corridas empujando la misma rama se pisarían.
 concurrency:
@@ -27,15 +27,22 @@ jobs:
   actualizar:
     runs-on: ubuntu-latest
     steps:
-      # Con GITHUB_TOKEN el PR se abre, pero GitHub no dispara los workflows
-      # (CI incluido) sobre eventos creados con él. Si existe el secreto
-      # CONTENT_SYNC_TOKEN (PAT o token de GitHub App con contents y
-      # pull-requests en escritura), se usa ese y el PR sí recibe CI.
+      # Un token de GitHub App de vida corta (1 hora) en vez de GITHUB_TOKEN:
+      # con GITHUB_TOKEN el PR se abre, pero GitHub no dispara los workflows
+      # (CI incluido) sobre eventos creados con él. El App solo tiene acceso a
+      # este repositorio y no hay ninguna credencial personal de por medio.
+      - name: Generar el token del App
+        id: token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.CONTENT_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.CONTENT_BOT_PRIVATE_KEY }}
+
       - name: Checkout repository and content
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: recursive
-          token: ${{ secrets.CONTENT_SYNC_TOKEN || secrets.GITHUB_TOKEN }}
+          token: ${{ steps.token.outputs.token }}
 
       - name: Traer el último commit de mistorias-contenido
         id: contenido
@@ -131,7 +138,7 @@ jobs:
       - name: Abrir o actualizar el PR
         if: steps.contenido.outputs.hay_cambios == 'true'
         env:
-          GH_TOKEN: ${{ secrets.CONTENT_SYNC_TOKEN || secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.token.outputs.token }}
           NUEVO: ${{ steps.contenido.outputs.nuevo }}
         run: |
           titulo="chore(contenido): el sitio incluye el contenido de \`${NUEVO:0:7}\`"
