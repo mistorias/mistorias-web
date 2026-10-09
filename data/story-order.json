@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-04T00:23:38.899Z",
-  "hash": "d7c97cad6889c3d5966de3f22ee11810fa313cf329937bf5f37a0077c59be503",
+  "generatedAt": "2026-10-09T19:04:24.774Z",
+  "hash": "2a432cb16d733406d54f4032b3d32f8ac7469df0a90e7f5d2115197aaaae6511",
   "order": [
     "2026-07-24-el-aula-de-madera-donde-ximena-aprende",
     "2026-07-31-los-libros-tambien-llegan-a-cotahuasi",
@@ -13,7 +13,8 @@
     "2026-09-11-walter-aprende-a-defender-su-escuela",
     "2026-09-18-caylloma-estrena-universidad-pero-elias-se-va",
     "2026-09-27-el-acoso-a-dani-sobrevive-gracias-a-quienes-miran-y-callan",
-    "2026-10-04-las-estrellas-de-calamina-que-un-profesor-quiere-devolver-a-su-sitio"
+    "2026-10-04-las-estrellas-de-calamina-que-un-profesor-quiere-devolver-a-su-sitio",
+    "2026-10-09-freddy-hizo-todo-bien-para-beca-18-pero-el-presupuesto-decide-si-hay-cupo"
   ],
   "stories": {
     "2026-07-24-el-aula-de-madera-donde-ximena-aprende": {
@@ -62,6 +63,10 @@
     },
     "2026-10-04-las-estrellas-de-calamina-que-un-profesor-quiere-devolver-a-su-sitio": {
       "previous": "2026-09-27-el-acoso-a-dani-sobrevive-gracias-a-quienes-miran-y-callan",
+      "next": "2026-10-09-freddy-hizo-todo-bien-para-beca-18-pero-el-presupuesto-decide-si-hay-cupo"
+    },
+    "2026-10-09-freddy-hizo-todo-bien-para-beca-18-pero-el-presupuesto-decide-si-hay-cupo": {
+      "previous": "2026-10-04-las-estrellas-de-calamina-que-un-profesor-quiere-devolver-a-su-sitio",
       "next": null
     }
   }
