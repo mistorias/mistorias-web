@@ -4,15 +4,21 @@
  * La portada, el índice de temas y cada página de tema muestran lo más
  * reciente primero. Se copia antes de ordenar porque `Array.prototype.sort`
  * muta, y la colección que entrega Astro se reutiliza entre páginas.
+ *
+ * Un empate de fecha se desempata por id, al revés que `orderStoriesByDate`
+ * (`src/lib/content/story-order.ts`): este orden es exactamente el inverso de
+ * aquel, así que la historia destacada de la portada es siempre la misma a la
+ * que lleva `/ultima` (issue #170).
  */
-
 export const sortByDateDescending = <T>(
   stories: readonly T[],
+  getId: (story: T) => string,
   getDate: (story: T) => Date
 ): readonly T[] =>
-  [...stories].sort(
-    (one, other) => getDate(other).getTime() - getDate(one).getTime()
-  );
+  [...stories].sort((one, other) => {
+    const dateDiff = getDate(other).getTime() - getDate(one).getTime();
+    return dateDiff !== 0 ? dateDiff : getId(other).localeCompare(getId(one));
+  });
 
 /**
  * Cuántas historias anteriores muestra la portada (issue #72), aparte de la

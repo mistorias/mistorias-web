@@ -4,9 +4,11 @@ import {
   MAX_PREVIOUS_STORIES,
   sortByDateDescending
 } from "../src/lib/stories";
+import { orderStoriesByDate } from "../src/lib/content/story-order";
 
 type TestStory = { readonly title: string; readonly date: Date };
 
+const idOf = (story: TestStory) => story.title;
 const dateOf = (story: TestStory) => story.date;
 
 describe("sortByDateDescending", () => {
@@ -16,6 +18,7 @@ describe("sortByDateDescending", () => {
         { title: "Antigua", date: new Date("2026-01-15") },
         { title: "Reciente", date: new Date("2026-08-07") }
       ],
+      idOf,
       dateOf
     );
 
@@ -31,7 +34,7 @@ describe("sortByDateDescending", () => {
       { title: "Reciente", date: new Date("2026-08-07") }
     ];
 
-    sortByDateDescending(originals, dateOf);
+    sortByDateDescending(originals, idOf, dateOf);
 
     expect(originals.map((story) => story.title)).toEqual([
       "Antigua",
@@ -39,8 +42,35 @@ describe("sortByDateDescending", () => {
     ]);
   });
 
+  it("desempata por id cuando dos historias comparten fecha", () => {
+    const sorted = sortByDateDescending(
+      [
+        { title: "a-primera", date: new Date("2026-10-09") },
+        { title: "b-segunda", date: new Date("2026-10-09") }
+      ],
+      idOf,
+      dateOf
+    );
+
+    expect(sorted.map(idOf)).toEqual(["b-segunda", "a-primera"]);
+  });
+
+  // La destacada de la portada y el destino de `/ultima` (que sale de
+  // `orderStoriesByDate`) tienen que ser la misma historia (issue #170).
+  it("es el inverso exacto del orden cronológico, empates incluidos", () => {
+    const stories = [
+      { title: "b-empate", date: new Date("2026-10-09") },
+      { title: "antigua", date: new Date("2026-07-24") },
+      { title: "a-empate", date: new Date("2026-10-09") }
+    ];
+
+    expect(sortByDateDescending(stories, idOf, dateOf).map(idOf)).toEqual(
+      [...orderStoriesByDate(stories, idOf, dateOf)].reverse()
+    );
+  });
+
   it("devuelve una lista vacía cuando no hay historias", () => {
-    expect(sortByDateDescending([], dateOf)).toEqual([]);
+    expect(sortByDateDescending([], idOf, dateOf)).toEqual([]);
   });
 });
 
