@@ -4,7 +4,6 @@ import {
   MAX_PREVIOUS_STORIES,
   sortByDateDescending
 } from "../src/lib/stories";
-import { orderStoriesByDate } from "../src/lib/content/story-order";
 
 type TestStory = { readonly title: string; readonly date: Date };
 
@@ -55,18 +54,23 @@ describe("sortByDateDescending", () => {
     expect(sorted.map(idOf)).toEqual(["b-segunda", "a-primera"]);
   });
 
-  // La destacada de la portada y el destino de `/ultima` (que sale de
-  // `orderStoriesByDate`) tienen que ser la misma historia (issue #170).
-  it("es el inverso exacto del orden cronológico, empates incluidos", () => {
-    const stories = [
-      { title: "b-empate", date: new Date("2026-10-09") },
-      { title: "antigua", date: new Date("2026-07-24") },
-      { title: "a-empate", date: new Date("2026-10-09") }
-    ];
+  // La destacada de la portada y el destino de `/ultima` tienen que ser la
+  // misma historia (issue #170): el desempate por id es el inverso del de
+  // `orderStoriesByDate`, y `tests/story-order.spec.ts` fija con estos mismos
+  // tres datos el orden cronológico. Los dos órdenes esperados están escritos
+  // a mano, sin calcular uno con el otro.
+  it("ordena de la más reciente a la más antigua, con empates por id descendente", () => {
+    const oldest = { title: "antigua", date: new Date("2026-07-24") };
+    const tieA = { title: "a-empate", date: new Date("2026-10-09") };
+    const tieB = { title: "b-empate", date: new Date("2026-10-09") };
 
-    expect(sortByDateDescending(stories, idOf, dateOf).map(idOf)).toEqual(
-      [...orderStoriesByDate(stories, idOf, dateOf)].reverse()
+    const sorted = sortByDateDescending(
+      [tieB, oldest, tieA],
+      idOf,
+      dateOf
     );
+
+    expect(sorted.map(idOf)).toEqual(["b-empate", "a-empate", "antigua"]);
   });
 
   it("devuelve una lista vacía cuando no hay historias", () => {
