@@ -13,6 +13,10 @@
 # `_headers`. Ese destino es el build de trabajo en progreso, marcado
 # `noindex` y sin sitemap (ADR 0008 y 0015), así que no compite por estas
 # URLs. Ver ADR 0018.
+#
+# Falta una regla a propósito: `/ultima` (302 a la historia más reciente) la
+# agrega el build al final de la copia de este archivo en `dist/`, porque su
+# destino cambia cada semana. Ver ADR 0025.
 
 /etiquetas/*  /temas/:splat  301
 /etiquetas    /temas/        301

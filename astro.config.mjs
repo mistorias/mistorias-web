@@ -4,6 +4,7 @@ import { noRawHtml } from "./src/lib/content/no-raw-html-integration";
 import { authorsNoRawHtml } from "./src/lib/content/authors-no-raw-html-integration";
 import { storyAssetFolders } from "./src/lib/content/story-asset-folders-integration";
 import { storyImageRequirements } from "./src/lib/content/story-image-requirements-integration";
+import { latestStoryRedirect } from "./src/lib/content/latest-story-redirect-integration";
 import { brandSymbol } from "./src/lib/brand/symbol-gate-integration";
 import { publicSvg } from "./src/lib/assets/public-svg-gate-integration";
 import { portadaIllustration } from "./src/lib/assets/illustration-gate-integration";
@@ -23,6 +24,7 @@ const integraciones = [
   authorsNoRawHtml(),
   storyAssetFolders(),
   storyImageRequirements(),
+  latestStoryRedirect(),
   brandSymbol(),
   portadaIllustration(),
   publicSvg()
