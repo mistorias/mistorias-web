@@ -204,11 +204,12 @@ pnpm story-order                 # regenera solo si el orden cambió
 pnpm story-order -- --rebuild    # regenera siempre, sin importar si cambió
 ```
 
-Si te olvidas de correrlo, el sitio no se rompe —`getStaticPaths` calcula el
-orden en memoria cuando el cache falta o quedó desactualizado— pero el diff
-del PR pierde el registro explícito de cuándo cambió el orden de
-publicación, así que conviene commitear el cache actualizado junto con el
-cambio de contenido.
+Si te olvidas de correrlo, `pnpm dev` y `pnpm build` se detienen con el
+mensaje "Run `pnpm story-order` and commit the result": el campo `latest` de
+ese archivo decide a qué historia lleva `/ultima`, y un valor desfasado la
+mandaría a la de la semana pasada sin que nada fallara (ver
+[ADR 0025](docs/adr/0025-redireccion-a-la-ultima-historia.md)). Commitea el
+cache actualizado junto con el cambio de contenido.
 
 ## Flujo de Contribución de Código
 
