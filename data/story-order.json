@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-09T19:04:24.774Z",
+  "generatedAt": "2026-10-14T19:22:36.343Z",
   "hash": "2a432cb16d733406d54f4032b3d32f8ac7469df0a90e7f5d2115197aaaae6511",
   "order": [
     "2026-07-24-el-aula-de-madera-donde-ximena-aprende",
@@ -16,6 +16,7 @@
     "2026-10-04-las-estrellas-de-calamina-que-un-profesor-quiere-devolver-a-su-sitio",
     "2026-10-09-freddy-hizo-todo-bien-para-beca-18-pero-el-presupuesto-decide-si-hay-cupo"
   ],
+  "latest": "2026-10-09-freddy-hizo-todo-bien-para-beca-18-pero-el-presupuesto-decide-si-hay-cupo",
   "stories": {
     "2026-07-24-el-aula-de-madera-donde-ximena-aprende": {
       "previous": null,
