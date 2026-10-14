@@ -11,7 +11,6 @@ import {
 } from "../src/lib/content/latest-story";
 import { latestStoryRedirect } from "../src/lib/content/latest-story-redirect-integration";
 import { writeCache, type StoryOrderCache } from "../src/lib/content/story-order-cache";
-import { latestStoryRoute, storyRoute } from "../src/lib/routes";
 
 type ConfigSetupOptions = Parameters<
   NonNullable<AstroIntegration["hooks"]["astro:config:setup"]>
@@ -19,10 +18,6 @@ type ConfigSetupOptions = Parameters<
 type BuildDoneOptions = Parameters<
   NonNullable<AstroIntegration["hooks"]["astro:build:done"]>
 >[0];
-
-// Netlify sirve el sitio en la raíz (`resolveDeploymentConfig`): la regla se
-// escribe con esa base y nunca con la de GitHub Pages (issue #29).
-const BASE_NETLIFY = "/";
 
 const temporaryDirectories: string[] = [];
 
@@ -82,27 +77,26 @@ describe("resolveLatestStory", () => {
   });
 });
 
+// Netlify sirve el sitio en la raíz (`resolveDeploymentConfig`): la regla se
+// escribe sin la base de GitHub Pages (issue #29). Las expectativas son texto
+// literal, no el resultado de `routes.ts`: la prueba se lee sin saber qué
+// devuelven esas funciones.
 describe("buildLatestStoryRedirectRule", () => {
-  const [source, destination, code] = buildLatestStoryRedirectRule(
-    "2026-10-09-freddy"
-  ).split(/\s+/);
-
-  it("sale del atajo de routes.ts, sin barra final", () => {
-    expect(`${source}/`).toBe(latestStoryRoute(BASE_NETLIFY));
-    expect(source).toBe("/ultima");
-  });
-
-  it("lleva a la página de la historia según routes.ts", () => {
-    expect(destination).toBe(storyRoute(BASE_NETLIFY, "2026-10-09-freddy"));
+  it("lleva /ultima, sin barra final, a la página de la historia", () => {
+    expect(buildLatestStoryRedirectRule("2026-10-09-freddy")).toBe(
+      "/ultima  /historias/2026-10-09-freddy/  302"
+    );
   });
 
   // El destino cambia con cada historia nueva: un 301 quedaría en caché.
   it("redirige de forma temporal", () => {
-    expect(code).toBe("302");
+    expect(buildLatestStoryRedirectRule("segunda")).toMatch(/ 302$/);
   });
 
   it("no arrastra la base de GitHub Pages", () => {
-    expect(destination).not.toContain("/mistorias-web");
+    expect(buildLatestStoryRedirectRule("segunda")).not.toContain(
+      "/mistorias-web"
+    );
   });
 });
 
@@ -115,7 +109,7 @@ describe("appendLatestStoryRedirect", () => {
     await appendLatestStoryRedirect(outputDirectory, "segunda");
 
     expect(await readFile(redirectsPath, "utf8")).toBe(
-      `/etiquetas  /temas/  301\n${buildLatestStoryRedirectRule("segunda")}\n`
+      "/etiquetas  /temas/  301\n/ultima  /historias/segunda/  302\n"
     );
   });
 
@@ -127,7 +121,7 @@ describe("appendLatestStoryRedirect", () => {
     await appendLatestStoryRedirect(outputDirectory, "segunda");
 
     expect(await readFile(redirectsPath, "utf8")).toBe(
-      `/etiquetas  /temas/  301\n${buildLatestStoryRedirectRule("segunda")}\n`
+      "/etiquetas  /temas/  301\n/ultima  /historias/segunda/  302\n"
     );
   });
 
@@ -138,7 +132,7 @@ describe("appendLatestStoryRedirect", () => {
 
     expect(
       await readFile(path.join(outputDirectory, "_redirects"), "utf8")
-    ).toBe(`${buildLatestStoryRedirectRule("segunda")}\n`);
+    ).toBe("/ultima  /historias/segunda/  302\n");
   });
 });
 
@@ -182,7 +176,7 @@ describe("latestStoryRedirect", () => {
 
     expect(
       await readFile(path.join(outputDirectory, "_redirects"), "utf8")
-    ).toBe(`${buildLatestStoryRedirectRule("reciente")}\n`);
+    ).toBe("/ultima  /historias/reciente/  302\n");
   });
 
   it("detiene el build si falta correr pnpm story-order", async () => {
