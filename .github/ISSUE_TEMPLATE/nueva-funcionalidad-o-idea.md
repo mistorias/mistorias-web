@@ -36,9 +36,10 @@ Y se muestra el texto "OCDE, PISA 2025 — nota de país: Perú..."
 
 > [!TIP]
 > Busca en internet sobre el lenguaje Gherkin. A grandes rasgos tiene la estructura:
->   Dado que `<situación>`
->   Cuando `<evento>`
->   Entonces `<expectativa>`
+>
+>     Dado que <situación>
+>     Cuando <evento>
+>     Entonces <expectativa>
 
 ## Contexto adicional
 
