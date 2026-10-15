@@ -9,6 +9,7 @@
     "preview": "astro preview",
     "test": "vitest run",
     "story-order": "node scripts/generate-story-order-cache.ts",
+    "next-version": "node scripts/next-version.ts",
     "og-default-image": "node scripts/generate-default-og-image.ts",
     "mutation-test": "stryker run"
   },
