@@ -15,6 +15,13 @@ export type StoryOrderCache = {
   readonly generatedAt: string;
   readonly hash: string;
   readonly order: readonly string[];
+  /**
+   * Id de la historia más reciente —el último de `order`—, o `null` si no
+   * hay historias. Queda escrito para que se sepa cuál es sin correr el
+   * build; el build lo consume para la redirección de `/ultima` (issue #170,
+   * ver ADR 0025).
+   */
+  readonly latest: string | null;
   readonly stories: Readonly<Record<string, StoryNeighbors>>;
 };
 
@@ -62,8 +69,8 @@ export function isCacheValid(
 /**
  * Calcula y escribe el cache para `orderedIds`. Legible por humanos:
  * indentado, con `generatedAt` (marca de tiempo de esta escritura) y `order`
- * explícito además del mapa `stories` que consume el build. Usado solo por
- * el script standalone (`scripts/generate-story-order-cache.ts`) — el build
+ * explícito, además de `latest` y del mapa `stories` que consume el
+ * build. Usado solo por el script standalone (`scripts/generate-story-order-cache.ts`) — el build
  * del sitio nunca escribe acá, ver `resolveNeighbors`.
  */
 export function writeCache(
@@ -74,6 +81,7 @@ export function writeCache(
     generatedAt: new Date().toISOString(),
     hash: hashOrderedIds(orderedIds),
     order: orderedIds,
+    latest: orderedIds.at(-1) ?? null,
     stories: buildNeighborsMap(orderedIds)
   };
 
