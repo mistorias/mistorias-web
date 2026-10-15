@@ -1,0 +1,72 @@
+name: Subir versión
+
+# Calcula la versión siguiente según los commits desde el último tag de
+# release (SemVer + Conventional Commits) y abre (o actualiza) un PR que
+# cambia solo la línea "version" de package.json (issue #194). Solo prepara
+# el cambio: fusionarlo no publica nada, y el tag que dispara el despliegue
+# lo crea una persona (ver CLAUDE.md, "Never deploy without an explicit
+# instruction"). Este workflow nunca fusiona ni etiqueta.
+
+on:
+  schedule:
+    - cron: "0 5 * * *" # 00:00 hora de Lima; sin subida que proponer, termina sin hacer nada
+  workflow_dispatch:
+
+# Las escrituras (push y PR) las hace el token del App; GITHUB_TOKEN solo lee.
+permissions:
+  contents: read
+
+# Una sola corrida a la vez: dos corridas empujando la misma rama se pisarían.
+concurrency:
+  group: subir-version
+  cancel-in-progress: false
+
+env:
+  BRANCH: version/subir
+
+jobs:
+  subir:
+    runs-on: ubuntu-latest
+    steps:
+      # El mismo App que actualizar-contenido.yml, por la misma razón: con
+      # GITHUB_TOKEN el PR se abre, pero GitHub no corre la CI sobre él.
+      - name: Generar el token del App
+        id: token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.CONTENT_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.CONTENT_BOT_PRIVATE_KEY }}
+
+      # Historia completa y tags: la base del cálculo es el último tag v*.
+      # No hace falta el submódulo de contenido, porque aquí no se construye
+      # el sitio.
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          token: ${{ steps.token.outputs.token }}
+
+      # El runner solo usa node y módulos del propio repo, así que no hace
+      # falta instalar dependencias.
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+
+      # Falla, sin abrir PR, si un commit que llega a los lectores no sigue
+      # Conventional Commits: ahí la subida no se puede decidir sin adivinar.
+      - name: Calcular la versión siguiente
+        id: version
+        run: node scripts/next-version.ts --summary "$RUNNER_TEMP/cuerpo-pr.md"
+
+      - name: Verificar que solo cambia la línea de la versión
+        if: steps.version.outputs.hay_cambios == 'true'
+        run: scripts/check_version_only_diff.sh
+
+      - name: Abrir o actualizar el PR
+        if: steps.version.outputs.hay_cambios == 'true'
+        env:
+          GH_TOKEN: ${{ steps.token.outputs.token }}
+          ANTERIOR: ${{ steps.version.outputs.anterior }}
+          NUEVA: ${{ steps.version.outputs.nueva }}
+        run: scripts/open_version_pr.sh "$ANTERIOR" "$NUEVA" "$RUNNER_TEMP/cuerpo-pr.md" "${{ github.event.repository.default_branch }}"
