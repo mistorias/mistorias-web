@@ -1,7 +1,7 @@
 ---
 name: Mejora técnica
 about: Tarea para mejorar la parte técnica de Mistorias Web
-title: ''
+title: 'Mejora técnica: <escribe un resumen de 10 palabras de lo que quieres>'
 labels: ''
 assignees: ''
 type: Task
