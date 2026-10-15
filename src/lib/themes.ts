@@ -112,6 +112,13 @@ export const groupByInitial = <T>(
     }));
 };
 
+/**
+ * Ancla de una letra dentro de /temas/ (`#letra-a`). La comparten el quipu de
+ * temas, que la pone como `id`, y el índice de letras, que salta a ella.
+ */
+export const initialAnchor = (initial: string): string =>
+  `letra-${initial === NON_LETTER_INITIAL ? "otros" : initial.toLocaleLowerCase("es")}`;
+
 /** Conteo de temas tal como lo lee el lector: "1 tema", "3 temas". */
 export const countThemes = (count: number): string =>
   count === 1 ? "1 tema" : `${count} temas`;

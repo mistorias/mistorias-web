@@ -3,6 +3,7 @@ import {
   countThemes,
   groupByInitial,
   groupByTheme,
+  initialAnchor,
   normalizeTheme,
   themeInitial
 } from "../src/lib/themes";
@@ -180,5 +181,19 @@ describe("countThemes", () => {
 
   it("usa el plural para varios temas", () => {
     expect(countThemes(3)).toBe("3 temas");
+  });
+});
+
+describe("initialAnchor", () => {
+  it("arma el ancla de una letra en minúscula", () => {
+    expect(initialAnchor("A")).toBe("letra-a");
+  });
+
+  it("conserva la eñe", () => {
+    expect(initialAnchor("Ñ")).toBe("letra-ñ");
+  });
+
+  it("da un nombre legible al grupo #, que no sirve dentro de un ancla", () => {
+    expect(initialAnchor("#")).toBe("letra-otros");
   });
 });
