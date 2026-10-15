@@ -14,6 +14,7 @@ herramientas esperan encontrar ahí, y solo para esos:
 | `LICENSE` | GitHub detecta la licencia por ubicación |
 | `CONTRIBUTING.md` | GitHub lo enlaza al abrir un issue o un PR |
 | `SECURITY.md` | GitHub lo enlaza desde la pestaña Security y desde el reporte privado |
+| `ACCESSIBILITY.md` | GitHub lo muestra como pestaña Accessibility en la portada del repositorio |
 | `CLAUDE.md` | Claude Code lo carga desde la raíz del proyecto |
 | `CONTEXT.md` | Lenguaje ubicuo del proyecto; se lee antes que cualquier otro documento |
 
