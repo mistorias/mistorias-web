@@ -70,5 +70,6 @@ agrega ninguna dependencia.
   deliberado.
 - El commit del propio PR (`chore: la versión va de X a Y`) cuenta como patch en la
   siguiente corrida. Es inofensivo, porque la base sigue siendo el tag.
-- Fuera del alcance: el auto-merge de estos PR. Tiene su propio issue, y
+- Fuera del alcance: el auto-merge de estos PR. Se investiga en el
+  [issue #197](https://github.com/mistorias/mistorias-web/issues/197), y
   `check_version_only_diff.sh` es el mecanismo de seguridad del que puede partir.
