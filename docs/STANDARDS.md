@@ -60,6 +60,16 @@ El código de Mistorias sigue:
    - Se implementa lo mínimo necesario para que el test pase, nada más
    - Si se quiere agregar más código o funcionalidad, primero se debe crear un test que lo cubra
    - Ciclo Rojo → Verde → Refactor
+   - Las expectativas de un test se escriben a mano, como valores literales
+     (ids, textos, listas en el orden esperado): nunca se calculan con el código
+     que se prueba ni con otras funciones de negocio. Así la prueba se lee sin
+     saber qué devuelven esas funciones, y no pasa por error cuando ambas están
+     mal implementadas. Los datos de entrada se declaran con nombre y la
+     expectativa los lista por su id, por ejemplo
+     `expect(sorted.map(idOf)).toEqual(["b-empate", "a-empate", "antigua"])`
+     y no `.toEqual(otraFuncion(entrada).reverse())`
+     Los helpers del propio test (`idOf`, `dateOf`) sí se pueden usar: no
+     son lógica de negocio.
    - El coverage debe ser mayor a 90%
    - Esto último no depende de que alguien lo recuerde: `pnpm test` mide la
      cobertura en cada corrida y falla si no supera ese 90%, de modo que el
