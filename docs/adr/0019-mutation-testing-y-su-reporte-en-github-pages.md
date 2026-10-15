@@ -65,7 +65,7 @@ modificados —se verificó leyendo su CLI (`stryker-cli.js`)—, pero sí acept
 `-m, --mutate <archivos>` para acotar manualmente el conjunto a mutar. El paso
 nuevo en `ci.yml` calcula ese conjunto con `git diff --name-only` contra la
 base del PR (o el commit anterior en un push a `main`) y se lo pasa a
-`pnpm mutation-test -- --mutate "…"`. Si no cambió ningún `.ts`, el paso se
+`pnpm mutation-test --mutate "…"`. Si no cambió ningún `.ts`, el paso se
 omite entero.
 
 Esto mantiene acotado el tiempo del pipeline —mutar todo `src/lib/` en cada
@@ -178,7 +178,7 @@ archivo una fecha de revisión: 2026-11-02.
 
 ## Verificación
 
-1. `pnpm mutation-test -- --mutate src/lib/brand/wordmark.ts` corre completo y
+1. `pnpm mutation-test --mutate src/lib/brand/wordmark.ts` corre completo y
    deja el reporte en `reports/mutation/index.html`.
 2. En un PR que modifique algún `.ts` bajo `src/`, el job `Verificación`
    muestra el paso «Mutation testing en los archivos modificados» y sube el
