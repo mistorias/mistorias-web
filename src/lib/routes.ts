@@ -19,6 +19,7 @@ const SITE_CODE_SECTION = "codigo";
 const BRAND_SECTION = "marca";
 const REPORT_SECTION = "reportar";
 const GRATITUDE_SECTION = "gracias";
+const LATEST_STORY_SECTION = "ultima";
 
 const splitIntoSegments = (value: string): readonly string[] =>
   value.split("/").filter((segment) => segment.length > 0);
@@ -90,3 +91,11 @@ export const reportRoute = (base: string): string =>
 
 export const gratitudeRoute = (base: string): string =>
   buildRoute(base, GRATITUDE_SECTION);
+
+/**
+ * Dirección corta y fija que lleva a la historia más reciente (issue #170):
+ * la que se pega en la biografía de Instagram, X o Linktree. No es una página
+ * del build sino una redirección de Netlify, ver ADR 0025.
+ */
+export const latestStoryRoute = (base: string): string =>
+  buildRoute(base, LATEST_STORY_SECTION);

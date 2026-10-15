@@ -8,6 +8,7 @@ import {
   editorialContentRoute,
   gratitudeRoute,
   homeRoute,
+  latestStoryRoute,
   reportRoute,
   siteCodeRoute,
   storyRoute,
@@ -145,6 +146,11 @@ describe("rutas con nombre", () => {
   it("expone la página de agradecimiento tras enviar un formulario", () => {
     expect(gratitudeRoute(BASE_NETLIFY)).toBe("/gracias/");
     expect(gratitudeRoute(BASE_PAGES)).toBe("/mistorias-web/gracias/");
+  });
+
+  it("publica el atajo a la última historia bajo /ultima/", () => {
+    expect(latestStoryRoute(BASE_NETLIFY)).toBe("/ultima/");
+    expect(latestStoryRoute(BASE_PAGES)).toBe("/mistorias-web/ultima/");
   });
 });
 
