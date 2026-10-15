@@ -148,8 +148,9 @@ node .claude/skills/desplegar-contenido/scripts/check_theme_counts.mjs
 
 Comparar esa tabla contra lo que renderiza el sitio:
 
-- `/temas` — cada tema debe mostrar "N historia(s)" igual al script, y debe
-  listarlos ordenados de más a menos historias (empate → alfabético).
+- `/temas` — cada tema debe mostrar "N historia(s)" (y N nudos en su cuerda)
+  igual al script, bajo la letra con la que empieza y en orden alfabético
+  dentro de ella.
 - `/temas/<tema>` — el conteo del encabezado y la cantidad de tarjetas
   mostradas deben coincidir con el número del script.
 
