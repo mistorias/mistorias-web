@@ -2,7 +2,7 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { themeRoute } from "../../lib/routes";
-import { sortByDateDescending } from "../../lib/stories";
+import { countStories, sortByDateDescending } from "../../lib/stories";
 import { groupByTheme } from "../../lib/themes";
 
 const historias = sortByDateDescending(
@@ -13,9 +13,6 @@ const historias = sortByDateDescending(
 
 const grupos = groupByTheme(historias, (historia) => historia.data.themes ?? []);
 const base = import.meta.env.BASE_URL;
-
-const cuentaHistorias = (cantidad: number) =>
-    cantidad === 1 ? "1 historia" : `${cantidad} historias`;
 ---
 
 <BaseLayout
@@ -42,7 +39,7 @@ const cuentaHistorias = (cantidad: number) =>
                                     {grupo.theme}
                                 </span>
                                 <span class="temas-indice__cuenta">
-                                    {cuentaHistorias(grupo.stories.length)}
+                                    {countStories(grupo.stories.length)}
                                 </span>
                             </a>
                         </li>

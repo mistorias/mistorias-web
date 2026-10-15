@@ -6,6 +6,7 @@ import type { Redondeo } from "./NudoDeQuipu.astro";
 import type { TimelineYear } from "../lib/weeks";
 import { readableWeekRange } from "../lib/dates";
 import { storyRoute } from "../lib/routes";
+import { countStories } from "../lib/stories";
 
 type Props = {
     anos: readonly TimelineYear<CollectionEntry<"stories">>[];
@@ -13,12 +14,6 @@ type Props = {
 
 const { anos } = Astro.props;
 const base = import.meta.env.BASE_URL;
-
-// Mismo criterio de pluralización que temas/index.astro: no se extrae a un
-// helper compartido en src/lib/ porque es una sola línea que vive en dos
-// archivos, no en tres o más (STANDARDS.md, sin abstracciones prematuras).
-const cuentaHistorias = (cantidad: number) =>
-    cantidad === 1 ? "1 historia" : `${cantidad} historias`;
 
 /*
  * El redondeo de cada tramo depende de su posición en la lista de semanas
@@ -49,7 +44,7 @@ const redondeoDe = (indice: number, total: number): Redondeo => {
                 <details open={indice === 0}>
                     <ResumenDeQuipu
                         titulo={String(anio.year)}
-                        cuenta={cuentaHistorias(anio.storyCount)}
+                        cuenta={countStories(anio.storyCount)}
                     />
                     <ol class="quipu-semanas">
                         {
