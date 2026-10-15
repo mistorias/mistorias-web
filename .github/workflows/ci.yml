@@ -99,7 +99,7 @@ jobs:
 
       - name: Mutation testing en los archivos modificados
         if: steps.cambios.outputs.archivos != ''
-        run: pnpm mutation-test -- --mutate "${{ steps.cambios.outputs.archivos }}"
+        run: pnpm mutation-test --mutate "${{ steps.cambios.outputs.archivos }}"
 
       - name: Publicar el reporte de mutation testing
         if: steps.cambios.outputs.archivos != '' && always()
