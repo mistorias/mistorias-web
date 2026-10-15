@@ -46,6 +46,7 @@ async function main(): Promise<void> {
     `${defaultStoryOrderCachePath} generado con ${cache.order.length} historias (generatedAt ${cache.generatedAt}).`
   );
   console.log(cache.order.join(" -> "));
+  console.log(`Última historia: ${cache.latest ?? "(ninguna)"}`);
 }
 
 main().catch((error: unknown) => {

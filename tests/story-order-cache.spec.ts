@@ -50,6 +50,18 @@ describe("story-order-cache", () => {
       });
       expect(readCache(cachePath)).toEqual(cache);
     });
+
+    it("guarda como latest el id de la historia más reciente", () => {
+      const cache = writeCache(["primera", "segunda", "tercera"], cachePath);
+
+      expect(cache.latest).toBe("tercera");
+    });
+
+    it("guarda latest en null cuando no hay historias", () => {
+      const cache = writeCache([], cachePath);
+
+      expect(cache.latest).toBeNull();
+    });
   });
 
   describe("isCacheValid", () => {
