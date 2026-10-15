@@ -8,6 +8,7 @@ As of issue #33, `.astro` components can be tested with Vitest using the `experi
 - Pages render the same way when they take no props: `tests/acerca.spec.ts` renders `src/pages/acerca.astro` directly and asserts only what has logic (the version line, the shared authorship labels), not its editorial prose.
 - Assert on the HTML string it produces (no DOM API in Node tests, so use `.toContain()` for substrings).
 - For data fixtures (e.g. `CollectionEntry<"stories">`), use `buildStoryFixture(overrides?)` from `tests/support/story-fixture.ts`, and `buildAuthorFixture(overrides?)` from `tests/support/author-fixture.ts` for `CollectionEntry<"authors">`.
+- Write expectations as literals, never computed with the code under test or other business functions (e.g. `toEqual(["b-empate", "a-empate"])`, not `toEqual(otherHelper(input))`), so the test reads without knowing what those functions return. See [docs/STANDARDS.md](../docs/STANDARDS.md#principios-fundamentales), principle 6.
 - Stub environment variables with `vi.stubEnv("DEPLOY_TARGET", "netlify")` and clean up in `afterEach(() => vi.unstubAllEnvs())`.
 
 **Coverage:**
