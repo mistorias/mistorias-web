@@ -37,6 +37,22 @@ describe("orderStoriesByDate", () => {
     expect(ordered).toEqual(["a-historia", "b-historia"]);
   });
 
+  // Mismos tres datos que el test de `sortByDateDescending` en
+  // `tests/stories.spec.ts`: acá el orden esperado es el cronológico (issue #170).
+  it("ordena ascendente con empates por id ascendente", () => {
+    const ordered = orderStoriesByDate(
+      [
+        { id: "b-empate", date: new Date("2026-10-09") },
+        { id: "antigua", date: new Date("2026-07-24") },
+        { id: "a-empate", date: new Date("2026-10-09") }
+      ],
+      idOf,
+      dateOf
+    );
+
+    expect(ordered).toEqual(["antigua", "a-empate", "b-empate"]);
+  });
+
   it("no altera el arreglo que recibe", () => {
     const originals = [
       { id: "reciente", date: new Date("2026-08-07") },

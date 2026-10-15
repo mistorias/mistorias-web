@@ -10,6 +10,7 @@ import { authorNameFor, buildAuthorNameMap } from "../../lib/content/authors";
 export async function getStaticPaths() {
     const historias = sortByDateDescending(
         await getCollection("stories"),
+        (historia) => historia.id,
         (historia) => historia.data.date
     );
 
