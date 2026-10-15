@@ -113,8 +113,8 @@ export const groupByInitial = <T>(
 };
 
 /**
- * Ancla de una letra dentro de /temas/ (`#letra-a`). El quipu de temas la
- * pone como `id`; vive acá para que cualquier enlace a una letra la arme igual.
+ * Ancla de una letra dentro de /temas/ (`#letra-a`). La comparten el quipu de
+ * temas, que la pone como `id`, y el índice de letras, que salta a ella.
  */
 export const initialAnchor = (initial: string): string =>
   `letra-${initial === NON_LETTER_INITIAL ? "otros" : initial.toLocaleLowerCase("es")}`;
