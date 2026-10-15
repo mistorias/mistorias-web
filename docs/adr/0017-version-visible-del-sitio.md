@@ -66,6 +66,10 @@ cliente, coherente con `script-src 'none'` (ver CLAUDE.md, Security & Validation
 
 - Cortar un release ahora tiene un paso más: subir `version` en `package.json` en el
   commit que precede al tag. Es el costo de que ambos números signifiquen lo mismo.
+
+  > [ADR 0026](0026-subida-automatica-de-version.md) automatiza ese paso: un
+  > workflow propone la subida en un PR, y lo que queda a mano es fusionarlo y
+  > etiquetar.
 - Fuera del release, `package.json` sigue moviéndose a mano; entre dos releases todas
   las builds de desarrollo anuncian la misma versión. Alcanza para el propósito del
   issue —saber qué release se está leyendo— y evitó agregar el SHA del commit, que se

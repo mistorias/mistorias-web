@@ -231,7 +231,12 @@ La página "Acerca de" muestra el tag del release, y `v` + la `version` de
 [ADR 0017](docs/adr/0017-version-visible-del-sitio.md)). Para que ambos números
 signifiquen lo mismo, el orden es:
 
-1. Sube `version` en `package.json` y haz commit.
+1. Fusiona el PR de versión (`chore: la versión va de X a Y`, rama
+   `version/subir`). Lo abre cada noche el workflow `subir-version.yml`, que
+   calcula la versión según los commits desde el último tag (ver
+   [ADR 0026](docs/adr/0026-subida-automatica-de-version.md)). Para ver qué
+   versión propondría, corre `pnpm next-version` en local y luego descarta el
+   cambio en `package.json`.
 2. Etiqueta ese commit con `v` + esa misma versión: `git tag v0.2.0`.
 3. Empuja el tag. El workflow de Netlify corre
    `scripts/check_release_version.sh` y **detiene el despliegue** si el tag y
