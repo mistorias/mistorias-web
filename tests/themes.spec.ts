@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { groupByTheme, normalizeTheme } from "../src/lib/themes";
+import {
+  countThemes,
+  groupByInitial,
+  groupByTheme,
+  normalizeTheme,
+  themeInitial
+} from "../src/lib/themes";
 
 type TestStory = {
   readonly title: string;
@@ -94,5 +100,85 @@ describe("groupByTheme", () => {
     const groups = groupByTheme([story("Primera", ["junin", "Junin"])], themesOf);
 
     expect(groups[0]?.stories).toHaveLength(1);
+  });
+});
+
+describe("themeInitial", () => {
+  it("devuelve la primera letra en mayúscula", () => {
+    expect(themeInitial("junin")).toBe("J");
+  });
+
+  it("agrupa la vocal tildada con su vocal sin tilde", () => {
+    expect(themeInitial("ética")).toBe("E");
+  });
+
+  it("conserva la eñe como letra propia", () => {
+    expect(themeInitial("ñuñoa")).toBe("Ñ");
+  });
+
+  it("junta bajo # lo que no empieza con letra", () => {
+    expect(themeInitial("2026")).toBe("#");
+  });
+});
+
+describe("groupByInitial", () => {
+  const themeGroup = (theme: string, storyCount = 1) => ({
+    theme,
+    stories: Array.from({ length: storyCount }, (_, index) =>
+      story(`${theme}-${index}`, [theme])
+    )
+  });
+
+  const lettersOf = (groups: ReturnType<typeof groupByInitial>) =>
+    groups.map((group) => ({
+      initial: group.initial,
+      themes: group.themes.map((entry) => entry.theme)
+    }));
+
+  it("no devuelve letras cuando no hay temas", () => {
+    expect(groupByInitial([])).toEqual([]);
+  });
+
+  it("reúne los temas por inicial y los ordena alfabéticamente dentro de cada letra", () => {
+    const groups = groupByInitial([
+      themeGroup("docentes", 3),
+      themeGroup("arequipa", 2),
+      themeGroup("america-latina")
+    ]);
+
+    expect(lettersOf(groups)).toEqual([
+      { initial: "A", themes: ["america-latina", "arequipa"] },
+      { initial: "D", themes: ["docentes"] }
+    ]);
+  });
+
+  it("ubica la eñe después de la ene y # al final", () => {
+    const groups = groupByInitial([
+      themeGroup("2026"),
+      themeGroup("ñuñoa"),
+      themeGroup("nazca"),
+      themeGroup("olmos")
+    ]);
+
+    expect(groups.map((group) => group.initial)).toEqual(["N", "Ñ", "O", "#"]);
+  });
+
+  it("conserva las historias de cada tema", () => {
+    const groups = groupByInitial([themeGroup("junin", 2)]);
+
+    expect(groups[0]?.themes[0]?.stories.map((s) => s.title)).toEqual([
+      "junin-0",
+      "junin-1"
+    ]);
+  });
+});
+
+describe("countThemes", () => {
+  it("usa el singular para un solo tema", () => {
+    expect(countThemes(1)).toBe("1 tema");
+  });
+
+  it("usa el plural para varios temas", () => {
+    expect(countThemes(3)).toBe("3 temas");
   });
 });
