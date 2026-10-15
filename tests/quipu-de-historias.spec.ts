@@ -434,8 +434,8 @@ describe("QuipuDeHistorias", () => {
       props: { anos: [ano1, ano2] },
     });
 
-    // Contar elementos con class="quipu-anio__greca"
-    const grecaCount = (html.match(/class="quipu-anio__greca"/g) ?? []).length;
+    // Contar elementos con class="quipu-resumen__greca"
+    const grecaCount = (html.match(/class="quipu-resumen__greca"/g) ?? []).length;
     expect(grecaCount).toBe(2); // Una para cada año
   });
 

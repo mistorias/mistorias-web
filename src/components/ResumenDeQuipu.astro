@@ -1,0 +1,67 @@
+---
+/*
+ * El `summary` de cada cuerda principal del quipu: el rótulo grande (un año
+ * en /historias/), su conteo y la greca escalonada corriendo al costado.
+ * Vive aparte de QuipuDeHistorias para que la máscara SVG de la greca exista
+ * en un solo lugar cuando otro quipu del sitio la necesite (issue #182).
+ */
+type Props = {
+    titulo: string;
+    cuenta: string;
+};
+
+const { titulo, cuenta } = Astro.props;
+---
+
+<summary class="quipu-resumen">
+    <h2>{titulo}</h2>
+    <span class="quipu-resumen__cuenta">{cuenta}</span>
+    <span class="quipu-resumen__greca" aria-hidden="true"></span>
+</summary>
+
+<style>
+    /*
+     * Resumen de la cuerda: el rótulo, el conteo, y la greca escalonada
+     * corriendo al costado — acompaña a cada cuerda, la primera incluida. Usa
+     * el mismo color que la cuerda (--color-metadato): son el mismo material,
+     * la cuerda principal y su remate.
+     */
+    .quipu-resumen {
+        display: flex;
+        align-items: center;
+        gap: var(--esp-s);
+        min-height: 44px;
+        cursor: pointer;
+    }
+
+    .quipu-resumen h2 {
+        margin: 0;
+        white-space: nowrap;
+    }
+
+    .quipu-resumen__cuenta {
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        color: var(--color-metadato);
+        white-space: nowrap;
+    }
+
+    /*
+     * Misma altura que el texto del conteo a su izquierda: atada al mismo
+     * token (--paso--1), no a un valor propio que se pueda desincronizar si
+     * ese token cambia.
+     */
+    .quipu-resumen__greca {
+        flex: 1 1 auto;
+        align-self: center;
+        height: var(--paso--1);
+        min-width: 2rem;
+        background-color: var(--color-metadato);
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 8'%3E%3Crect x='0' y='6' width='4' height='2'/%3E%3Crect x='4' y='4' width='4' height='4'/%3E%3Crect x='8' y='2' width='4' height='6'/%3E%3Crect x='12' y='0' width='4' height='8'/%3E%3C/svg%3E");
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 8'%3E%3Crect x='0' y='6' width='4' height='2'/%3E%3Crect x='4' y='4' width='4' height='4'/%3E%3Crect x='8' y='2' width='4' height='6'/%3E%3Crect x='12' y='0' width='4' height='8'/%3E%3C/svg%3E");
+        -webkit-mask-repeat: repeat-x;
+        mask-repeat: repeat-x;
+        -webkit-mask-size: calc(var(--paso--1) * 2) var(--paso--1);
+        mask-size: calc(var(--paso--1) * 2) var(--paso--1);
+    }
+</style>

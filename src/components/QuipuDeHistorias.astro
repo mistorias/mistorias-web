@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import NudoDeQuipu from "./NudoDeQuipu.astro";
+import ResumenDeQuipu from "./ResumenDeQuipu.astro";
 import type { Redondeo } from "./NudoDeQuipu.astro";
 import type { TimelineYear } from "../lib/weeks";
 import { readableWeekRange } from "../lib/dates";
@@ -46,13 +47,10 @@ const redondeoDe = (indice: number, total: number): Redondeo => {
             // que usa el propio buildTimeline para anclar el rango.
             <li>
                 <details open={indice === 0}>
-                    <summary class="quipu-anio__resumen">
-                        <h2>{anio.year}</h2>
-                        <span class="quipu-anio__cuenta">
-                            {cuentaHistorias(anio.storyCount)}
-                        </span>
-                        <span class="quipu-anio__greca" aria-hidden="true" />
-                    </summary>
+                    <ResumenDeQuipu
+                        titulo={String(anio.year)}
+                        cuenta={cuentaHistorias(anio.storyCount)}
+                    />
                     <ol class="quipu-semanas">
                         {
                             anio.entries.map((entrada, indiceEntrada) => {
@@ -155,52 +153,6 @@ const redondeoDe = (indice: number, total: number): Redondeo => {
 
     .quipu-anos > li + li {
         margin-block-start: var(--esp-l);
-    }
-
-    /*
-     * Resumen del año: el número, el conteo, y la greca escalonada corriendo
-     * al costado — ya no separa un año del siguiente, acompaña a cada año, el
-     * más reciente incluido. Usa el mismo color que la cuerda
-     * (--color-metadato): son el mismo material, la cuerda principal y su
-     * remate.
-     */
-    .quipu-anio__resumen {
-        display: flex;
-        align-items: center;
-        gap: var(--esp-s);
-        min-height: 44px;
-        cursor: pointer;
-    }
-
-    .quipu-anio__resumen h2 {
-        margin: 0;
-        white-space: nowrap;
-    }
-
-    .quipu-anio__cuenta {
-        font-family: var(--fuente-info);
-        font-size: var(--paso--1);
-        color: var(--color-metadato);
-        white-space: nowrap;
-    }
-
-    /*
-     * Misma altura que el texto del conteo a su izquierda: atada al mismo
-     * token (--paso--1), no a un valor propio que se pueda desincronizar si
-     * ese token cambia.
-     */
-    .quipu-anio__greca {
-        flex: 1 1 auto;
-        align-self: center;
-        height: var(--paso--1);
-        min-width: 2rem;
-        background-color: var(--color-metadato);
-        -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 8'%3E%3Crect x='0' y='6' width='4' height='2'/%3E%3Crect x='4' y='4' width='4' height='4'/%3E%3Crect x='8' y='2' width='4' height='6'/%3E%3Crect x='12' y='0' width='4' height='8'/%3E%3C/svg%3E");
-        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 8'%3E%3Crect x='0' y='6' width='4' height='2'/%3E%3Crect x='4' y='4' width='4' height='4'/%3E%3Crect x='8' y='2' width='4' height='6'/%3E%3Crect x='12' y='0' width='4' height='8'/%3E%3C/svg%3E");
-        -webkit-mask-repeat: repeat-x;
-        mask-repeat: repeat-x;
-        -webkit-mask-size: calc(var(--paso--1) * 2) var(--paso--1);
-        mask-size: calc(var(--paso--1) * 2) var(--paso--1);
     }
 
     .quipu-semanas {
