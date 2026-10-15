@@ -65,9 +65,11 @@ agrega ninguna dependencia.
 
 - Cortar un release es fusionar el PR de versión y crear el tag `v` + esa versión.
   Ya no hay que acordarse de editar `package.json`.
-- Un commit no convencional que toque el sitio detiene el workflow hasta que se
-  corrija (por ejemplo, con un commit convencional que lo reemplace). Es
-  deliberado.
+- Un commit no convencional que toque el sitio detiene el workflow, y es
+  deliberado. Un commit nuevo no lo arregla, porque el viejo sigue entre el tag y
+  `HEAD`. La salida es cortar ese release a mano, como antes de este ADR: subir
+  `version`, fusionar y etiquetar. El tag nuevo deja ese commit fuera del rango.
+  Por eso conviene que todo llegue a `main` por PR con título convencional.
 - El commit del propio PR (`chore: la versión va de X a Y`) cuenta como patch en la
   siguiente corrida. Es inofensivo, porque la base sigue siendo el tag.
 - Fuera del alcance: el auto-merge de estos PR. Se investiga en el
