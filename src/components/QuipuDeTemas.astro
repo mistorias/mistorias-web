@@ -1,0 +1,199 @@
+---
+import type { CollectionEntry } from "astro:content";
+import NudoDeQuipu from "./NudoDeQuipu.astro";
+import ResumenDeQuipu from "./ResumenDeQuipu.astro";
+import type { Redondeo } from "./NudoDeQuipu.astro";
+import { themeRoute } from "../lib/routes";
+import { countStories } from "../lib/stories";
+import { countThemes, initialAnchor } from "../lib/themes";
+import type { InitialGroup } from "../lib/themes";
+
+type Props = {
+    letras: readonly InitialGroup<CollectionEntry<"stories">>[];
+};
+
+const { letras } = Astro.props;
+const base = import.meta.env.BASE_URL;
+
+/*
+ * Mismo criterio que QuipuDeHistorias: el primer tramo de la letra redondea
+ * arriba (linda con el resumen), el último abajo, los del medio quedan rectos.
+ * Se repite en lugar de extraerse porque vive en dos archivos, no en tres
+ * (STANDARDS.md, sin abstracciones prematuras).
+ */
+const redondeoDe = (indice: number, total: number): Redondeo => {
+    const esPrimera = indice === 0;
+    const esUltima = indice === total - 1;
+    if (esPrimera && esUltima) return "ambos";
+    if (esPrimera) return "arriba";
+    if (esUltima) return "abajo";
+    return "ninguno";
+};
+---
+
+<ol class="quipu-letras">
+    {
+        letras.map((letra) => (
+            // Todas abiertas al cargar, a diferencia de los años: el índice de
+            // letras salta a `#letra-x`, y un salto a un <details> cerrado
+            // deja al lector frente a una caja vacía.
+            <li class="quipu-letra" id={initialAnchor(letra.initial)}>
+                <details open>
+                    <ResumenDeQuipu
+                        titulo={letra.initial}
+                        cuenta={countThemes(letra.themes.length)}
+                    />
+                    <ol class="quipu-temas">
+                        {letra.themes.map((grupo, indice) => (
+                            <li
+                                class="quipu-tema"
+                                style={`--nudos: ${grupo.stories.length}`}
+                            >
+                                <span class="quipu-tema__cuerda">
+                                    <NudoDeQuipu
+                                        cantidad={grupo.stories.length}
+                                        redondeo={redondeoDe(
+                                            indice,
+                                            letra.themes.length
+                                        )}
+                                        reparto="parejo"
+                                    />
+                                </span>
+                                <a
+                                    class="quipu-tema__enlace"
+                                    href={themeRoute(base, grupo.theme)}
+                                >
+                                    <span class="quipu-tema__nombre">
+                                        {grupo.theme}
+                                    </span>
+                                    <span class="quipu-tema__cuenta">
+                                        {countStories(grupo.stories.length)}
+                                    </span>
+                                </a>
+                            </li>
+                        ))}
+                    </ol>
+                </details>
+            </li>
+        ))
+    }
+</ol>
+
+<style>
+    .quipu-letras {
+        --dur-pliegue: 0.3s;
+
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        max-width: var(--medida);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        /*
+         * La regla global de base.css no alcanza a `::details-content` (el
+         * mismo hueco que documenta DatoConFuente): la duración se apaga acá.
+         */
+        .quipu-letras {
+            --dur-pliegue: 0.01ms;
+        }
+    }
+
+    .quipu-letra + .quipu-letra {
+        margin-block-start: var(--esp-m);
+    }
+
+    /* Que el salto desde el índice no deje la letra pegada al borde. */
+    .quipu-letra {
+        scroll-margin-block-start: var(--esp-m);
+    }
+
+    /*
+     * Pliegue animado sin JavaScript. `interpolate-size` deja animar hasta
+     * `auto`; donde no existe, el <details> pliega igual, solo que de golpe.
+     * `content-visibility: visible` es deliberado: animar su cambio con
+     * `allow-discrete` no sostiene el cierre (ver DatoConFuente), así que el
+     * contenido queda siempre "visible" para el navegador y lo que de verdad
+     * lo saca del Tab y del lector de pantalla es `visibility` en
+     * `.quipu-temas`, con la demora clásica al cerrar.
+     */
+    .quipu-letra details {
+        interpolate-size: allow-keywords;
+    }
+
+    .quipu-letra details::details-content {
+        content-visibility: visible;
+        block-size: 0;
+        overflow: hidden;
+        transition: block-size var(--dur-pliegue) ease;
+    }
+
+    .quipu-letra details[open]::details-content {
+        block-size: auto;
+    }
+
+    .quipu-temas {
+        list-style: none;
+        margin: var(--esp-s) 0 0;
+        padding: 0;
+        visibility: hidden;
+        transition: visibility 0s linear var(--dur-pliegue);
+    }
+
+    .quipu-letra details[open] .quipu-temas {
+        visibility: visible;
+        transition-delay: 0s;
+    }
+
+    /*
+     * Misma grilla que una semana de QuipuDeHistorias: cuerda angosta a la
+     * izquierda, contenido a la derecha, sin margen entre filas para que los
+     * tramos se lean como una sola cuerda. El alto mínimo crece con los nudos
+     * para que un tema con muchas historias no los amontone.
+     */
+    .quipu-tema {
+        display: grid;
+        grid-template-columns: 1.25rem 1fr;
+        column-gap: var(--esp-s);
+        min-height: max(44px, calc(var(--nudos) * 0.75rem));
+    }
+
+    .quipu-tema__cuerda {
+        grid-column: 1;
+        color: var(--color-metadato);
+    }
+
+    .quipu-tema__enlace {
+        grid-column: 2;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0 var(--esp-s);
+        align-items: baseline;
+        align-self: center;
+        justify-content: space-between;
+        min-width: 0;
+        min-height: 44px;
+        padding-block: var(--esp-2xs);
+        text-decoration: none;
+    }
+
+    .quipu-tema__nombre {
+        font-family: var(--fuente-info);
+        font-weight: 600;
+        color: var(--color-acento);
+        overflow-wrap: anywhere;
+    }
+
+    .quipu-tema__cuenta {
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        color: var(--color-metadato);
+        white-space: nowrap;
+    }
+
+    @media (hover: hover) {
+        .quipu-tema__enlace:hover .quipu-tema__nombre {
+            text-decoration: underline;
+        }
+    }
+</style>
