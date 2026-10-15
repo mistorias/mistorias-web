@@ -94,6 +94,10 @@ navegación anterior/siguiente funcione.
 
 ## Consecuencias
 
+> [ADR 0025](0025-redireccion-a-la-ultima-historia.md) suma el campo `latest`
+> a este cache para la redirección de `/ultima`, y ahí un cache desfasado sí
+> detiene el build.
+
 ### Positivas
 
 - El sitio nunca puede mostrar un vecino incorrecto por un cache

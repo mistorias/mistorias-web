@@ -90,10 +90,11 @@ pnpm story-order -- --rebuild
 ```
 
 Commitear `data/story-order.json` junto con el cambio de contenido (bump del
-submódulo). Si se omite este paso, el sitio sigue siendo correcto — el build
-cae al cálculo en memoria (ver `resolveNeighbors`) — pero el cache
-commiteado queda desactualizado y dejará de ser el artefacto auditable que
-busca el ADR 0012.
+submódulo). Si se omite este paso, el build falla: su campo `latest` decide a
+qué historia lleva `/ultima`, y la integración `latestStoryRedirect` se
+detiene si no coincide con la historia más reciente por fecha (ADR 0025). La
+navegación anterior/siguiente sí recalcularía en memoria, pero el cache
+commiteado dejaría de ser el artefacto auditable que busca el ADR 0012.
 
 ### 3. Validar el contenido: schema y gates de seguridad
 
