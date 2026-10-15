@@ -122,3 +122,21 @@ export const initialAnchor = (initial: string): string =>
 /** Conteo de temas tal como lo lee el lector: "1 tema", "3 temas". */
 export const countThemes = (count: number): string =>
   count === 1 ? "1 tema" : `${count} temas`;
+
+/**
+ * Cuántos temas muestra "Los más tocados" en /temas/ (issue #182): la lectura
+ * por cantidad que el índice alfabético dejó de dar.
+ */
+export const MAX_MOST_COVERED_THEMES = 3;
+
+/**
+ * Los temas con más historias. Asume que `groups` llega ordenado por cantidad
+ * (ver `groupByTheme`). Si no hay más temas que el tope, no devuelve nada: la
+ * lista solo repetiría lo que el quipu ya muestra completo.
+ */
+export const mostCoveredThemes = <T>(
+  groups: readonly ThemeGroup<T>[]
+): readonly ThemeGroup<T>[] =>
+  groups.length > MAX_MOST_COVERED_THEMES
+    ? groups.slice(0, MAX_MOST_COVERED_THEMES)
+    : [];
