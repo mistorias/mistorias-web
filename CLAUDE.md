@@ -27,7 +27,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for full setup instructions.
 
 Node version and pnpm version are defined in `.nvmrc` and `package.json` respectively — they may differ from values documented elsewhere.
 
-Common commands: `pnpm dev`, `pnpm build`, `pnpm test`, `pnpm mutation-test` (mutation testing with Stryker — both the nightly run and the per-PR run (changed files only) fail below a 75% score; vitest is pinned to 4.1 until Stryker's runner supports vitest 5, see [ADR 0019](docs/adr/0019-mutation-testing-y-su-reporte-en-github-pages.md)). For dev container setup, Docker commands, and detailed development workflow, see [CONTRIBUTING.md](CONTRIBUTING.md).
+Common commands: `pnpm dev`, `pnpm build`, `pnpm test`, `pnpm next-version` (what the version-bump workflow runs; rewrites `package.json` locally, so revert it after trying), `pnpm mutation-test` (mutation testing with Stryker — both the nightly run and the per-PR run (changed files only) fail below a 75% score; vitest is pinned to 4.1 until Stryker's runner supports vitest 5, see [ADR 0019](docs/adr/0019-mutation-testing-y-su-reporte-en-github-pages.md)). For dev container setup, Docker commands, and detailed development workflow, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Developer Workflow & Hooks
 
@@ -129,16 +129,18 @@ This allows the same codebase to deploy to either platform with correct base pat
 
 ## CI Deployments
 
-Three workflows in `.github/workflows/` (two deploy, one content sync):
+Four workflows in `.github/workflows/` (two deploy, one content sync, one version bump):
 
 1. **GitHub Pages** (`deploy-github-pages.yml`): Triggers on push to `main` or manual dispatch; uses `DEPLOY_TARGET=development`
 2. **Netlify** (`deploy-netlify.yml`): Triggers on tag push or manual dispatch; uses `DEPLOY_TARGET=netlify`
 
 A third workflow, `actualizar-contenido.yml`, runs daily (and on demand): it advances the content submodule to the latest `mistorias-contenido`, regenerates `data/story-order.json`, checks that `pnpm build` passes, and opens or updates a single PR on the `contenido/actualizar` branch. It never merges or tags — publishing stays a human decision (see below). It authenticates as a GitHub App (variable `CONTENT_BOT_CLIENT_ID`, secret `CONTENT_BOT_PRIVATE_KEY`) rather than `GITHUB_TOKEN`, because events created with `GITHUB_TOKEN` do not trigger CI on the PR.
 
+A fourth workflow, `subir-version.yml`, runs daily at 00:00 Lima time (and on demand): `scripts/next-version.ts` (`pnpm next-version` locally, over `src/lib/release/version-bump.ts`) computes the next version from the commits since the latest `v*` tag (SemVer + Conventional Commits, ignoring commits that only touch non-reader paths such as `docs/`, `.github/`, `.claude/`, `tests/`, `*.md`; a non-conventional commit that reaches readers fails the run), `scripts/check_version_only_diff.sh` asserts the change is only the `"version"` line, and it opens or updates a single PR on `version/subir` with the same GitHub App. It never merges or tags. Because the commit type decides the bump, commits that only change GitHub automation use `ci`, never `feat` ([docs/STANDARDS.md](docs/STANDARDS.md#conventional-commits)). See [ADR 0027](docs/adr/0027-subida-automatica-de-version.md).
+
 Both deploy workflows check out with `--recursive` (initializes submodules) and run `pnpm install --frozen-lockfile` before building.
 
-The Netlify workflow also passes the tag to the build as `SITE_VERSION`, and runs `scripts/check_release_version.sh` on a tag push: it fails the deploy if the tag is not `v` + the `version` in `package.json`. Cutting a release therefore means bumping `package.json` in the commit that precedes the tag. Keeping those two in sync is what stops `/acerca` from announcing a version that isn't what shipped (ADR 0017).
+The Netlify workflow also passes the tag to the build as `SITE_VERSION`, and runs `scripts/check_release_version.sh` on a tag push: it fails the deploy if the tag is not `v` + the `version` in `package.json`. Cutting a release therefore means merging that version PR and then tagging `v` + its version. Keeping those two in sync is what stops `/acerca` from announcing a version that isn't what shipped (ADR 0017).
 
 ### Never deploy without an explicit instruction
 
