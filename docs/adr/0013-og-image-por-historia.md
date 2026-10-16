@@ -62,7 +62,7 @@ mitad de los casos es peor que una que no varía.
 ### 3. `og:image` requiere `Astro.site`, igual que `og:url`
 
 Facebook y X necesitan una URL absoluta para `og:image`. `BaseLayout.astro`
-ya arma `urlCanonica` condicionada a `Astro.site` (ausente en los tests de
+ya arma `canonicalUrl` condicionada a `Astro.site` (ausente en los tests de
 Container, ver CLAUDE.md § Limitaciones); `og:image` sigue el mismo patrón:
 sin `Astro.site` no hay origen contra el cual absolutizar, así que la etiqueta
 no se emite. En cualquier build real (los dos `DEPLOY_TARGET`) `site` siempre
