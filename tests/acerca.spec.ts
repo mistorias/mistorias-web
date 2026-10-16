@@ -4,7 +4,7 @@ import packageJson from "../package.json" with { type: "json" };
 import { authorshipDescriptions } from "../src/lib/content/authorship";
 import { renderAstroComponent } from "./support/render-astro-component";
 
-const versionEn = (html: string): string | undefined =>
+const versionIn = (html: string): string | undefined =>
   html.match(/class="acerca__version[^"]*"[^>]*>([^<]+)</)?.[1];
 
 // De toda la página, lo único con lógica propia es la versión: el resto es
@@ -19,7 +19,7 @@ describe("Acerca de", () => {
 
     const html = await renderAstroComponent(Acerca);
 
-    expect(versionEn(html)).toBe("Versión v1.4.0");
+    expect(versionIn(html)).toBe("Versión v1.4.0");
   });
 
   it("cae a la versión de package.json cuando no hay tag", async () => {
@@ -27,7 +27,7 @@ describe("Acerca de", () => {
 
     const html = await renderAstroComponent(Acerca);
 
-    expect(versionEn(html)).toBe(`Versión v${packageJson.version}`);
+    expect(versionIn(html)).toBe(`Versión v${packageJson.version}`);
   });
 
   // La versión cierra "Todo es público y tiene historial" a propósito: ahí es
@@ -36,11 +36,11 @@ describe("Acerca de", () => {
   it("cierra la sección del historial, no otra", async () => {
     const html = await renderAstroComponent(Acerca);
 
-    const historial = html.indexOf("Todo es público y tiene historial");
+    const historySection = html.indexOf("Todo es público y tiene historial");
     const version = html.indexOf('class="acerca__version');
 
-    expect(historial).toBeGreaterThan(-1);
-    expect(version).toBeGreaterThan(historial);
+    expect(historySection).toBeGreaterThan(-1);
+    expect(version).toBeGreaterThan(historySection);
   });
 
   // Las tres etiquetas de autoría se explican acá con el mismo texto que
@@ -50,13 +50,13 @@ describe("Acerca de", () => {
   it("explica las tres autorías con el texto compartido", async () => {
     const html = await renderAstroComponent(Acerca);
 
-    const autorias = authorshipDescriptions();
+    const authorships = authorshipDescriptions();
 
-    expect(autorias).toHaveLength(3);
+    expect(authorships).toHaveLength(3);
 
-    for (const autoria of autorias) {
-      expect(html).toContain(autoria.label);
-      expect(html).toContain(autoria.detail);
+    for (const authorship of authorships) {
+      expect(html).toContain(authorship.label);
+      expect(html).toContain(authorship.detail);
     }
   });
 });

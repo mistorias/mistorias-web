@@ -6,9 +6,9 @@ import { assertIllustrationFileIsThemeReady } from "./illustration-gate";
  * Igual que `brandSymbol` y los gates de contenido, cuelga del hook
  * `astro:config:setup` para correr tanto en `astro dev` como en `astro build`.
  */
-export function portadaIllustration(filePath?: string): AstroIntegration {
+export function coverIllustration(filePath?: string): AstroIntegration {
   return {
-    name: "mistorias-portada-illustration",
+    name: "mistorias-cover-illustration",
     hooks: {
       "astro:config:setup": async () => {
         await assertIllustrationFileIsThemeReady(filePath);

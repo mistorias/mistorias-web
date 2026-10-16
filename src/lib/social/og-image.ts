@@ -32,7 +32,7 @@ export async function ogImageFromStoryImage(
     image: ImageMetadata,
     alt: string
 ): Promise<OgImage> {
-    const recorte = await getImage({
+    const crop = await getImage({
         src: image,
         width: OG_IMAGE_WIDTH,
         height: OG_IMAGE_HEIGHT,
@@ -40,7 +40,7 @@ export async function ogImageFromStoryImage(
     });
 
     return {
-        src: recorte.src,
+        src: crop.src,
         alt,
         width: OG_IMAGE_WIDTH,
         height: OG_IMAGE_HEIGHT

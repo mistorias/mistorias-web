@@ -21,9 +21,9 @@ const ILLUSTRATION_HEIGHT = 560;
 // Mismos hexadecimales que tokens.css en modo claro (--color-fondo,
 // --color-texto, --color-analitico). La tarjeta social no tiene un <html>
 // que active el modo oscuro, así que usa siempre la variante clara.
-const COLOR_FONDO = "#f7f4ef";
-const COLOR_INK_BASE = "#1e2328";
-const COLOR_INK_ACENTO = "#5e2c3e";
+const BACKGROUND_COLOR = "#f7f4ef";
+const BASE_INK_COLOR = "#1e2328";
+const ACCENT_INK_COLOR = "#5e2c3e";
 
 /**
  * Genera `public/imagenes/og-default.jpg`, el `og:image` de respaldo para
@@ -44,30 +44,30 @@ const COLOR_INK_ACENTO = "#5e2c3e";
  * de marca.
  */
 async function main(): Promise<void> {
-    const svgOriginal = await readFile(ILLUSTRATION_PATH, "utf8");
-    const svgConTintasFijas = svgOriginal
-        .replace(/class="ink-base"/g, `fill="${COLOR_INK_BASE}"`)
-        .replace(/class="ink-acento"/g, `fill="${COLOR_INK_ACENTO}"`);
+    const sourceSvg = await readFile(ILLUSTRATION_PATH, "utf8");
+    const svgWithFixedInks = sourceSvg
+        .replace(/class="ink-base"/g, `fill="${BASE_INK_COLOR}"`)
+        .replace(/class="ink-acento"/g, `fill="${ACCENT_INK_COLOR}"`);
 
-    const ilustracion = await sharp(Buffer.from(svgConTintasFijas))
+    const illustration = await sharp(Buffer.from(svgWithFixedInks))
         .resize({ height: ILLUSTRATION_HEIGHT, fit: "inside" })
         .png()
         .toBuffer();
 
-    const tarjeta = await sharp({
+    const card = await sharp({
         create: {
             width: CARD_WIDTH,
             height: CARD_HEIGHT,
             channels: 3,
-            background: COLOR_FONDO
+            background: BACKGROUND_COLOR
         }
     })
-        .composite([{ input: ilustracion, gravity: "center" }])
+        .composite([{ input: illustration, gravity: "center" }])
         .jpeg({ quality: 88 })
         .toBuffer();
 
     await mkdir(path.dirname(OUTPUT_PATH), { recursive: true });
-    await writeFile(OUTPUT_PATH, tarjeta);
+    await writeFile(OUTPUT_PATH, card);
 
     console.log(`Generado ${OUTPUT_PATH} (${CARD_WIDTH}x${CARD_HEIGHT}px).`);
 }

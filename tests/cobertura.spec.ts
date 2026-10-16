@@ -6,7 +6,7 @@ import { coverageConfig } from "../coverage.config";
 // el pipeline dejaría de bloquear en silencio y la pérdida de cobertura recién
 // se notaría cuando ya ocurrió (issue #23).
 
-const metricas = ["lines", "statements", "functions", "branches"] as const;
+const metrics = ["lines", "statements", "functions", "branches"] as const;
 
 const reporters = [coverageConfig.reporter ?? []].flat(2);
 
@@ -16,8 +16,8 @@ describe("control de cobertura", () => {
   });
 
   it("exige más de 90% en cada métrica", () => {
-    for (const metrica of metricas) {
-      expect(coverageConfig.thresholds[metrica]).toBeGreaterThan(90);
+    for (const metric of metrics) {
+      expect(coverageConfig.thresholds[metric]).toBeGreaterThan(90);
     }
   });
 

@@ -5,28 +5,28 @@ import {
   storiesByAuthor
 } from "../src/lib/content/authors";
 
-const fichas = [
-  { id: "mateo-salazar", nombre: "Mateo Salazar" },
-  { id: "ana-quispe", nombre: "Ana Quispe" }
+const profiles = [
+  { id: "mateo-salazar", name: "Mateo Salazar" },
+  { id: "ana-quispe", name: "Ana Quispe" }
 ];
 
-const nombres = buildAuthorNameMap(
-  fichas,
-  (ficha) => ficha.id,
-  (ficha) => ficha.nombre
+const names = buildAuthorNameMap(
+  profiles,
+  (profile) => profile.id,
+  (profile) => profile.name
 );
 
 describe("buildAuthorNameMap", () => {
   it("traduce el id de la ficha al nombre visible", () => {
-    expect(authorNameFor(nombres, "mateo-salazar")).toBe("Mateo Salazar");
-    expect(authorNameFor(nombres, "ana-quispe")).toBe("Ana Quispe");
+    expect(authorNameFor(names, "mateo-salazar")).toBe("Mateo Salazar");
+    expect(authorNameFor(names, "ana-quispe")).toBe("Ana Quispe");
   });
 
   it("no inventa nada cuando no hay fichas", () => {
     expect(
       buildAuthorNameMap(
         [],
-        (ficha: { id: string }) => ficha.id,
+        (profile: { id: string }) => profile.id,
         () => ""
       ).size
     ).toBe(0);
@@ -37,32 +37,32 @@ describe("authorNameFor", () => {
   // Mostrar el slug donde va el nombre sería un build exitoso publicando algo
   // roto — la misma clase de error silencioso del issue #29.
   it("falla en vez de mostrar el slug cuando falta la ficha", () => {
-    expect(() => authorNameFor(nombres, "quien-sea")).toThrow(/quien-sea/);
+    expect(() => authorNameFor(names, "quien-sea")).toThrow(/quien-sea/);
   });
 });
 
 describe("storiesByAuthor", () => {
-  const historias = [
-    { id: "una", autor: "mateo-salazar" },
-    { id: "otra", autor: "ana-quispe" },
-    { id: "tercera", autor: "mateo-salazar" }
+  const stories = [
+    { id: "una", author: "mateo-salazar" },
+    { id: "otra", author: "ana-quispe" },
+    { id: "tercera", author: "mateo-salazar" }
   ];
 
   it("se queda solo con las historias que firma esa persona", () => {
     expect(
-      storiesByAuthor(historias, (h) => h.autor, "mateo-salazar").map(
-        (h) => h.id
+      storiesByAuthor(stories, (story) => story.author, "mateo-salazar").map(
+        (story) => story.id
       )
     ).toEqual(["una", "tercera"]);
   });
 
   it("conserva el orden en que llegaron", () => {
     expect(
-      storiesByAuthor(historias, (h) => h.autor, "ana-quispe").map((h) => h.id)
+      storiesByAuthor(stories, (story) => story.author, "ana-quispe").map((story) => story.id)
     ).toEqual(["otra"]);
   });
 
   it("devuelve una lista vacía para alguien sin historias", () => {
-    expect(storiesByAuthor(historias, (h) => h.autor, "nadie")).toEqual([]);
+    expect(storiesByAuthor(stories, (story) => story.author, "nadie")).toEqual([]);
   });
 });

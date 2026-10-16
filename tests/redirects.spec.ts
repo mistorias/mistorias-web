@@ -19,53 +19,53 @@ const REDIRECTS = readFileSync(
 // GitHub Pages.
 const BASE_NETLIFY = "/";
 
-type Regla = {
-  readonly origen: string;
-  readonly destino: string;
-  readonly codigo: string;
+type Rule = {
+  readonly from: string;
+  readonly to: string;
+  readonly status: string;
 };
 
-const reglas: readonly Regla[] = REDIRECTS.split("\n")
-  .map((linea) => linea.trim())
-  .filter((linea) => linea.length > 0 && !linea.startsWith("#"))
-  .map((linea) => linea.split(/\s+/))
-  .map(([origen, destino, codigo]) => ({
-    origen: origen ?? "",
-    destino: destino ?? "",
-    codigo: codigo ?? ""
+const rules: readonly Rule[] = REDIRECTS.split("\n")
+  .map((line) => line.trim())
+  .filter((line) => line.length > 0 && !line.startsWith("#"))
+  .map((line) => line.split(/\s+/))
+  .map(([from, to, status]) => ({
+    from: from ?? "",
+    to: to ?? "",
+    status: status ?? ""
   }));
 
-const reglaDe = (origen: string): Regla | undefined =>
-  reglas.find((regla) => regla.origen === origen);
+const ruleFor = (from: string): Rule | undefined =>
+  rules.find((rule) => rule.from === from);
 
 describe("redirecciones de /etiquetas hacia /temas", () => {
   // Una redirección temporal le diría al buscador que la ruta vieja va a
   // volver, y volvería a pedirla indefinidamente: acá la mudanza es
   // definitiva (ADR 0009).
   it("redirige de forma permanente", () => {
-    expect(reglas).not.toHaveLength(0);
+    expect(rules).not.toHaveLength(0);
 
-    for (const regla of reglas) {
-      expect(regla.codigo).toBe("301");
+    for (const rule of rules) {
+      expect(rule.status).toBe("301");
     }
   });
 
   it("manda cada tema al mismo slug bajo la sección nueva", () => {
-    expect(reglaDe("/etiquetas/*")?.destino).toBe(
+    expect(ruleFor("/etiquetas/*")?.to).toBe(
       `${themesRoute(BASE_NETLIFY)}:splat`
     );
   });
 
   it("manda la sección vieja al índice de temas", () => {
-    expect(reglaDe("/etiquetas")?.destino).toBe(themesRoute(BASE_NETLIFY));
+    expect(ruleFor("/etiquetas")?.to).toBe(themesRoute(BASE_NETLIFY));
   });
 
   // El artefacto que se publica en mistorias.pe no debe llevar nunca la base
   // de GitHub Pages (issue #29): acá el riesgo es el mismo, con el agravante
   // de que un destino mal escrito redirige a un 404.
   it("no arrastra la base de GitHub Pages", () => {
-    for (const regla of reglas) {
-      expect(regla.destino).not.toContain("/mistorias-web");
+    for (const rule of rules) {
+      expect(rule.to).not.toContain("/mistorias-web");
     }
   });
 });

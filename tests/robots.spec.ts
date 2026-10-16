@@ -21,26 +21,26 @@ describe("buildRobotsTxt en development", () => {
 // tocar los bots de vista previa de enlace, ver ADR 0013) y anuncia el
 // sitemap.
 describe("buildRobotsTxt en netlify", () => {
-  const contenido = buildRobotsTxt("netlify");
+  const content = buildRobotsTxt("netlify");
 
   it("permite el crawleo general", () => {
-    expect(contenido).toContain("User-agent: *\nAllow: /");
+    expect(content).toContain("User-agent: *\nAllow: /");
   });
 
   it("bloquea a Bytespider específicamente", () => {
-    expect(contenido).toContain("User-agent: Bytespider\nDisallow: /");
+    expect(content).toContain("User-agent: Bytespider\nDisallow: /");
   });
 
   it("anuncia el sitemap con la URL absoluta de mistorias.pe", () => {
-    expect(contenido).toContain(
+    expect(content).toContain(
       "Sitemap: https://mistorias.pe/sitemap-index.xml"
     );
   });
 
   it("no bloquea a los bots de vista previa de enlace", () => {
-    expect(contenido).not.toContain("facebookexternalhit");
-    expect(contenido).not.toContain("Twitterbot");
-    expect(contenido).not.toContain("Slackbot");
+    expect(content).not.toContain("facebookexternalhit");
+    expect(content).not.toContain("Twitterbot");
+    expect(content).not.toContain("Slackbot");
   });
 });
 
