@@ -1,6 +1,6 @@
 // Configuración de cobertura compartida entre vitest.config.ts y tests/cobertura.spec.ts
 // El estándar del equipo es una cobertura mayor a 90% (docs/STANDARDS.md)
-export const COBERTURA_MINIMA = 90.01;
+export const MIN_COVERAGE = 90.01;
 
 export const coverageConfig = {
   enabled: true,
@@ -38,9 +38,9 @@ export const coverageConfig = {
     "text" | ["text-summary", { file: string }]
   >,
   thresholds: {
-    lines: COBERTURA_MINIMA,
-    statements: COBERTURA_MINIMA,
-    functions: COBERTURA_MINIMA,
-    branches: COBERTURA_MINIMA,
+    lines: MIN_COVERAGE,
+    statements: MIN_COVERAGE,
+    functions: MIN_COVERAGE,
+    branches: MIN_COVERAGE,
   },
 };

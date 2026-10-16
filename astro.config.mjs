@@ -7,7 +7,7 @@ import { storyImageRequirements } from "./src/lib/content/story-image-requiremen
 import { latestStoryRedirect } from "./src/lib/content/latest-story-redirect-integration";
 import { brandSymbol } from "./src/lib/brand/symbol-gate-integration";
 import { publicSvg } from "./src/lib/assets/public-svg-gate-integration";
-import { portadaIllustration } from "./src/lib/assets/illustration-gate-integration";
+import { coverIllustration } from "./src/lib/assets/illustration-gate-integration";
 import { isDevelopmentTarget, resolveDeploymentConfig } from "./src/lib/deployment";
 
 const { site, base } = resolveDeploymentConfig(process.env.DEPLOY_TARGET);
@@ -19,19 +19,19 @@ const { site, base } = resolveDeploymentConfig(process.env.DEPLOY_TARGET);
 // build de trabajo en progreso. La barrera efectiva ahí es el
 // <meta name="robots" content="noindex"> de BaseLayout.astro; generar un
 // sitemap además no aporta nada y sí expone de más.
-const integraciones = [
+const integrations = [
   noRawHtml(),
   authorsNoRawHtml(),
   storyAssetFolders(),
   storyImageRequirements(),
   latestStoryRedirect(),
   brandSymbol(),
-  portadaIllustration(),
+  coverIllustration(),
   publicSvg()
 ];
 
 if (!isDevelopmentTarget(process.env.DEPLOY_TARGET)) {
-  integraciones.push(
+  integrations.push(
     sitemap({
       // 404 no es contenido; reportar/ es soporte, no contenido editorial
       // (issue #44) — ninguno vale la pena indexar.
@@ -42,7 +42,7 @@ if (!isDevelopmentTarget(process.env.DEPLOY_TARGET)) {
 
 export default defineConfig({
   srcDir: "src",
-  integrations: integraciones,
+  integrations,
   site,
   base
 });

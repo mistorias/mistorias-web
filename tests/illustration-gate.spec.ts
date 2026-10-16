@@ -6,7 +6,7 @@ import {
   assertIllustrationIsThemeReady,
   defaultIllustrationPath
 } from "../src/lib/assets/illustration-gate";
-import { portadaIllustration } from "../src/lib/assets/illustration-gate-integration";
+import { coverIllustration } from "../src/lib/assets/illustration-gate-integration";
 
 type ConfigSetupHook = NonNullable<
   AstroIntegration["hooks"]["astro:config:setup"]
@@ -17,7 +17,7 @@ const fixturePath = (name: string): string =>
   path.resolve(process.cwd(), "tests/fixtures/ilustracion", name);
 
 async function runConfigSetupHook(filePath: string): Promise<void> {
-  const hook = portadaIllustration(filePath).hooks["astro:config:setup"];
+  const hook = coverIllustration(filePath).hooks["astro:config:setup"];
   await hook?.({} as ConfigSetupOptions);
 }
 
@@ -93,7 +93,7 @@ describe("assertIllustrationFileIsThemeReady", () => {
   });
 });
 
-describe("integración portadaIllustration", () => {
+describe("integración coverIllustration", () => {
   it("deja compilar cuando la ilustración es válida", async () => {
     await expect(
       runConfigSetupHook(fixturePath("valid.svg"))
