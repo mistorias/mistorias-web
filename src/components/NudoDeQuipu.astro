@@ -1,5 +1,5 @@
 ---
-export type Redondeo = "arriba" | "abajo" | "ambos" | "ninguno";
+export type Rounding = "arriba" | "abajo" | "ambos" | "ninguno";
 
 /*
  * "bajo-encabezado": la fila de una semana, con rótulo arriba y una historia
@@ -7,42 +7,42 @@ export type Redondeo = "arriba" | "abajo" | "ambos" | "ninguno";
  * tema en /temas/, donde los nudos solo cuentan y se reparten a espacio
  * parejo, cada uno al centro de su tramo.
  */
-export type Reparto = "bajo-encabezado" | "parejo";
+export type KnotLayout = "bajo-encabezado" | "parejo";
 
 type Props = {
     cantidad: number;
-    redondeo: Redondeo;
-    reparto?: Reparto;
+    redondeo: Rounding;
+    reparto?: KnotLayout;
 };
 
 const { cantidad, redondeo, reparto = "bajo-encabezado" } = Astro.props;
-const nudosAVisualizar = Math.max(0, cantidad);
+const knotCount = Math.max(0, cantidad);
 
 /*
  * La fila no es solo la lista de historias: arranca con el rótulo de la
  * semana (<h3>), y recién debajo va el título de cada historia seguido de su
  * resumen. Repartir los nudos a espacio parejo en toda la fila (como hacía
  * antes) los deja más cerca del resumen que del título con el que van —
- * RESERVA_ENCABEZADO destina el primer tramo de la fila al rótulo, y dentro
- * de lo que queda, SESGO_HACIA_TITULO ubica cada nudo hacia el comienzo de
+ * HEADING_RESERVE destina el primer tramo de la fila al rótulo, y dentro
+ * de lo que queda, TITLE_BIAS ubica cada nudo hacia el comienzo de
  * su historia (donde está el título) en vez de en el centro (que cae más
  * cerca del resumen). Los dos números salen de comparar contra la posición
  * real del título en un prototipo, no de una fórmula exacta — no hay forma
  * de calcular el alto real del texto sin JavaScript, así que esto es una
  * aproximación deliberada, no una medición.
  */
-const RESERVA_ENCABEZADO = 15;
-const SESGO_HACIA_TITULO = 0.25;
+const HEADING_RESERVE = 15;
+const TITLE_BIAS = 0.25;
 
-const { reserva, sesgo } =
+const { reserve, bias } =
     reparto === "parejo"
-        ? { reserva: 0, sesgo: 0.5 }
-        : { reserva: RESERVA_ENCABEZADO, sesgo: SESGO_HACIA_TITULO };
+        ? { reserve: 0, bias: 0.5 }
+        : { reserve: HEADING_RESERVE, bias: TITLE_BIAS };
 
-const posiciones = Array.from(
-    { length: nudosAVisualizar },
-    (_, indice) =>
-        reserva + ((indice + sesgo) / nudosAVisualizar) * (100 - reserva)
+const positions = Array.from(
+    { length: knotCount },
+    (_, index) =>
+        reserve + ((index + bias) / knotCount) * (100 - reserve)
 );
 ---
 
@@ -50,8 +50,8 @@ const posiciones = Array.from(
     class:list={["nudo-de-quipu", `nudo-de-quipu--${redondeo}`]}
     aria-hidden="true"
 >
-    {posiciones.map((porcentaje) => (
-        <span class="nudo-de-quipu__hueco" style={`top: ${porcentaje}%`} />
+    {positions.map((percent) => (
+        <span class="nudo-de-quipu__hueco" style={`top: ${percent}%`} />
     ))}
 </span>
 

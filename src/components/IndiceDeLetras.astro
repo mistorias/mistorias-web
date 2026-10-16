@@ -31,13 +31,13 @@ const { letras } = Astro.props;
         <nav class="indice-letras__nav" aria-label="Saltar a una letra">
             <ol class="indice-letras__lista">
                 {
-                    letras.map((letra) => (
+                    letras.map((letter) => (
                         <li>
                             <a
                                 class="indice-letras__enlace"
-                                href={`#${initialAnchor(letra)}`}
+                                href={`#${initialAnchor(letter)}`}
                             >
-                                {letra}
+                                {letter}
                             </a>
                         </li>
                     ))

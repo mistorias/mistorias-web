@@ -2,7 +2,7 @@
 import type { CollectionEntry } from "astro:content";
 import NudoDeQuipu from "./NudoDeQuipu.astro";
 import ResumenDeQuipu from "./ResumenDeQuipu.astro";
-import type { Redondeo } from "./NudoDeQuipu.astro";
+import type { Rounding } from "./NudoDeQuipu.astro";
 import type { TimelineYear } from "../lib/weeks";
 import { readableWeekRange } from "../lib/dates";
 import { storyRoute } from "../lib/routes";
@@ -22,39 +22,39 @@ const base = import.meta.env.BASE_URL;
  * siguiente año), las del medio quedan rectas, y si el año tiene una sola
  * entrada, esa entrada es primera y última a la vez.
  */
-const redondeoDe = (indice: number, total: number): Redondeo => {
-    const esPrimera = indice === 0;
-    const esUltima = indice === total - 1;
-    if (esPrimera && esUltima) return "ambos";
-    if (esPrimera) return "arriba";
-    if (esUltima) return "abajo";
+const roundingFor = (index: number, total: number): Rounding => {
+    const isFirst = index === 0;
+    const isLast = index === total - 1;
+    if (isFirst && isLast) return "ambos";
+    if (isFirst) return "arriba";
+    if (isLast) return "abajo";
     return "ninguno";
 };
 ---
 
 <ol class="quipu-anos">
     {
-        anos.map((anio, indice) => (
+        anos.map((timelineYear, index) => (
             // El año abierto es el primero de la lista, no el año calendario
             // actual: buildTimeline (src/lib/weeks.ts) ya entrega los años en
             // orden descendente, así que el índice 0 es siempre el más
             // reciente del contenido. Es el mismo criterio de determinismo
             // que usa el propio buildTimeline para anclar el rango.
             <li>
-                <details open={indice === 0}>
+                <details open={index === 0}>
                     <ResumenDeQuipu
-                        titulo={String(anio.year)}
-                        cuenta={countStories(anio.storyCount)}
+                        titulo={String(timelineYear.year)}
+                        cuenta={countStories(timelineYear.storyCount)}
                     />
                     <ol class="quipu-semanas">
                         {
-                            anio.entries.map((entrada, indiceEntrada) => {
-                                const redondeo = redondeoDe(
-                                    indiceEntrada,
-                                    anio.entries.length
+                            timelineYear.entries.map((entry, entryIndex) => {
+                                const rounding = roundingFor(
+                                    entryIndex,
+                                    timelineYear.entries.length
                                 );
 
-                                return entrada.kind === "gap" ? (
+                                return entry.kind === "gap" ? (
                                     // Hueco colapsado (3+ semanas seguidas sin
                                     // historia, GAP_THRESHOLD en weeks.ts):
                                     // cuerda sólida sin nudos, con el texto
@@ -63,14 +63,14 @@ const redondeoDe = (indice: number, total: number): Redondeo => {
                                         <span class="quipu-semana__cuerda">
                                             <NudoDeQuipu
                                                 cantidad={0}
-                                                redondeo={redondeo}
+                                                redondeo={rounding}
                                             />
                                         </span>
                                         <p class="quipu-hueco__texto">
-                                            {entrada.weeks} semanas sin historia
+                                            {entry.weeks} semanas sin historia
                                         </p>
                                     </li>
-                                ) : entrada.stories.length === 0 ? (
+                                ) : entry.stories.length === 0 ? (
                                     // Semana sin historia: cuerda sólida sin
                                     // nudos — es el cero del quipu, ausencia y
                                     // no un símbolo aparte. aria-hidden porque
@@ -84,7 +84,7 @@ const redondeoDe = (indice: number, total: number): Redondeo => {
                                         <span class="quipu-semana__cuerda">
                                             <NudoDeQuipu
                                                 cantidad={0}
-                                                redondeo={redondeo}
+                                                redondeo={rounding}
                                             />
                                         </span>
                                         <div class="quipu-semana__contenido" />
@@ -93,32 +93,32 @@ const redondeoDe = (indice: number, total: number): Redondeo => {
                                     <li class="quipu-semana">
                                         <span class="quipu-semana__cuerda">
                                             <NudoDeQuipu
-                                                cantidad={entrada.stories.length}
-                                                redondeo={redondeo}
+                                                cantidad={entry.stories.length}
+                                                redondeo={rounding}
                                             />
                                         </span>
                                         <div class="quipu-semana__contenido">
                                             <h3>
-                                                <time datetime={entrada.key}>
+                                                <time datetime={entry.key}>
                                                     Semana{" "}
                                                     {readableWeekRange(
-                                                        entrada.start,
-                                                        entrada.end
+                                                        entry.start,
+                                                        entry.end
                                                     )}
                                                 </time>
                                             </h3>
                                             <ul class="quipu-historias">
-                                                {entrada.stories.map((historia) => (
+                                                {entry.stories.map((story) => (
                                                     <li>
                                                         <a
                                                             href={storyRoute(
                                                                 base,
-                                                                historia.id
+                                                                story.id
                                                             )}
                                                         >
-                                                            {historia.data.title}
+                                                            {story.data.title}
                                                         </a>
-                                                        <p>{historia.data.summary}</p>
+                                                        <p>{story.data.summary}</p>
                                                     </li>
                                                 ))}
                                             </ul>
