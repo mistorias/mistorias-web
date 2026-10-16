@@ -57,6 +57,21 @@ describe("NudoDeQuipu", () => {
     expect(idx0 < idx1 && idx1 < idx2).toBe(true);
   });
 
+  it('reparto: "parejo" → un solo hueco queda al centro de la fila', async () => {
+    const html = await renderAstroComponent(NudoDeQuipu, {
+      props: { cantidad: 1, redondeo: "ninguno", reparto: "parejo" },
+    });
+    expect(html).toContain("top: 50%");
+  });
+
+  it('reparto: "parejo" → dos huecos se reparten a espacio parejo, sin reserva de encabezado', async () => {
+    const html = await renderAstroComponent(NudoDeQuipu, {
+      props: { cantidad: 2, redondeo: "ninguno", reparto: "parejo" },
+    });
+    expect(html).toContain("top: 25%");
+    expect(html).toContain("top: 75%");
+  });
+
   it('redondeo: "arriba" → class="nudo-de-quipu nudo-de-quipu--arriba"', async () => {
     const html = await renderAstroComponent(NudoDeQuipu, {
       props: { cantidad: 0, redondeo: "arriba" },
