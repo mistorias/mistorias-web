@@ -12,10 +12,10 @@ const base = import.meta.env.BASE_URL;
 
 <ul class="temas" role="list" aria-label={temaTextual}>
     {
-        temas.map((tema) => (
+        temas.map((theme) => (
             <li>
-                <a class="temas__ficha" href={themeRoute(base, tema)}>
-                    {tema}
+                <a class="temas__ficha" href={themeRoute(base, theme)}>
+                    {theme}
                 </a>
             </li>
         ))

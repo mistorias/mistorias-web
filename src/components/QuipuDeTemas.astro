@@ -2,7 +2,7 @@
 import type { CollectionEntry } from "astro:content";
 import NudoDeQuipu from "./NudoDeQuipu.astro";
 import ResumenDeQuipu from "./ResumenDeQuipu.astro";
-import type { Redondeo } from "./NudoDeQuipu.astro";
+import type { Rounding } from "./NudoDeQuipu.astro";
 import { themeRoute } from "../lib/routes";
 import { countStories } from "../lib/stories";
 import { countThemes, initialAnchor } from "../lib/themes";
@@ -21,53 +21,53 @@ const base = import.meta.env.BASE_URL;
  * Se repite en lugar de extraerse porque vive en dos archivos, no en tres
  * (STANDARDS.md, sin abstracciones prematuras).
  */
-const redondeoDe = (indice: number, total: number): Redondeo => {
-    const esPrimera = indice === 0;
-    const esUltima = indice === total - 1;
-    if (esPrimera && esUltima) return "ambos";
-    if (esPrimera) return "arriba";
-    if (esUltima) return "abajo";
+const roundingFor = (index: number, total: number): Rounding => {
+    const isFirst = index === 0;
+    const isLast = index === total - 1;
+    if (isFirst && isLast) return "ambos";
+    if (isFirst) return "arriba";
+    if (isLast) return "abajo";
     return "ninguno";
 };
 ---
 
 <ol class="quipu-letras">
     {
-        letras.map((letra) => (
+        letras.map((letter) => (
             // Todas abiertas al cargar, a diferencia de los años: el índice de
             // letras salta a `#letra-x`, y un salto a un <details> cerrado
             // deja al lector frente a una caja vacía.
-            <li class="quipu-letra" id={initialAnchor(letra.initial)}>
+            <li class="quipu-letra" id={initialAnchor(letter.initial)}>
                 <details open>
                     <ResumenDeQuipu
-                        titulo={letra.initial}
-                        cuenta={countThemes(letra.themes.length)}
+                        titulo={letter.initial}
+                        cuenta={countThemes(letter.themes.length)}
                     />
                     <ol class="quipu-temas">
-                        {letra.themes.map((grupo, indice) => (
+                        {letter.themes.map((group, index) => (
                             <li
                                 class="quipu-tema"
-                                style={`--nudos: ${grupo.stories.length}`}
+                                style={`--nudos: ${group.stories.length}`}
                             >
                                 <span class="quipu-tema__cuerda">
                                     <NudoDeQuipu
-                                        cantidad={grupo.stories.length}
-                                        redondeo={redondeoDe(
-                                            indice,
-                                            letra.themes.length
+                                        cantidad={group.stories.length}
+                                        redondeo={roundingFor(
+                                            index,
+                                            letter.themes.length
                                         )}
                                         reparto="parejo"
                                     />
                                 </span>
                                 <a
                                     class="quipu-tema__enlace"
-                                    href={themeRoute(base, grupo.theme)}
+                                    href={themeRoute(base, group.theme)}
                                 >
                                     <span class="quipu-tema__nombre">
-                                        {grupo.theme}
+                                        {group.theme}
                                     </span>
                                     <span class="quipu-tema__cuenta">
-                                        {countStories(grupo.stories.length)}
+                                        {countStories(group.stories.length)}
                                     </span>
                                 </a>
                             </li>

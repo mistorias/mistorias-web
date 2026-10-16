@@ -8,7 +8,7 @@ const base = import.meta.env.BASE_URL;
 // verdad: el servidor sirve el mismo 404.html sin importar la ruta (issue #42
 // de gestión de producto). En vez de intentar adivinarla, se invita a quien
 // llegó acá a contarnos ella misma qué enlace siguió.
-const enlaceReporte = `${reportRoute(base)}#formulario`;
+const reportHref = `${reportRoute(base)}#formulario`;
 ---
 
 <BaseLayout
@@ -34,7 +34,7 @@ const enlaceReporte = `${reportRoute(base)}#formulario`;
 
         <p class="no-encontrada__reporte">
             Si veniste desde un enlace de este mismo sitio, <a
-                href={enlaceReporte}>cuéntanos cuál era</a
+                href={reportHref}>cuéntanos cuál era</a
             > y lo revisamos.
         </p>
     </div>

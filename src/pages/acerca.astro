@@ -4,43 +4,43 @@ import { authorRoute } from "../lib/routes";
 import { authorshipDescriptions } from "../lib/content/authorship";
 import { resolveSiteVersion } from "../lib/version";
 
-const pilares = [
+const pillars = [
     {
-        nombre: "Historias humanas",
-        descripcion:
+        name: "Historias humanas",
+        description:
             "Una persona concreta, con nombre y lugar, atravesada por el problema del que hablamos."
     },
     {
-        nombre: "Datos explicados",
-        descripcion:
+        name: "Datos explicados",
+        description:
             "Qué dice la cifra, de dónde sale y qué decisión ayuda a tomar. Nunca el dato solo."
     },
     {
-        nombre: "Contexto y reflexión",
-        descripcion:
+        name: "Contexto y reflexión",
+        description:
             "Cómo se conectan los hechos entre sí y qué preguntas siguen abiertas."
     }
 ] as const;
 
-const ciclo = [
+const cycle = [
     {
-        momento: "Siente",
-        descripcion: "La historia de alguien hace visible la brecha."
+        stage: "Siente",
+        description: "La historia de alguien hace visible la brecha."
     },
     {
-        momento: "Entiende",
-        descripcion: "Los datos explican de dónde viene esa brecha."
+        stage: "Entiende",
+        description: "Los datos explican de dónde viene esa brecha."
     },
     {
-        momento: "Actúa",
-        descripcion: "La comprensión se convierte en algo concreto que hacer."
+        stage: "Actúa",
+        description: "La comprensión se convierte en algo concreto que hacer."
     }
 ] as const;
 
 // Las tres etiquetas de autoría se explican acá, una sola vez, con el mismo
 // texto que muestra el pie de cada historia: si divergen, la etiqueta del pie
 // deja de significar lo que esta página promete.
-const autorias = authorshipDescriptions();
+const authorships = authorshipDescriptions();
 
 const base = import.meta.env.BASE_URL;
 
@@ -92,10 +92,10 @@ const version = resolveSiteVersion(process.env.SITE_VERSION);
 
         <dl class="acerca__lista">
             {
-                pilares.map((pilar) => (
+                pillars.map((pillar) => (
                     <div class="acerca__item">
-                        <dt>{pilar.nombre}</dt>
-                        <dd>{pilar.descripcion}</dd>
+                        <dt>{pillar.name}</dt>
+                        <dd>{pillar.description}</dd>
                     </div>
                 ))
             }
@@ -111,10 +111,10 @@ const version = resolveSiteVersion(process.env.SITE_VERSION);
 
         <dl class="acerca__lista">
             {
-                ciclo.map((paso) => (
+                cycle.map((step) => (
                     <div class="acerca__item">
-                        <dt>{paso.momento}</dt>
-                        <dd>{paso.descripcion}</dd>
+                        <dt>{step.stage}</dt>
+                        <dd>{step.description}</dd>
                     </div>
                 ))
             }
@@ -148,10 +148,10 @@ const version = resolveSiteVersion(process.env.SITE_VERSION);
 
         <dl class="acerca__lista">
             {
-                autorias.map((autoria) => (
+                authorships.map((authorship) => (
                     <div class="acerca__item">
-                        <dt>{autoria.label}</dt>
-                        <dd>{autoria.detail}</dd>
+                        <dt>{authorship.label}</dt>
+                        <dd>{authorship.detail}</dd>
                     </div>
                 ))
             }

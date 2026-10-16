@@ -3,7 +3,7 @@ import "@fontsource-variable/ibm-plex-sans";
 import "@fontsource-variable/lora";
 import "../styles/tokens.css";
 import "../styles/base.css";
-import loraLatino from "@fontsource-variable/lora/files/lora-latin-wght-normal.woff2?url";
+import loraLatin from "@fontsource-variable/lora/files/lora-latin-wght-normal.woff2?url";
 
 import type { ImageMetadata } from "astro";
 import CabeceraSitio from "../components/CabeceraSitio.astro";
@@ -44,8 +44,8 @@ const { title, description, ogImage } = Astro.props;
 
 // El build de desarrollo antepone "WIP: " para que no se confunda con el
 // sitio real (issue #28).
-const esDesarrollo = isDevelopmentTarget(process.env.DEPLOY_TARGET);
-const tituloMostrado = esDesarrollo ? `WIP: ${title}` : title;
+const isDevelopment = isDevelopmentTarget(process.env.DEPLOY_TARGET);
+const displayedTitle = isDevelopment ? `WIP: ${title}` : title;
 
 // Los iconos viven en `public/` y se sirven tal cual, así que su ruta depende
 // de la base del despliegue igual que cualquier enlace interno. El navegador
@@ -53,30 +53,30 @@ const tituloMostrado = esDesarrollo ? `WIP: ${title}` : title;
 // Pages, donde el sitio cuelga de `/mistorias-web`, sin estas etiquetas no
 // encuentra ninguno.
 const base = import.meta.env.BASE_URL;
-const iconos = {
+const icons = {
     ico: assetRoute(base, "favicon.ico"),
     png16: assetRoute(base, "favicon-16x16.png"),
     png32: assetRoute(base, "favicon-32x32.png"),
     png48: assetRoute(base, "favicon-48x48.png"),
     apple: assetRoute(base, "apple-touch-icon.png"),
-    manifiesto: assetRoute(base, "site.webmanifest")
+    manifest: assetRoute(base, "site.webmanifest")
 };
 
-const urlCanonica = Astro.site
+const canonicalUrl = Astro.site
     ? new URL(Astro.url.pathname, Astro.site)
     : undefined;
 
 // La cabecera 16:9 de la historia (recortada a 1200×630) si la hay, o si no
 // la ilustración de portada pre-generada (issue #39): toda página emite un
 // og:image, nunca queda en blanco al compartirse.
-const imagenOg = await resolveOgImage(base, ogImage);
+const resolvedOgImage = await resolveOgImage(base, ogImage);
 
-// Igual que urlCanonica: sin Astro.site (fuera de un build real, como los
+// Igual que canonicalUrl: sin Astro.site (fuera de un build real, como los
 // tests de este componente) no hay origen contra el cual armar una URL
 // absoluta, y og:image la necesita absoluta para que Facebook y X puedan
 // buscarla.
-const urlImagenOg = Astro.site
-    ? new URL(imagenOg.src, Astro.site).toString()
+const ogImageUrl = Astro.site
+    ? new URL(resolvedOgImage.src, Astro.site).toString()
     : undefined;
 ---
 
@@ -87,9 +87,9 @@ const urlImagenOg = Astro.site
     <meta http-equiv="Content-Security-Policy" content={contentSecurityPolicy} />
     <meta name="color-scheme" content="light dark" />
 
-    <title>{tituloMostrado}</title>
+    <title>{displayedTitle}</title>
     {description && <meta name="description" content={description} />}
-    {urlCanonica && <link rel="canonical" href={urlCanonica} />}
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
 
     <!-- GitHub Pages sirve este build bajo /mistorias-web, no en la raíz del
          origen: un crawler solo lee robots.txt en mistorias.github.io/robots.txt
@@ -97,31 +97,31 @@ const urlImagenOg = Astro.site
          llega a leerse ahí. La única barrera que sí opera bajo un subpath es
          esta etiqueta por página — mismo destino que el marcador "WIP:" de
          arriba (issue #28, ADR 0015). -->
-    {esDesarrollo && <meta name="robots" content="noindex, nofollow" />}
+    {isDevelopment && <meta name="robots" content="noindex, nofollow" />}
 
     <!-- El .ico trae 16, 32 y 48 para los navegadores que solo leen ese
          formato; los PNG son para los que prefieren mapa de bits. El
          manifiesto declara los iconos de Android y el color de la marca. -->
-    <link rel="icon" href={iconos.ico} sizes="any" />
-    <link rel="icon" type="image/png" sizes="16x16" href={iconos.png16} />
-    <link rel="icon" type="image/png" sizes="32x32" href={iconos.png32} />
-    <link rel="icon" type="image/png" sizes="48x48" href={iconos.png48} />
-    <link rel="apple-touch-icon" sizes="180x180" href={iconos.apple} />
-    <link rel="manifest" href={iconos.manifiesto} />
+    <link rel="icon" href={icons.ico} sizes="any" />
+    <link rel="icon" type="image/png" sizes="16x16" href={icons.png16} />
+    <link rel="icon" type="image/png" sizes="32x32" href={icons.png32} />
+    <link rel="icon" type="image/png" sizes="48x48" href={icons.png48} />
+    <link rel="apple-touch-icon" sizes="180x180" href={icons.apple} />
+    <link rel="manifest" href={icons.manifest} />
 
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="es_PE" />
     <meta property="og:site_name" content="Mistorias" />
-    <meta property="og:title" content={tituloMostrado} />
+    <meta property="og:title" content={displayedTitle} />
     {description && <meta property="og:description" content={description} />}
-    {urlCanonica && <meta property="og:url" content={urlCanonica} />}
+    {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
     {
-        urlImagenOg && (
+        ogImageUrl && (
             <>
-                <meta property="og:image" content={urlImagenOg} />
-                <meta property="og:image:width" content={String(imagenOg.width)} />
-                <meta property="og:image:height" content={String(imagenOg.height)} />
-                <meta property="og:image:alt" content={imagenOg.alt} />
+                <meta property="og:image" content={ogImageUrl} />
+                <meta property="og:image:width" content={String(resolvedOgImage.width)} />
+                <meta property="og:image:height" content={String(resolvedOgImage.height)} />
+                <meta property="og:image:alt" content={resolvedOgImage.alt} />
                 <meta name="twitter:card" content="summary_large_image" />
             </>
         )
@@ -133,7 +133,7 @@ const urlImagenOg = Astro.site
         rel="preload"
         as="font"
         type="font/woff2"
-        href={loraLatino}
+        href={loraLatin}
         crossorigin
     />
 </head>

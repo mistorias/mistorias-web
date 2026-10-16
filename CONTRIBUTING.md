@@ -17,8 +17,9 @@ castellano peruano.**
 
 - **Inglés:** identificadores, nombres de archivos, claves de frontmatter,
   mensajes de error del build, y todo `src/lib/` y los tests.
-- **Castellano, por excepción:** componentes, páginas y layouts de Astro (incluidas
-  sus props y variables), las rutas públicas y el texto que ve quien lee.
+- **Castellano, por excepción:** el nombre de los componentes, páginas y layouts
+  de Astro y sus props (lo de adentro va en inglés), las rutas públicas y el texto
+  que ve quien lee.
 - **Castellano peruano:** comentarios, commits, PR y documentos.
 
 El detalle, los ejemplos y el criterio para los tests están en

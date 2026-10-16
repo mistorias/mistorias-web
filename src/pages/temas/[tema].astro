@@ -8,31 +8,31 @@ import { groupByTheme } from "../../lib/themes";
 import { authorNameFor, buildAuthorNameMap } from "../../lib/content/authors";
 
 export async function getStaticPaths() {
-    const historias = sortByDateDescending(
+    const stories = sortByDateDescending(
         await getCollection("stories"),
-        (historia) => historia.id,
-        (historia) => historia.data.date
+        (story) => story.id,
+        (story) => story.data.date
     );
 
-    return groupByTheme(historias, (historia) => historia.data.themes ?? []).map(
-        (grupo) => ({
-            params: { tema: grupo.theme },
-            props: { historias: grupo.stories }
+    return groupByTheme(stories, (story) => story.data.themes ?? []).map(
+        (group) => ({
+            params: { tema: group.theme },
+            props: { stories: group.stories }
         })
     );
 }
 
 type Props = {
-    historias: readonly CollectionEntry<"stories">[];
+    stories: readonly CollectionEntry<"stories">[];
 };
 
 const { tema } = Astro.params;
-const { historias } = Astro.props;
+const { stories } = Astro.props;
 
-const nombresDeAutor = buildAuthorNameMap(
+const authorNames = buildAuthorNameMap(
     await getCollection("authors"),
-    (autor) => autor.id,
-    (autor) => autor.data.name
+    (author) => author.id,
+    (author) => author.data.name
 );
 ---
 
@@ -45,19 +45,19 @@ const nombresDeAutor = buildAuthorNameMap(
         <h1>{tema}</h1>
 
         <p class="tema__cuenta">
-            {historias.length === 1
+            {stories.length === 1
                 ? "1 historia con este tema"
-                : `${historias.length} historias con este tema`}
+                : `${stories.length} historias con este tema`}
         </p>
 
         <div class="tema__rejilla">
             {
-                historias.map((historia) => (
+                stories.map((story) => (
                     <TarjetaHistoria
-                        historia={historia}
+                        historia={story}
                         nombreAutor={authorNameFor(
-                            nombresDeAutor,
-                            historia.data.author.id
+                            authorNames,
+                            story.data.author.id
                         )}
                     />
                 ))

@@ -153,7 +153,7 @@ la página sin recurrir a JavaScript, y eso rompería `script-src 'none'`
   promesa llegue después de una razón para escucharla.
 - **Punto de mantenimiento**: las dos cifras son de PISA 2025 y están fijas en
   el texto. Cuando la OCDE publique el siguiente ciclo hay que revisarlas en
-  `index.astro`, donde la constante `CICLO_DE_LOS_DATOS` deja esa dependencia a
+  `index.astro`, donde la constante `DATA_CYCLE` deja esa dependencia a
   la vista. El propio issue lo asume como el precio de usar datos duros.
 - `DatoConFuente.astro` sirve para cualquier afirmación con dato duro, no solo
   para la portada.

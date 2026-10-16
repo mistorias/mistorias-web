@@ -8,33 +8,33 @@ import { reportRoute, storiesRoute, themesRoute } from "../lib/routes";
 import { limitPreviousStories, sortByDateDescending } from "../lib/stories";
 import { authorNameFor, buildAuthorNameMap } from "../lib/content/authors";
 
-const historias = sortByDateDescending(
+const stories = sortByDateDescending(
     await getCollection("stories"),
-    (historia) => historia.id,
-    (historia) => historia.data.date
+    (story) => story.id,
+    (story) => story.data.date
 );
 
 // El nombre de quien firma se resuelve una sola vez por página: la tarjeta
 // recibe el nombre ya resuelto y no toca la colección de fichas.
-const nombresDeAutor = buildAuthorNameMap(
+const authorNames = buildAuthorNameMap(
     await getCollection("authors"),
-    (autor) => autor.id,
-    (autor) => autor.data.name
+    (author) => author.id,
+    (author) => author.data.name
 );
 
-const [destacada, ...resto] = historias;
-const anteriores = limitPreviousStories(resto);
-const hayTemas = historias.some((historia) => (historia.data.themes ?? []).length > 0);
+const [featured, ...rest] = stories;
+const previousStories = limitPreviousStories(rest);
+const hasThemes = stories.some((story) => (story.data.themes ?? []).length > 0);
 
 // La portada abre con datos verificables antes de prometer nada (issue #37 de
 // gestión de producto): dos cifras que incomodan y que cualquiera puede
 // comprobar, porque cada una enlaza a su fuente. Prometer sin haber generado
 // esa tensión deja a quien llega sin razones para quedarse.
 //
-// MANTENIMIENTO: las dos cifras son del ciclo que nombra `CICLO_DE_LOS_DATOS`.
+// MANTENIMIENTO: las dos cifras son del ciclo que nombra `DATA_CYCLE`.
 // Cuando la OCDE publique el siguiente ciclo de PISA hay que revisarlas acá; es
 // el precio de usar datos duros dentro de un texto fijo.
-const CICLO_DE_LOS_DATOS = "PISA 2025";
+const DATA_CYCLE = "PISA 2025";
 
 // La disonancia son dos golpes, no dos datos sueltos: el primero dice dónde
 // está el piso y el segundo le quita a quien lee la salida cómoda de «esto ya
@@ -48,20 +48,20 @@ const CICLO_DE_LOS_DATOS = "PISA 2025";
 // promedio de una promoción distinta en cada ciclo, no sigue a los mismos
 // estudiantes, así que «los de hoy leen peor que los de 2015» diría algo que
 // la prueba no mide.
-const datos = [
+const facts = [
     {
-        cifra: "Siete de cada diez",
-        resto: "jóvenes peruanos de quince años no alcanzan el mínimo de matemática que la OCDE considera necesario para la vida adulta.",
-        fuente: `OCDE, ${CICLO_DE_LOS_DATOS} — nota de país: Perú`,
+        figure: "Siete de cada diez",
+        remainder: "jóvenes peruanos de quince años no alcanzan el mínimo de matemática que la OCDE considera necesario para la vida adulta.",
+        source: `OCDE, ${DATA_CYCLE} — nota de país: Perú`,
         href: "https://www.oecd.org/en/publications/pisa-2025-results-volume-i-country-notes_2d4ff9ea-en/peru_0c319189-en.html",
-        detalle: "Solo el 30 % de los estudiantes peruanos alcanzó el nivel 2 en Matemática, y ese nivel 2 es el mínimo para desenvolverse en el mundo actual. El promedio de la OCDE es 65 %. Lo mide un organismo externo, sin interés en el resultado peruano."
+        detail: "Solo el 30 % de los estudiantes peruanos alcanzó el nivel 2 en Matemática, y ese nivel 2 es el mínimo para desenvolverse en el mundo actual. El promedio de la OCDE es 65 %. Lo mide un organismo externo, sin interés en el resultado peruano."
     },
     {
-        cifra: "Diez años de avances",
-        resto: "se borraron en lectura: el puntaje de 2025 quedó por debajo del de 2015.",
-        fuente: `OCDE, ${CICLO_DE_LOS_DATOS} — nota de país: Perú`,
+        figure: "Diez años de avances",
+        remainder: "se borraron en lectura: el puntaje de 2025 quedó por debajo del de 2015.",
+        source: `OCDE, ${DATA_CYCLE} — nota de país: Perú`,
         href: "https://www.oecd.org/en/publications/pisa-2025-results-volume-i-country-notes_2d4ff9ea-en/peru_0c319189-en.html",
-        detalle: "390 puntos en Lectura, por debajo de los 398 de 2015. La OCDE lo resume así: la caída reciente «revirtió cualquier avance logrado después de 2015». Cada ciclo mide a una promoción distinta, no a los mismos estudiantes."
+        detail: "390 puntos en Lectura, por debajo de los 398 de 2015. La OCDE lo resume así: la caída reciente «revirtió cualquier avance logrado después de 2015». Cada ciclo mide a una promoción distinta, no a los mismos estudiantes."
     }
 ] as const;
 ---
@@ -79,18 +79,18 @@ const datos = [
 
                 <div class="portada__entrada">
                     {
-                        datos.map((dato) => (
+                        facts.map((fact) => (
                             <>
                                 <DatoConFuente
-                                    fuente={dato.fuente}
-                                    href={dato.href}
-                                    detalle={dato.detalle}
+                                    fuente={fact.source}
+                                    href={fact.href}
+                                    detalle={fact.detail}
                                     grupo="fuentes-portada"
                                 >
                                     <strong class="portada__cifra">
-                                        {dato.cifra}
+                                        {fact.figure}
                                     </strong>{" "}
-                                    {dato.resto}
+                                    {fact.remainder}
                                 </DatoConFuente>{" "}
                             </>
                         ))
@@ -116,13 +116,13 @@ const datos = [
     </section>
 
     {
-        destacada && (
+        featured && (
             <section class="destacada" aria-label="Última historia">
                 <div class="columna">
                     <p class="destacada__rotulo">Última historia</p>
                     <TarjetaHistoria
-                        historia={destacada}
-                        nombreAutor={authorNameFor(nombresDeAutor, destacada.data.author.id)}
+                        historia={featured}
+                        nombreAutor={authorNameFor(authorNames, featured.data.author.id)}
                         destacada
                     />
                 </div>
@@ -131,18 +131,18 @@ const datos = [
     }
 
     {
-        anteriores.length > 0 && (
+        previousStories.length > 0 && (
             <section class="anteriores">
                 <div class="contenedor">
                     <h2>Historias anteriores</h2>
 
                     <div class="anteriores__rejilla">
-                        {anteriores.map((historia) => (
+                        {previousStories.map((story) => (
                             <TarjetaHistoria
-                                historia={historia}
+                                historia={story}
                                 nombreAutor={authorNameFor(
-                                    nombresDeAutor,
-                                    historia.data.author.id
+                                    authorNames,
+                                    story.data.author.id
                                 )}
                                 nivelTitulo={3}
                             />
@@ -154,7 +154,7 @@ const datos = [
     }
 
     {
-        historias.length === 0 && (
+        stories.length === 0 && (
             <section class="columna vacia">
                 <p>
                     Todavía no hay historias publicadas. La primera está en
@@ -165,9 +165,9 @@ const datos = [
     }
 
     {
-        destacada && (
+        featured && (
             <section class="columna explorar">
-                {hayTemas && (
+                {hasThemes && (
                     <a href={themesRoute(import.meta.env.BASE_URL)}>
                         Explorar más historias por tema
                     </a>

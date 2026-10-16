@@ -23,7 +23,7 @@ type Props = {
 // nadie la descubra por sorpresa. Los enlaces internos no pasan por acá.
 const {
     href,
-    class: clase,
+    class: className,
     rel,
     variante = "texto",
     avisoAlineado = "centro"
@@ -33,12 +33,12 @@ const {
 // de unión lo impide en Chromium (corta antes de un elemento en línea), así
 // que se la pega a la última palabra del texto dentro de un `nowrap`. Si el
 // texto termina en una etiqueta, la flecha queda suelta en su envoltura.
-const contenido = await Astro.slots.render("default");
-const [, antes = "", ultimaPalabra = ""] =
-    variante === "texto" ? (contenido.match(/^([\s\S]*?)([^\s<>]+)$/) ?? []) : [];
-const textoPrevio = variante === "texto" && ultimaPalabra ? antes : contenido;
+const content = await Astro.slots.render("default");
+const [, before = "", lastWord = ""] =
+    variante === "texto" ? (content.match(/^([\s\S]*?)([^\s<>]+)$/) ?? []) : [];
+const leadingText = variante === "texto" && lastWord ? before : content;
 
-const valoresRel = [...(rel ? rel.split(/\s+/) : []), "noopener", "noreferrer"]
+const relValues = [...(rel ? rel.split(/\s+/) : []), "noopener", "noreferrer"]
     .filter(Boolean)
     .join(" ");
 ---
@@ -48,13 +48,13 @@ const valoresRel = [...(rel ? rel.split(/\s+/) : []), "noopener", "noreferrer"]
         "enlace-externo",
         `enlace-externo--${variante}`,
         `enlace-externo--aviso-${avisoAlineado}`,
-        clase
+        className
     ]}
     href={href}
     target="_blank"
-    rel={valoresRel}
+    rel={relValues}
 >
-    <Fragment set:html={textoPrevio} /><span class="enlace-externo__cola"><Fragment set:html={ultimaPalabra} /><svg
+    <Fragment set:html={leadingText} /><span class="enlace-externo__cola"><Fragment set:html={lastWord} /><svg
         class="enlace-externo__flecha"
         viewBox="0 0 24 24"
         fill="none"

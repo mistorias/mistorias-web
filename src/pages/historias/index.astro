@@ -4,12 +4,12 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import QuipuDeHistorias from "../../components/QuipuDeHistorias.astro";
 import { buildTimeline } from "../../lib/weeks";
 
-const historias = await getCollection("stories");
+const stories = await getCollection("stories");
 
-const anos = buildTimeline(
-    historias,
-    (historia) => historia.data.date,
-    (historia) => historia.id
+const years = buildTimeline(
+    stories,
+    (story) => story.data.date,
+    (story) => story.id
 );
 ---
 
@@ -25,8 +25,8 @@ const anos = buildTimeline(
         </p>
 
         {
-            anos.length > 0 ? (
-                <QuipuDeHistorias anos={anos} />
+            years.length > 0 ? (
+                <QuipuDeHistorias anos={years} />
             ) : (
                 <p>Todavía no hay historias publicadas.</p>
             )

@@ -8,11 +8,11 @@
 // sabe por qué no le va a llegar la confirmación.
 import { isDevelopmentTarget } from "../lib/deployment";
 
-const avisoVisible = isDevelopmentTarget(process.env.DEPLOY_TARGET);
+const showNotice = isDevelopmentTarget(process.env.DEPLOY_TARGET);
 ---
 
 {
-    avisoVisible && (
+    showNotice && (
         <p class="aviso-solo-netlify">
             <slot />
         </p>

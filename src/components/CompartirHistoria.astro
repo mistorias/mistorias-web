@@ -22,7 +22,7 @@ type Props = {
 
 const { urlHistoria, titulo, resumen, urlImagen } = Astro.props;
 
-const enlaces = buildShareLinks({
+const links = buildShareLinks({
     url: urlHistoria,
     title: titulo,
     summary: resumen,
@@ -53,15 +53,15 @@ const enlaces = buildShareLinks({
 
         <ul class="compartir__redes" role="list" aria-label="Compartir en redes sociales">
             {
-                enlaces.map((enlace) => (
+                links.map((link) => (
                     <li>
                         <EnlaceExterno
                             class="compartir__enlace"
-                            href={enlace.href}
+                            href={link.href}
                             variante="icono"
                         >
-                            <GlifoRed red={enlace.network} />
-                            <span class="sr-only">Compartir en {enlace.label}</span>
+                            <GlifoRed red={link.network} />
+                            <span class="sr-only">Compartir en {link.label}</span>
                         </EnlaceExterno>
                     </li>
                 ))

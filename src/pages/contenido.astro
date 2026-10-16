@@ -8,29 +8,29 @@ const base = import.meta.env.BASE_URL;
 // La página Acerca de explica qué es Mistorias y con qué criterios se escribe.
 // Esta responde otra pregunta: cómo se produce cada edición, paso por paso.
 // Si alguna vez las dos dicen lo mismo, sobra una.
-const secuencia = [
+const sequence = [
     {
-        titulo: "La historia",
-        momento: "Siente",
-        descripcion:
+        title: "La historia",
+        stage: "Siente",
+        description:
             "Narrativa humana, anclada en una persona concreta con nombre y lugar."
     },
     {
-        titulo: "Noticias principales",
-        momento: "Entiende",
-        descripcion:
+        title: "Noticias principales",
+        stage: "Entiende",
+        description:
             "Cada hecho dice qué pasó, qué significa el dato y de dónde sale."
     },
     {
-        titulo: "Conectando los puntos",
-        momento: "Entiende",
-        descripcion:
+        title: "Conectando los puntos",
+        stage: "Entiende",
+        description:
             "Cómo se relacionan los hechos y qué preguntas no responden todavía los datos."
     },
     {
-        titulo: "Acción final",
-        momento: "Actúa",
-        descripcion:
+        title: "Acción final",
+        stage: "Actúa",
+        description:
             "Pasos concretos, en imperativo, distintos según quién esté leyendo."
     }
 ] as const;
@@ -68,15 +68,15 @@ const checklist = [
 
         <dl class="contenido__lista">
             {
-                secuencia.map((seccion) => (
+                sequence.map((section) => (
                     <div class="contenido__item">
                         <dt>
-                            {seccion.titulo}
+                            {section.title}
                             <span class="contenido__momento">
-                                {seccion.momento}
+                                {section.stage}
                             </span>
                         </dt>
-                        <dd>{seccion.descripcion}</dd>
+                        <dd>{section.description}</dd>
                     </div>
                 ))
             }
@@ -118,7 +118,7 @@ const checklist = [
         <p>Ninguna edición sale sin pasar por esta lista.</p>
 
         <ul>
-            {checklist.map((punto) => <li>{punto}</li>)}
+            {checklist.map((item) => <li>{item}</li>)}
         </ul>
 
         <p>
