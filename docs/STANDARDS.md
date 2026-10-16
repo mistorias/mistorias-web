@@ -139,6 +139,11 @@ Formato:
 
 **Tipos:** `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `ci`
 
+`feat` se reserva para lo que el lector puede hacer o ver. Un commit que solo cambia la automatización de GitHub usa `ci`, aunque traiga código JS/TS. Eso incluye los workflows de `.github/` y los scripts y helpers que solo esos workflows usan. El tipo importa porque dice qué subida de versión merece el cambio según SemVer. Un `feat` mal puesto pide una versión menor nueva sin que haya nada nuevo que publicar, y la subida de versión automática (issue #194) se calcula leyendo ese tipo.
+
+- ✅ `ci: el workflow propone la subida de versión en un PR`
+- ❌ `feat: el workflow propone la subida de versión en un PR` (el lector no gana nada nuevo)
+
 **Ejemplo (castellano, preemptive):**
 ```
 feat(docker): el desarrollador dispone de Dockerfile y entrypoint para dev container
