@@ -113,8 +113,8 @@ export const groupByInitial = <T>(
 };
 
 /**
- * Ancla de una letra dentro de /temas/ (`#letra-a`). El quipu de temas la
- * pone como `id`; vive acá para que cualquier enlace a una letra la arme igual.
+ * Ancla de una letra dentro de /temas/ (`#letra-a`). La comparten el quipu de
+ * temas, que la pone como `id`, y el índice de letras, que salta a ella.
  */
 export const initialAnchor = (initial: string): string =>
   `letra-${initial === NON_LETTER_INITIAL ? "otros" : initial.toLocaleLowerCase("es")}`;
@@ -122,3 +122,21 @@ export const initialAnchor = (initial: string): string =>
 /** Conteo de temas tal como lo lee el lector: "1 tema", "3 temas". */
 export const countThemes = (count: number): string =>
   count === 1 ? "1 tema" : `${count} temas`;
+
+/**
+ * Cuántos temas muestra "Los más tocados" en /temas/ (issue #182): la lectura
+ * por cantidad que el índice alfabético dejó de dar.
+ */
+export const MAX_MOST_COVERED_THEMES = 3;
+
+/**
+ * Los temas con más historias. Asume que `groups` llega ordenado por cantidad
+ * (ver `groupByTheme`). Si no hay más temas que el tope, no devuelve nada: la
+ * lista solo repetiría lo que el quipu ya muestra completo.
+ */
+export const mostCoveredThemes = <T>(
+  groups: readonly ThemeGroup<T>[]
+): readonly ThemeGroup<T>[] =>
+  groups.length > MAX_MOST_COVERED_THEMES
+    ? groups.slice(0, MAX_MOST_COVERED_THEMES)
+    : [];

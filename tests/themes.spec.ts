@@ -4,6 +4,8 @@ import {
   groupByInitial,
   groupByTheme,
   initialAnchor,
+  MAX_MOST_COVERED_THEMES,
+  mostCoveredThemes,
   normalizeTheme,
   themeInitial
 } from "../src/lib/themes";
@@ -195,5 +197,29 @@ describe("initialAnchor", () => {
 
   it("da un nombre legible al grupo #, que no sirve dentro de un ancla", () => {
     expect(initialAnchor("#")).toBe("letra-otros");
+  });
+});
+
+describe("mostCoveredThemes", () => {
+  const groups = (count: number) =>
+    Array.from({ length: count }, (_, index) => ({
+      theme: `tema-${index}`,
+      stories: [story(`Historia ${index}`, [`tema-${index}`])]
+    }));
+
+  it("muestra a lo más tres temas", () => {
+    expect(MAX_MOST_COVERED_THEMES).toBe(3);
+  });
+
+  it("toma los primeros temas en el orden recibido, que ya viene por cantidad", () => {
+    expect(mostCoveredThemes(groups(5)).map((group) => group.theme)).toEqual([
+      "tema-0",
+      "tema-1",
+      "tema-2"
+    ]);
+  });
+
+  it("no devuelve nada cuando no hay más temas que el tope, porque repetiría el quipu", () => {
+    expect(mostCoveredThemes(groups(3))).toEqual([]);
   });
 });
