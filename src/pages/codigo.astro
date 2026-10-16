@@ -11,25 +11,25 @@ const base = import.meta.env.BASE_URL;
 // otra cosa —qué le garantizan esas decisiones—, así que esta página traduce
 // las que se pueden verificar desde afuera y deja el repositorio al final,
 // para quien sí quiera el detalle técnico (issue #28).
-const garantias = [
+const guarantees = [
     {
-        titulo: "No te rastreamos",
-        descripcion:
+        title: "No te rastreamos",
+        description:
             "Nadie mide tu visita: no hay estadísticas, ni rastreadores, ni nada que se guarde en tu navegador."
     },
     {
-        titulo: "No se ejecuta JavaScript",
-        descripcion:
+        title: "No se ejecuta JavaScript",
+        description:
             "El sitio declara una política que lo prohíbe por completo. Lo que llega a tu navegador es texto y estilos."
     },
     {
-        titulo: "Todo viene del mismo lugar",
-        descripcion:
+        title: "Todo viene del mismo lugar",
+        description:
             "Tipografías, imágenes y estilos se sirven desde este dominio. No hay pedidos a servidores ajenos."
     },
     {
-        titulo: "Pesa poco a propósito",
-        descripcion:
+        title: "Pesa poco a propósito",
+        description:
             "Son páginas ya construidas, sin aplicación que arrancar. Pensadas para conexiones lentas y equipos viejos."
     }
 ] as const;
@@ -51,10 +51,10 @@ const garantias = [
 
         <dl class="codigo__lista">
             {
-                garantias.map((garantia) => (
+                guarantees.map((guarantee) => (
                     <div class="codigo__item">
-                        <dt>{garantia.titulo}</dt>
-                        <dd>{garantia.descripcion}</dd>
+                        <dt>{guarantee.title}</dt>
+                        <dd>{guarantee.description}</dd>
                     </div>
                 ))
             }

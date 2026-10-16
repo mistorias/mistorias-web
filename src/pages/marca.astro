@@ -9,45 +9,45 @@ const base = import.meta.env.BASE_URL;
 // los principios y los límites que el proyecto se pone. La identidad visual
 // queda fuera a propósito —el sitio ya es su demostración— y los criterios de
 // escritura viven en la página de contenido editorial (issue #28).
-const principios = [
+const principles = [
     {
-        nombre: "Empatía",
-        lema: "Personas antes que datos",
-        descripcion:
+        name: "Empatía",
+        motto: "Personas antes que datos",
+        description:
             "Ninguna cifra abre una historia. Primero está la persona a la que le ocurre."
     },
     {
-        nombre: "Transparencia",
-        lema: "Contexto claro, fuentes visibles",
-        descripcion:
+        name: "Transparencia",
+        motto: "Contexto claro, fuentes visibles",
+        description:
             "Cada fuente se enlaza, se dice qué es y se admite qué no responde."
     },
     {
-        nombre: "Empoderamiento",
-        lema: "Comprensión que habilita acción",
-        descripcion:
+        name: "Empoderamiento",
+        motto: "Comprensión que habilita acción",
+        description:
             "Entender sin poder hacer nada es frustración. Toda historia cierra con algo concreto."
     },
     {
-        nombre: "Claridad",
-        lema: "Lo complejo se vuelve entendible",
-        descripcion:
+        name: "Claridad",
+        motto: "Lo complejo se vuelve entendible",
+        description:
             "Sin jerga académica ni simplificaciones que engañen. Explicar bien es respeto."
     }
 ] as const;
 
-const territorio = [
+const nonGoals = [
     {
-        noEs: "Un medio de noticias",
-        sino: "No competimos por la primicia. Publicamos cuando podemos explicar lo que pasó."
+        isNot: "Un medio de noticias",
+        instead: "No competimos por la primicia. Publicamos cuando podemos explicar lo que pasó."
     },
     {
-        noEs: "Un repositorio de datos",
-        sino: "Los datos entran cuando ayudan a entender una historia, nunca solos."
+        isNot: "Un repositorio de datos",
+        instead: "Los datos entran cuando ayudan a entender una historia, nunca solos."
     },
     {
-        noEs: "Un espacio académico",
-        sino: "No hay distancia de experto. Es un blog personal, y se nota."
+        isNot: "Un espacio académico",
+        instead: "No hay distancia de experto. Es un blog personal, y se nota."
     }
 ] as const;
 ---
@@ -83,13 +83,13 @@ const territorio = [
 
         <dl class="marca__lista">
             {
-                principios.map((principio) => (
+                principles.map((principle) => (
                     <div class="marca__item">
                         <dt>
-                            {principio.nombre}
-                            <span class="marca__lema">{principio.lema}</span>
+                            {principle.name}
+                            <span class="marca__lema">{principle.motto}</span>
                         </dt>
-                        <dd>{principio.descripcion}</dd>
+                        <dd>{principle.description}</dd>
                     </div>
                 ))
             }
@@ -118,10 +118,10 @@ const territorio = [
 
         <dl class="marca__lista">
             {
-                territorio.map((limite) => (
+                nonGoals.map((limit) => (
                     <div class="marca__item">
-                        <dt>{limite.noEs}</dt>
-                        <dd>{limite.sino}</dd>
+                        <dt>{limit.isNot}</dt>
+                        <dd>{limit.instead}</dd>
                     </div>
                 ))
             }
