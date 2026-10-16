@@ -22,20 +22,23 @@ castellano cuando nombran un elemento de la marca o del dominio editorial:
 el borde del sistema que da la cara al lector, y ahí el nombre del dominio
 comunica mejor que su traducción.
 
-La excepción no se queda en el nombre del archivo: alcanza también a lo que vive
-adentro —props como `historia`, `temaTextual` o `nivelTitulo`, y variables
-como `grupos` o `enlace`—. Ese vocabulario es el mismo de
-[CONTEXT.md](../CONTEXT.md), y traducirlo solo dentro del componente partiría en dos
-el lenguaje con que se habla de la misma cosa.
+La excepción cubre la **interfaz** del componente, no su interior:
 
-Dentro de un componente en castellano no hace falta que cada variable sea un
-término del dominio: `enlace`, `grupos`, `cantidad` o `indice` están bien. Lo que
-sigue prohibido es mezclar idiomas dentro de un mismo identificador (ver más
-abajo).
+- **En castellano:** el nombre del archivo, sus props (`historia`, `temaTextual`,
+  `nivelTitulo`) y los parámetros de ruta que nacen del nombre del archivo
+  (`[tema]`, `[autor]`). Es lo que se nombra al usar el componente, y comparte el
+  vocabulario de [CONTEXT.md](../CONTEXT.md).
+- **En inglés:** todo lo demás que vive adentro. Eso incluye variables locales,
+  funciones, parámetros, tipos y claves de objetos locales (`groups`, `link`,
+  `isFirst`, `roundingFor`, `type Rounding`). Se lee igual que `src/lib/`.
 
-El límite es `src/lib/`: la lógica que no da la cara al lector se escribe en
-inglés, y en la frontera el componente en castellano consume funciones en inglés
-(`storyRoute`, `groupByTheme`).
+Cuando una prop recibe una variable local, la prop conserva su nombre y la
+variable va en inglés: `<QuipuDeHistorias anos={years} />`.
+
+No son identificadores, así que la regla no los toca: las clases CSS y las
+custom properties (`.quipu-semana`, `--tamano`), los valores de texto de una prop
+(`redondeo="arriba"`) y los `id` del HTML. El porqué de este borde está en el
+[ADR 0027](adr/0027-identificadores-internos-de-componentes-en-ingles.md).
 
 ## Excepción: lenguaje de cara al lector
 
@@ -58,27 +61,25 @@ componentes: sus identificadores van en inglés, igual que el código que prueba
 
 - **Un test de `src/lib/`** va íntegro en inglés, incluido el vocabulario del
   dominio (`story`, no `historia`).
-- **Un test de un componente, página o layout** puede usar el vocabulario en
-  castellano del propio componente cuando lo nombra: las props que declara
-  (`variante`, `avisoAlineado`) y los términos de [CONTEXT.md](../CONTEXT.md). Los
-  pasa por su nombre y traducirlos solo en el test partiría en dos el lenguaje. Lo
-  genérico —funciones auxiliares, variables de iteración, resultados— va en
-  inglés.
+- **Un test de un componente, página o layout** usa en castellano solo las props
+  que el componente declara (`variante`, `avisoAlineado`), porque las pasa por su
+  nombre. Todo lo demás —funciones auxiliares, fixtures, variables de iteración,
+  resultados— va en inglés, igual que el interior del componente.
 - **Los títulos** (`it("…")`, `describe("…")`) y los comentarios van en
   castellano peruano: explican el comportamiento, no son identificadores.
 
 ## Identificadores mezclados
 
-Un identificador no mezcla idiomas: `valoresRel` sí (el nombre HTML `rel` no es de
-ningún idioma), `relCompleto` no (`rel` + castellano) ni `getHistorias`. Los nombres
+Un identificador no mezcla idiomas: `relValues` sí, `relCompleto` no (`rel` +
+castellano) ni `getHistorias`. Los nombres
 que vienen de HTML, CSS o de una librería se escriben como son.
 
 ## Estado actual
 
 `src/lib/` está íntegramente en inglés: ahí viven `dates.ts`, `stories.ts`,
 `themes.ts`, `routes.ts`, `deployment.ts` y los gates de `content/` y `brand/`.
-Los componentes, las páginas y los layouts siguen en castellano por la
-excepción de arriba, y eso no es deuda pendiente: no se traducen.
+Los componentes, las páginas y los layouts tienen en castellano su nombre y sus
+props, y en inglés todo lo de adentro.
 
 Si aparece un nombre en castellano fuera de esa excepción, se corrige antes de
 que se acumule: no se espera a que el archivo se toque por otra razón. El
