@@ -8,16 +8,16 @@ import { groupByTheme } from "../../lib/themes";
 import { authorNameFor, buildAuthorNameMap } from "../../lib/content/authors";
 
 export async function getStaticPaths() {
-    const historias = sortByDateDescending(
+    const stories = sortByDateDescending(
         await getCollection("stories"),
-        (historia) => historia.id,
-        (historia) => historia.data.date
+        (story) => story.id,
+        (story) => story.data.date
     );
 
-    return groupByTheme(historias, (historia) => historia.data.themes ?? []).map(
-        (grupo) => ({
-            params: { tema: grupo.theme },
-            props: { historias: grupo.stories }
+    return groupByTheme(stories, (story) => story.data.themes ?? []).map(
+        (group) => ({
+            params: { tema: group.theme },
+            props: { historias: group.stories }
         })
     );
 }
@@ -29,10 +29,10 @@ type Props = {
 const { tema } = Astro.params;
 const { historias } = Astro.props;
 
-const nombresDeAutor = buildAuthorNameMap(
+const authorNames = buildAuthorNameMap(
     await getCollection("authors"),
-    (autor) => autor.id,
-    (autor) => autor.data.name
+    (author) => author.id,
+    (author) => author.data.name
 );
 ---
 
@@ -52,12 +52,12 @@ const nombresDeAutor = buildAuthorNameMap(
 
         <div class="tema__rejilla">
             {
-                historias.map((historia) => (
+                historias.map((story) => (
                     <TarjetaHistoria
-                        historia={historia}
+                        historia={story}
                         nombreAutor={authorNameFor(
-                            nombresDeAutor,
-                            historia.data.author.id
+                            authorNames,
+                            story.data.author.id
                         )}
                     />
                 ))

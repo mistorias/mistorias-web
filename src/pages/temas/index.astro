@@ -11,15 +11,15 @@ import {
     mostCoveredThemes
 } from "../../lib/themes";
 
-const historias = sortByDateDescending(
+const stories = sortByDateDescending(
     await getCollection("stories"),
-    (historia) => historia.id,
-    (historia) => historia.data.date
+    (story) => story.id,
+    (story) => story.data.date
 );
 
-const grupos = groupByTheme(historias, (historia) => historia.data.themes ?? []);
-const letras = groupByInitial(grupos);
-const masTocados = mostCoveredThemes(grupos);
+const groups = groupByTheme(stories, (story) => story.data.themes ?? []);
+const letters = groupByInitial(groups);
+const mostCovered = mostCoveredThemes(groups);
 const base = import.meta.env.BASE_URL;
 ---
 
@@ -35,24 +35,24 @@ const base = import.meta.env.BASE_URL;
         </p>
 
         {
-            masTocados.length > 0 && (
+            mostCovered.length > 0 && (
                 <section
                     class="temas-indice__mas-tocados"
                     aria-labelledby="mas-tocados"
                 >
                     <h2 id="mas-tocados">Los más tocados</h2>
                     <ol class="temas-indice__fichas">
-                        {masTocados.map((grupo) => (
+                        {mostCovered.map((group) => (
                             <li>
                                 <a
                                     class="temas-indice__ficha"
-                                    href={themeRoute(base, grupo.theme)}
+                                    href={themeRoute(base, group.theme)}
                                 >
                                     <span class="temas-indice__nombre">
-                                        {grupo.theme}
+                                        {group.theme}
                                     </span>
                                     <span class="temas-indice__cuenta">
-                                        {countStories(grupo.stories.length)}
+                                        {countStories(group.stories.length)}
                                     </span>
                                 </a>
                             </li>
@@ -63,9 +63,9 @@ const base = import.meta.env.BASE_URL;
         }
 
         {
-            letras.length > 0 ? (
-                <IndiceDeLetras letras={letras.map((letra) => letra.initial)}>
-                    <QuipuDeTemas letras={letras} />
+            letters.length > 0 ? (
+                <IndiceDeLetras letras={letters.map((letter) => letter.initial)}>
+                    <QuipuDeTemas letras={letters} />
                 </IndiceDeLetras>
             ) : (
                 <p>Todavía no hay temas publicados.</p>

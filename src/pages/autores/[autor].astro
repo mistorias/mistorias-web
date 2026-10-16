@@ -8,22 +8,22 @@ import { sortByDateDescending } from "../../lib/stories";
 import { storiesByAuthor } from "../../lib/content/authors";
 
 export async function getStaticPaths() {
-    const historias = sortByDateDescending(
+    const stories = sortByDateDescending(
         await getCollection("stories"),
-        (historia) => historia.id,
-        (historia) => historia.data.date
+        (story) => story.id,
+        (story) => story.data.date
     );
 
-    const autores = await getCollection("authors");
+    const authors = await getCollection("authors");
 
-    return autores.map((autor) => ({
-        params: { autor: autor.id },
+    return authors.map((author) => ({
+        params: { autor: author.id },
         props: {
-            autor,
+            autor: author,
             historias: storiesByAuthor(
-                historias,
-                (historia) => historia.data.author.id,
-                autor.id
+                stories,
+                (story) => story.data.author.id,
+                author.id
             )
         }
     }));
@@ -78,9 +78,9 @@ const base = import.meta.env.BASE_URL;
         {
             historias.length > 0 ? (
                 <div class="autor__rejilla">
-                    {historias.map((historia) => (
+                    {historias.map((story) => (
                         <TarjetaHistoria
-                            historia={historia}
+                            historia={story}
                             nombreAutor={autor.data.name}
                             nivelTitulo={3}
                         />
