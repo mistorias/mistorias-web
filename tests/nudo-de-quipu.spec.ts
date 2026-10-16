@@ -7,32 +7,32 @@ describe("NudoDeQuipu", () => {
     const html = await renderAstroComponent(NudoDeQuipu, {
       props: { cantidad: 0, redondeo: "ninguno" },
     });
-    const huecoCount = (html.match(/class="nudo-de-quipu__hueco"/g) ?? []).length;
-    expect(huecoCount).toBe(0);
+    const gapCount = (html.match(/class="nudo-de-quipu__hueco"/g) ?? []).length;
+    expect(gapCount).toBe(0);
   });
 
   it("cantidad: 1 → UNA ocurrencia de class=\"nudo-de-quipu__hueco\"", async () => {
     const html = await renderAstroComponent(NudoDeQuipu, {
       props: { cantidad: 1, redondeo: "ninguno" },
     });
-    const huecoCount = (html.match(/class="nudo-de-quipu__hueco"/g) ?? []).length;
-    expect(huecoCount).toBe(1);
+    const gapCount = (html.match(/class="nudo-de-quipu__hueco"/g) ?? []).length;
+    expect(gapCount).toBe(1);
   });
 
   it("cantidad: 3 → TRES ocurrencias de class=\"nudo-de-quipu__hueco\"", async () => {
     const html = await renderAstroComponent(NudoDeQuipu, {
       props: { cantidad: 3, redondeo: "ninguno" },
     });
-    const huecoCount = (html.match(/class="nudo-de-quipu__hueco"/g) ?? []).length;
-    expect(huecoCount).toBe(3);
+    const gapCount = (html.match(/class="nudo-de-quipu__hueco"/g) ?? []).length;
+    expect(gapCount).toBe(3);
   });
 
   it("cantidad: 8 → OCHO ocurrencias de class=\"nudo-de-quipu__hueco\" (sin tope)", async () => {
     const html = await renderAstroComponent(NudoDeQuipu, {
       props: { cantidad: 8, redondeo: "ninguno" },
     });
-    const huecoCount = (html.match(/class="nudo-de-quipu__hueco"/g) ?? []).length;
-    expect(huecoCount).toBe(8);
+    const gapCount = (html.match(/class="nudo-de-quipu__hueco"/g) ?? []).length;
+    expect(gapCount).toBe(8);
   });
 
   it("cantidad: 1 → el único hueco tiene top: 36.25%", async () => {
