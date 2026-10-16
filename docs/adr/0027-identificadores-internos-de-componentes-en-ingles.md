@@ -25,11 +25,16 @@ distinto.
 El castellano se queda en la **interfaz** del componente:
 
 - el nombre del archivo,
-- sus props,
+- sus props (las de un componente; ver abajo el caso de las páginas),
 - los parámetros de ruta que nacen del nombre del archivo (`[tema]`, `[autor]`).
 
 Es lo que se nombra cuando alguien usa el componente, y ahí el vocabulario de
 CONTEXT.md comunica mejor.
+
+Una página no tiene interfaz en ese sentido: nadie la usa como componente, y sus
+props las llena solo su propio `getStaticPaths`. Por eso las props de una página
+también van en inglés. Sus parámetros de ruta siguen en castellano, porque nacen
+del nombre del archivo.
 
 Todo lo de adentro va en inglés, como en `src/lib/`. Eso incluye variables,
 funciones, parámetros, tipos y claves de objetos locales. Cuando una prop recibe

@@ -42,10 +42,10 @@ export async function getStaticPaths() {
             params: { id: story.id },
             props: {
                 story,
-                historiaAnterior: previous
+                previousStory: previous
                     ? storiesById.get(previous)
                     : undefined,
-                historiaSiguiente: next ? storiesById.get(next) : undefined
+                nextStory: next ? storiesById.get(next) : undefined
             }
         };
     });
@@ -53,11 +53,11 @@ export async function getStaticPaths() {
 
 type Props = {
     story: CollectionEntry<"stories">;
-    historiaAnterior?: CollectionEntry<"stories">;
-    historiaSiguiente?: CollectionEntry<"stories">;
+    previousStory?: CollectionEntry<"stories">;
+    nextStory?: CollectionEntry<"stories">;
 };
 
-const { story, historiaAnterior, historiaSiguiente } = Astro.props;
+const { story, previousStory, nextStory } = Astro.props;
 const { Content } = await render(story);
 const base = import.meta.env.BASE_URL;
 const image = getStoryImage(story.id);
@@ -171,8 +171,8 @@ if (author === undefined) {
         <OpinionHistoria historiaId={story.id} />
 
         <NavegacionHistorias
-            historiaAnterior={historiaAnterior}
-            historiaSiguiente={historiaSiguiente}
+            historiaAnterior={previousStory}
+            historiaSiguiente={nextStory}
         />
     </article>
 </BaseLayout>

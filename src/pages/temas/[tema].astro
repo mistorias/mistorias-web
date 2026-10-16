@@ -17,17 +17,17 @@ export async function getStaticPaths() {
     return groupByTheme(stories, (story) => story.data.themes ?? []).map(
         (group) => ({
             params: { tema: group.theme },
-            props: { historias: group.stories }
+            props: { stories: group.stories }
         })
     );
 }
 
 type Props = {
-    historias: readonly CollectionEntry<"stories">[];
+    stories: readonly CollectionEntry<"stories">[];
 };
 
 const { tema } = Astro.params;
-const { historias } = Astro.props;
+const { stories } = Astro.props;
 
 const authorNames = buildAuthorNameMap(
     await getCollection("authors"),
@@ -45,14 +45,14 @@ const authorNames = buildAuthorNameMap(
         <h1>{tema}</h1>
 
         <p class="tema__cuenta">
-            {historias.length === 1
+            {stories.length === 1
                 ? "1 historia con este tema"
-                : `${historias.length} historias con este tema`}
+                : `${stories.length} historias con este tema`}
         </p>
 
         <div class="tema__rejilla">
             {
-                historias.map((story) => (
+                stories.map((story) => (
                     <TarjetaHistoria
                         historia={story}
                         nombreAutor={authorNameFor(

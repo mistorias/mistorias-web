@@ -19,8 +19,8 @@ export async function getStaticPaths() {
     return authors.map((author) => ({
         params: { autor: author.id },
         props: {
-            autor: author,
-            historias: storiesByAuthor(
+            author,
+            stories: storiesByAuthor(
                 stories,
                 (story) => story.data.author.id,
                 author.id
@@ -30,34 +30,34 @@ export async function getStaticPaths() {
 }
 
 type Props = {
-    autor: CollectionEntry<"authors">;
-    historias: readonly CollectionEntry<"stories">[];
+    author: CollectionEntry<"authors">;
+    stories: readonly CollectionEntry<"stories">[];
 };
 
-const { autor, historias } = Astro.props;
-const { Content } = await render(autor);
+const { author, stories } = Astro.props;
+const { Content } = await render(author);
 const base = import.meta.env.BASE_URL;
 ---
 
 <BaseLayout
-    title={`${autor.data.name} | Mistorias`}
-    description={autor.data.bio}
+    title={`${author.data.name} | Mistorias`}
+    description={author.data.bio}
 >
     <div class="contenedor autor">
         <p class="autor__rotulo">Quién escribe</p>
-        <h1>{autor.data.name}</h1>
+        <h1>{author.data.name}</h1>
 
-        <p class="autor__bio">{autor.data.bio}</p>
+        <p class="autor__bio">{author.data.bio}</p>
 
         {
-            autor.data.link && (
+            author.data.link && (
                 <p class="autor__enlace">
                     {/* El enlace apunta a un perfil que esta persona ya
                         mantiene por su cuenta: es lo que permite verificar que
                         existe sin que Mistorias publique un dato suyo que
                         después no pueda retirar. */}
-                    <EnlaceExterno href={autor.data.link} rel="me">
-                        {autor.data.linkLabel}
+                    <EnlaceExterno href={author.data.link} rel="me">
+                        {author.data.linkLabel}
                     </EnlaceExterno>
                 </p>
             )
@@ -69,19 +69,19 @@ const base = import.meta.env.BASE_URL;
 
         <h2 class="autor__titulo-historias">
             {
-                historias.length === 1
+                stories.length === 1
                     ? "1 historia firmada"
-                    : `${historias.length} historias firmadas`
+                    : `${stories.length} historias firmadas`
             }
         </h2>
 
         {
-            historias.length > 0 ? (
+            stories.length > 0 ? (
                 <div class="autor__rejilla">
-                    {historias.map((story) => (
+                    {stories.map((story) => (
                         <TarjetaHistoria
                             historia={story}
-                            nombreAutor={autor.data.name}
+                            nombreAutor={author.data.name}
                             nivelTitulo={3}
                         />
                     ))}

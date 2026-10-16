@@ -35,6 +35,11 @@ La excepción cubre la **interfaz** del componente, no su interior:
 Cuando una prop recibe una variable local, la prop conserva su nombre y la
 variable va en inglés: `<QuipuDeHistorias anos={years} />`.
 
+Las props de una **página** no son interfaz: nadie usa la página como componente,
+y solo las llena su propio `getStaticPaths`, en el mismo archivo. Por eso van en
+inglés (`previousStory`, `stories`). Sus parámetros de ruta, en cambio, nacen del
+nombre del archivo y siguen en castellano (`params: { tema }`).
+
 No son identificadores, así que la regla no los toca: las clases CSS y las
 custom properties (`.quipu-semana`, `--tamano`), los valores de texto de una prop
 (`redondeo="arriba"`) y los `id` del HTML. El porqué de este borde está en el
@@ -78,8 +83,9 @@ que vienen de HTML, CSS o de una librería se escriben como son.
 
 `src/lib/` está íntegramente en inglés: ahí viven `dates.ts`, `stories.ts`,
 `themes.ts`, `routes.ts`, `deployment.ts` y los gates de `content/` y `brand/`.
-Los componentes, las páginas y los layouts tienen en castellano su nombre y sus
-props, y en inglés todo lo de adentro.
+Los componentes, las páginas y los layouts tienen en castellano su nombre (y sus
+props, en el caso de los componentes), y en inglés todo lo de adentro, incluidas
+las props de las páginas.
 
 Si aparece un nombre en castellano fuera de esa excepción, se corrige antes de
 que se acumule: no se espera a que el archivo se toque por otra razón. El
