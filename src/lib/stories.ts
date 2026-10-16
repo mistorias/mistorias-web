@@ -35,3 +35,10 @@ export const MAX_PREVIOUS_STORIES = 4;
  */
 export const limitPreviousStories = <T>(stories: readonly T[]): readonly T[] =>
   stories.slice(0, MAX_PREVIOUS_STORIES);
+
+/**
+ * Conteo de historias tal como lo lee el lector: "1 historia", "3 historias".
+ * Lo comparten el índice de historias y el de temas.
+ */
+export const countStories = (count: number): string =>
+  count === 1 ? "1 historia" : `${count} historias`;

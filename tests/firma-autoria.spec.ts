@@ -43,14 +43,14 @@ describe("FirmaAutoria", () => {
   });
 
   it("declara qué hizo la inteligencia artificial en esta historia", async () => {
-    const declaracion = describeAuthorship("editado-con-ia");
+    const statement = describeAuthorship("editado-con-ia");
 
     const html = await renderAstroComponent(FirmaAutoria, {
       props: { autor, autoria: "editado-con-ia" }
     });
 
-    expect(html).toContain(declaracion.label);
-    expect(html).toContain(declaracion.detail);
+    expect(html).toContain(statement.label);
+    expect(html).toContain(statement.detail);
   });
 
   // El rótulo cambia de una historia a otra: si se quedara fijo, la etiqueta

@@ -1,0 +1,214 @@
+---
+import { initialAnchor } from "../lib/themes";
+
+/*
+ * Envuelve al contenido de /temas/ (el slot: el quipu de temas) y le agrega un
+ * índice para saltar a cada letra. Envuelve en vez de ir suelto porque la
+ * disposición depende del ancho que queda para los dos juntos: el índice va a
+ * la derecha si cabe, y si no, como una barra pegada al pie de la pantalla.
+ * Así el umbral vive en un solo archivo.
+ */
+type Props = {
+    letras: readonly string[];
+};
+
+const { letras } = Astro.props;
+---
+
+<div class="indice-letras">
+    <div class="indice-letras__disposicion">
+        <div class="indice-letras__contenido">
+            <slot />
+        </div>
+        {
+            /*
+             * Después del contenido en el HTML: el lector de pantalla oye
+             * primero los temas y encuentra el índice como punto de
+             * referencia. No lleva aria-hidden: sus enlaces reciben foco, y un
+             * foco que no se anuncia es peor que una navegación de más.
+             */
+        }
+        <nav class="indice-letras__nav" aria-label="Saltar a una letra">
+            <ol class="indice-letras__lista">
+                {
+                    letras.map((letra) => (
+                        <li>
+                            <a
+                                class="indice-letras__enlace"
+                                href={`#${initialAnchor(letra)}`}
+                            >
+                                {letra}
+                            </a>
+                        </li>
+                    ))
+                }
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<style>
+    /*
+     * Container query y no media query: lo que decide es el ancho de la
+     * columna de temas, no el de la pantalla. Se permite acá —a diferencia de
+     * la portada (ADR 0012)— porque adentro no hay nada `position: fixed` que
+     * `container-type` pudiera despegar del viewport; la barra es `sticky`.
+     */
+    .indice-letras {
+        container-type: inline-size;
+    }
+
+    /*
+     * Que la barra pegada al pie nunca tape el elemento con foco (WCAG
+     * 2.4.11): el navegador desplaza lo enfocado por encima de este margen. Es
+     * el alto de la barra —enlace, relleno de la lista, relleno de la barra y
+     * su borde—, con un respiro.
+     */
+    :global(html:has(.indice-letras)) {
+        scroll-padding-block-end: calc(
+            44px + 4 * var(--grosor-foco) + 2 * var(--esp-2xs) + var(--esp-2xs)
+        );
+    }
+
+    .indice-letras__contenido {
+        min-width: 0;
+    }
+
+    /*
+     * Angosto (por defecto): una sola fila pegada al pie de la pantalla
+     * mientras se recorren los temas, que se desliza con el dedo. Con Tab, el
+     * navegador desplaza la fila hasta la letra enfocada.
+     */
+    .indice-letras__nav {
+        position: sticky;
+        inset-block-end: 0;
+        margin-block-start: var(--esp-l);
+        padding-block: var(--esp-2xs);
+        border-block-start: 1px solid var(--color-borde);
+        background-color: var(--color-fondo);
+    }
+
+    .indice-letras__lista {
+        display: flex;
+        gap: var(--esp-3xs);
+        margin: 0;
+        /* Grosor + separación del anillo de foco de base.css: si no, el recorte de overflow lo corta. */
+        padding: calc(2 * var(--grosor-foco));
+        list-style: none;
+        overflow-x: auto;
+        scroll-snap-type: x proximity;
+        /* El snap respeta el mismo margen que deja lugar al anillo de foco. */
+        scroll-padding: calc(2 * var(--grosor-foco));
+        scrollbar-width: none;
+    }
+
+    .indice-letras__lista li {
+        flex: none;
+        scroll-snap-align: start;
+    }
+
+    .indice-letras__enlace {
+        display: grid;
+        place-items: center;
+        min-width: 44px;
+        min-height: 44px;
+        border: 1px solid var(--color-borde);
+        border-radius: var(--radio);
+        background-color: var(--color-superficie);
+        font-family: var(--fuente-narrativa);
+        font-weight: 600;
+        color: var(--color-acento);
+        text-decoration: none;
+    }
+
+    @media (hover: hover) {
+        .indice-letras__enlace:hover {
+            border-color: var(--color-vivo);
+        }
+    }
+
+    /*
+     * Ancho: columna a la derecha que acompaña el scroll. En un celular
+     * horizontal no entran todas las letras a lo alto, así que la columna
+     * tiene el alto de la pantalla y se desliza sola.
+     */
+    @container (min-width: 30rem) {
+        .indice-letras__disposicion {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            column-gap: var(--esp-m);
+            align-items: start;
+        }
+
+        .indice-letras__nav {
+            inset-block: var(--esp-s) auto;
+            margin-block-start: 0;
+            padding-block: 0;
+            border-block-start: 0;
+            background-color: transparent;
+        }
+
+        .indice-letras__lista {
+            flex-direction: column;
+            max-block-size: calc(100dvh - 2 * var(--esp-s));
+            overflow-x: visible;
+            overflow-y: auto;
+            scroll-snap-type: y proximity;
+        }
+    }
+
+    /*
+     * Pista de "hay más letras": el borde final de la fila se desvanece y deja
+     * de hacerlo al llegar al final. Mejora progresiva: sin scroll-driven
+     * animations la fila se desliza igual, solo que sin la pista.
+     */
+    @property --desvanecido {
+        syntax: "<length>";
+        inherits: false;
+        initial-value: 0px;
+    }
+
+    @supports (animation-timeline: scroll()) {
+        @keyframes indice-letras-final {
+            from {
+                --desvanecido: 2rem;
+            }
+
+            to {
+                --desvanecido: 0px;
+            }
+        }
+
+        .indice-letras__lista {
+            --hacia: to right;
+
+            mask-image: linear-gradient(
+                var(--hacia),
+                black calc(100% - var(--desvanecido)),
+                transparent
+            );
+            animation: indice-letras-final linear both;
+        }
+
+        /*
+         * La línea de tiempo va en otra regla, con más especificidad: el
+         * minificador junta las propiedades de una misma regla en el atajo
+         * `animation`, que no admite `animation-timeline`, y la animación
+         * entera se descartaba.
+         */
+        .indice-letras__nav .indice-letras__lista {
+            animation-range: calc(100% - 2rem) 100%;
+            animation-timeline: scroll(self inline);
+        }
+
+        @container (min-width: 30rem) {
+            .indice-letras__lista {
+                --hacia: to bottom;
+            }
+
+            .indice-letras__nav .indice-letras__lista {
+                animation-timeline: scroll(self block);
+            }
+        }
+    }
+</style>

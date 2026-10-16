@@ -8,20 +8,20 @@ import { AUTHORSHIP_VALUES } from "../src/lib/content/schema";
 describe("describeAuthorship", () => {
   it("describe cada una de las tres etiquetas del esquema", () => {
     for (const value of AUTHORSHIP_VALUES) {
-      const descripcion = describeAuthorship(value);
+      const description = describeAuthorship(value);
 
-      expect(descripcion.value).toBe(value);
-      expect(descripcion.label.length).toBeGreaterThan(0);
-      expect(descripcion.detail.length).toBeGreaterThan(0);
+      expect(description.value).toBe(value);
+      expect(description.label.length).toBeGreaterThan(0);
+      expect(description.detail.length).toBeGreaterThan(0);
     }
   });
 
   it("distingue las tres con rótulos distintos", () => {
-    const rotulos = AUTHORSHIP_VALUES.map(
+    const labels = AUTHORSHIP_VALUES.map(
       (value) => describeAuthorship(value).label
     );
 
-    expect(new Set(rotulos).size).toBe(AUTHORSHIP_VALUES.length);
+    expect(new Set(labels).size).toBe(AUTHORSHIP_VALUES.length);
   });
 
   it("nombra a la inteligencia artificial sin siglas en el rótulo visible", () => {

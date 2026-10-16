@@ -18,9 +18,9 @@ describe("PlantaDeLibros", () => {
   it("lo oculta de lectores de pantalla por decorativo", async () => {
     const html = await renderAstroComponent(PlantaDeLibros);
 
-    const envoltorio = html.match(/<span class="planta-de-libros"[^>]*>/)?.[0];
+    const wrapper = html.match(/<span class="planta-de-libros"[^>]*>/)?.[0];
 
-    expect(envoltorio).toContain('aria-hidden="true"');
+    expect(wrapper).toContain('aria-hidden="true"');
   });
 
   it("declara el viewBox recortado al dibujo", async () => {

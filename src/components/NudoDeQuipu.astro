@@ -1,12 +1,21 @@
 ---
 export type Redondeo = "arriba" | "abajo" | "ambos" | "ninguno";
 
+/*
+ * "bajo-encabezado": la fila de una semana, con rótulo arriba y una historia
+ * (título + resumen) por nudo. "parejo": una fila sin rótulo, como la de un
+ * tema en /temas/, donde los nudos solo cuentan y se reparten a espacio
+ * parejo, cada uno al centro de su tramo.
+ */
+export type Reparto = "bajo-encabezado" | "parejo";
+
 type Props = {
     cantidad: number;
     redondeo: Redondeo;
+    reparto?: Reparto;
 };
 
-const { cantidad, redondeo } = Astro.props;
+const { cantidad, redondeo, reparto = "bajo-encabezado" } = Astro.props;
 const nudosAVisualizar = Math.max(0, cantidad);
 
 /*
@@ -25,11 +34,15 @@ const nudosAVisualizar = Math.max(0, cantidad);
 const RESERVA_ENCABEZADO = 15;
 const SESGO_HACIA_TITULO = 0.25;
 
+const { reserva, sesgo } =
+    reparto === "parejo"
+        ? { reserva: 0, sesgo: 0.5 }
+        : { reserva: RESERVA_ENCABEZADO, sesgo: SESGO_HACIA_TITULO };
+
 const posiciones = Array.from(
     { length: nudosAVisualizar },
     (_, indice) =>
-        RESERVA_ENCABEZADO +
-        ((indice + SESGO_HACIA_TITULO) / nudosAVisualizar) * (100 - RESERVA_ENCABEZADO)
+        reserva + ((indice + sesgo) / nudosAVisualizar) * (100 - reserva)
 );
 ---
 

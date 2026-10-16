@@ -11,37 +11,37 @@ import {
 describe("og-image", () => {
   describe("ogImageFromStoryImage", () => {
     it("recorta a 1200x630 y conserva el alt recibido", async () => {
-      const resultado = await ogImageFromStoryImage(
+      const result = await ogImageFromStoryImage(
         fixtureImage,
         "Descripción de prueba"
       );
 
-      expect(resultado.width).toBe(1200);
-      expect(resultado.height).toBe(630);
-      expect(resultado.alt).toBe("Descripción de prueba");
+      expect(result.width).toBe(1200);
+      expect(result.height).toBe(630);
+      expect(result.alt).toBe("Descripción de prueba");
       // El path exacto lo decide el servicio de imágenes de Astro (en build,
       // /_astro/*.jpg; en dev/tests, el endpoint /_image on-demand) — acá
       // solo importa que astro:assets procesó el recorte y no devolvió la
       // ruta cruda del fixture.
-      expect(resultado.src).not.toBe("");
-      expect(resultado.src).not.toContain("og-default.jpg");
+      expect(result.src).not.toBe("");
+      expect(result.src).not.toContain("og-default.jpg");
     });
   });
 
   describe("defaultOgImage", () => {
     it("apunta a la imagen pre-generada bajo la base del despliegue", () => {
-      const resultado = defaultOgImage("/mistorias-web/");
+      const result = defaultOgImage("/mistorias-web/");
 
-      expect(resultado.src).toBe("/mistorias-web/imagenes/og-default.jpg");
-      expect(resultado.width).toBe(1200);
-      expect(resultado.height).toBe(630);
-      expect(resultado.alt.length).toBeGreaterThan(0);
+      expect(result.src).toBe("/mistorias-web/imagenes/og-default.jpg");
+      expect(result.width).toBe(1200);
+      expect(result.height).toBe(630);
+      expect(result.alt.length).toBeGreaterThan(0);
     });
 
     it("funciona con la base raíz de Netlify", () => {
-      const resultado = defaultOgImage("/");
+      const result = defaultOgImage("/");
 
-      expect(resultado.src).toBe("/imagenes/og-default.jpg");
+      expect(result.src).toBe("/imagenes/og-default.jpg");
     });
   });
 
