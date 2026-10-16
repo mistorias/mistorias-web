@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  countStories,
   limitPreviousStories,
   MAX_PREVIOUS_STORIES,
   sortByDateDescending
@@ -119,5 +120,16 @@ describe("limitPreviousStories", () => {
     limitPreviousStories(stories);
 
     expect(titles(stories)).toEqual(originalTitles);
+  });
+});
+
+describe("countStories", () => {
+  it("usa el singular para una sola historia", () => {
+    expect(countStories(1)).toBe("1 historia");
+  });
+
+  it("usa el plural para cero o varias historias", () => {
+    expect(countStories(0)).toBe("0 historias");
+    expect(countStories(4)).toBe("4 historias");
   });
 });
