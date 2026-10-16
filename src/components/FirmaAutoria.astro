@@ -10,8 +10,8 @@ type Props = {
 };
 
 const { autor, autoria } = Astro.props;
-const enlace = authorRoute(import.meta.env.BASE_URL, autor.id);
-const declaracion = describeAuthorship(autoria);
+const authorHref = authorRoute(import.meta.env.BASE_URL, autor.id);
+const statement = describeAuthorship(autoria);
 ---
 
 {/* Quien termina de leer tiene que poder llegar a alguien que responda por lo
@@ -23,14 +23,14 @@ const declaracion = describeAuthorship(autoria);
     <h2 class="firma__titulo">Quién escribió esta historia</h2>
 
     <p class="firma__nombre">
-        <a href={enlace}>{autor.data.name}</a>
+        <a href={authorHref}>{autor.data.name}</a>
     </p>
 
     <p class="firma__bio">{autor.data.bio}</p>
 
     <p class="firma__autoria">
-        <span class="firma__etiqueta">{declaracion.label}</span>
-        <span class="firma__detalle">{declaracion.detail}</span>
+        <span class="firma__etiqueta">{statement.label}</span>
+        <span class="firma__detalle">{statement.detail}</span>
     </p>
 </footer>
 

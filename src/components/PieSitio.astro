@@ -9,7 +9,7 @@ import {
 import RedesSociales from "./RedesSociales.astro";
 
 const base = import.meta.env.BASE_URL;
-const inicio = homeRoute(base);
+const homeHref = homeRoute(base);
 
 // El pie es el principio de transparencia hecho navegación: desde aquí se
 // llega al contenido editorial, al código que lo publica y a los criterios de
@@ -24,11 +24,11 @@ const inicio = homeRoute(base);
 // la misión del proyecto (issue #32). Desde el issue #148 esa misma nota
 // termina invitando a seguir a Mistorias en redes, con los íconos al lado: la
 // invitación llega cuando la lectura ya terminó, sin taparla. Ver ADR 0021.
-const enlaces = [
-    { texto: "Contenido editorial", href: editorialContentRoute(base) },
-    { texto: "Código del sitio", href: siteCodeRoute(base) },
-    { texto: "Esencia de marca", href: brandRoute(base) },
-    { texto: "Reportar un problema", href: reportRoute(base) }
+const links = [
+    { text: "Contenido editorial", href: editorialContentRoute(base) },
+    { text: "Código del sitio", href: siteCodeRoute(base) },
+    { text: "Esencia de marca", href: brandRoute(base) },
+    { text: "Reportar un problema", href: reportRoute(base) }
 ] as const;
 ---
 
@@ -36,7 +36,7 @@ const enlaces = [
     <div class="contenedor pie__interior">
         <div class="pie__marca">
             <div class="pie__franja">
-                <a class="pie__logo" href={inicio}>Mistorias</a>
+                <a class="pie__logo" href={homeHref}>Mistorias</a>
 
                 <p class="pie__nota">
                     No queremos solo informarte: cada semana, una historia para
@@ -53,10 +53,10 @@ const enlaces = [
         <nav aria-label="Enlaces del pie">
             <ul class="pie__lista" role="list">
                 {
-                    enlaces.map((enlace) => (
+                    links.map((link) => (
                         <li>
-                            <a class="pie__enlace" href={enlace.href}>
-                                {enlace.texto}
+                            <a class="pie__enlace" href={link.href}>
+                                {link.text}
                             </a>
                         </li>
                     ))

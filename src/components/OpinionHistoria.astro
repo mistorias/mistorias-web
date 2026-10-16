@@ -24,15 +24,15 @@ type Props = {
 
 const { historiaId } = Astro.props;
 const base = import.meta.env.BASE_URL;
-const accion = gratitudeRoute(base);
+const formAction = gratitudeRoute(base);
 
 // El punto crece con el valor (14px→30px) y su borde se acerca al acento de
 // marca a la misma velocidad (20%→100%): tamaño y color cuentan la misma
 // historia — de "nada útil" a "muy útil" — antes de que se lea un número.
-const escala = [1, 2, 3, 4, 5].map((valor) => ({
-    valor,
-    tamano: 10 + valor * 4,
-    intensidad: valor * 20
+const scale = [1, 2, 3, 4, 5].map((value) => ({
+    value,
+    size: 10 + value * 4,
+    intensity: value * 20
 }));
 ---
 
@@ -53,7 +53,7 @@ const escala = [1, 2, 3, 4, 5].map((valor) => ({
         method="POST"
         data-netlify="true"
         netlify-honeypot="opinion-empresa"
-        action={accion}
+        action={formAction}
     >
         <input type="hidden" name="form-name" value="opinion-historia" />
         <input type="hidden" name="historia" value={historiaId} />
@@ -75,21 +75,21 @@ const escala = [1, 2, 3, 4, 5].map((valor) => ({
 
             <div class="opinion-historia__opciones">
                 {
-                    escala.map(({ valor, tamano, intensidad }) => (
+                    scale.map(({ value, size, intensity }) => (
                         <label
                             class="opinion-historia__opcion"
-                            style={`--tamano: ${tamano}px; --intensidad: ${intensidad}%`}
+                            style={`--tamano: ${size}px; --intensidad: ${intensity}%`}
                         >
                             <input
                                 type="radio"
                                 name="calificacion"
-                                value={valor}
+                                value={value}
                                 required
-                                aria-label={`Calificar ${valor} de 5`}
+                                aria-label={`Calificar ${value} de 5`}
                             />
                             <span class="opinion-historia__punto" aria-hidden="true" />
                             <span class="opinion-historia__numero" aria-hidden="true">
-                                {valor}
+                                {value}
                             </span>
                         </label>
                     ))

@@ -3,21 +3,21 @@ import LogotipoMistorias from "./LogotipoMistorias.astro";
 import { aboutRoute, homeRoute } from "../lib/routes";
 
 const base = import.meta.env.BASE_URL;
-const inicio = homeRoute(base);
-const acerca = aboutRoute(base);
+const homeHref = homeRoute(base);
+const aboutHref = aboutRoute(base);
 
 // La navegación tiene un solo destino, así que entra en línea desde 320px. Que
 // no haga falta un menú desplegable es afortunado: exigiría JavaScript y la CSP
 // del sitio declara `script-src 'none'`.
-const esRutaActual = (ruta: string) => Astro.url.pathname === ruta;
+const isCurrentRoute = (path: string) => Astro.url.pathname === path;
 ---
 
 <header class="cabecera">
     <div class="contenedor cabecera__interior">
         <a
             class="cabecera__marca"
-            href={inicio}
-            aria-current={esRutaActual(inicio) ? "page" : undefined}
+            href={homeHref}
+            aria-current={isCurrentRoute(homeHref) ? "page" : undefined}
         >
             <LogotipoMistorias disposicion="adaptable" />
         </a>
@@ -25,8 +25,8 @@ const esRutaActual = (ruta: string) => Astro.url.pathname === ruta;
         <nav aria-label="Principal">
             <a
                 class="cabecera__enlace"
-                href={acerca}
-                aria-current={esRutaActual(acerca) ? "page" : undefined}
+                href={aboutHref}
+                aria-current={isCurrentRoute(aboutHref) ? "page" : undefined}
             >
                 Acerca de
             </a>

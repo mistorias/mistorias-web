@@ -1,5 +1,5 @@
 ---
-import simbolo from "../assets/brand/symbol-mistorias.svg?raw";
+import symbolSvg from "../assets/brand/symbol-mistorias.svg?raw";
 
 // Sin `titulo` el símbolo es decorativo (la palabra al lado ya nombra la
 // marca, como en la cabecera). Con `titulo` es la única pista de la marca
@@ -16,7 +16,7 @@ const { titulo } = Astro.props;
     role={titulo ? "img" : undefined}
     aria-label={titulo}
     aria-hidden={titulo ? undefined : "true"}
-    set:html={simbolo}
+    set:html={symbolSvg}
 />
 
 <style>

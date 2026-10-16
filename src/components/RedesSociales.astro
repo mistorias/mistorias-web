@@ -14,19 +14,19 @@ const { etiquetadoPor } = Astro.props;
 
 <ul class="redes" role="list" aria-labelledby={etiquetadoPor}>
     {
-        SOCIAL_PROFILES.map((perfil, indice) => (
+        SOCIAL_PROFILES.map((profile, index) => (
             <li>
                 <EnlaceExterno
                     class="redes__enlace"
-                    href={perfil.url}
+                    href={profile.url}
                     rel="me"
                     variante="icono"
                     avisoAlineado={
-                        indice === SOCIAL_PROFILES.length - 1 ? "fin" : "centro"
+                        index === SOCIAL_PROFILES.length - 1 ? "fin" : "centro"
                     }
                 >
-                    <GlifoRed red={perfil.network} />
-                    <span class="sr-only">Mistorias en {perfil.label}</span>
+                    <GlifoRed red={profile.network} />
+                    <span class="sr-only">Mistorias en {profile.label}</span>
                 </EnlaceExterno>
             </li>
         ))

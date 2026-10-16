@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import CabeceraSitio from "../src/components/CabeceraSitio.astro";
 import { renderAstroComponent } from "./support/render-astro-component";
 
-// esRutaActual() marca aria-current="page" solo cuando Astro.url.pathname
+// isCurrentRoute() marca aria-current="page" solo cuando Astro.url.pathname
 // coincide con el enlace: cubre las dos ramas, no solo la de "sin coincidir"
 // que el resto de los tests dispara por defecto (issue #33).
 describe("CabeceraSitio", () => {

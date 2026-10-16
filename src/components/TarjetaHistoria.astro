@@ -21,29 +21,29 @@ type Props = {
 const { historia, nombreAutor, destacada = false, nivelTitulo = 2 } = Astro.props;
 const { title, summary, date, themes, imageAlt, readingTimeMinutes } =
     historia.data;
-const enlace = storyRoute(import.meta.env.BASE_URL, historia.id);
-const imagen = getStoryImage(historia.id);
+const storyHref = storyRoute(import.meta.env.BASE_URL, historia.id);
+const image = getStoryImage(historia.id);
 
 // El nivel se recibe en vez de fijarse: una tarjeta que cuelga de un encabezado
 // de sección debe ser h3, y saltarse un nivel rompe la navegación por
 // encabezados de los lectores de pantalla.
-const Titulo = `h${nivelTitulo}` as const;
+const Heading = `h${nivelTitulo}` as const;
 ---
 
 <article class:list={["tarjeta", destacada && "tarjeta--destacada"]}>
     <div class="tarjeta__imagen">
         <span
-            class:list={["tarjeta__marcador", imagen && "tarjeta__marcador--cargando"]}
+            class:list={["tarjeta__marcador", image && "tarjeta__marcador--cargando"]}
         >
             <SimboloMistorias />
         </span>
         {
             // El gate de contenido (story-image-requirements.ts) exige
-            // imageAlt siempre que exista principal.jpg: si `imagen` está
+            // imageAlt siempre que exista principal.jpg: si `image` está
             // presente, `imageAlt` también, por construcción.
-            imagen && (
+            image && (
                 <Picture
-                    src={imagen}
+                    src={image}
                     alt={imageAlt!}
                     width={480}
                     height={480}
@@ -56,7 +56,7 @@ const Titulo = `h${nivelTitulo}` as const;
         }
     </div>
 
-    <Titulo class="tarjeta__titulo">{title}</Titulo>
+    <Heading class="tarjeta__titulo">{title}</Heading>
 
     <p class="tarjeta__metadatos">
         <time datetime={dateForAttribute(date)}>{readableDate(date)}</time>
@@ -80,7 +80,7 @@ const Titulo = `h${nivelTitulo}` as const;
     }
 
     <p class="tarjeta__cta">
-        <a class="tarjeta__enlace" href={enlace}>
+        <a class="tarjeta__enlace" href={storyHref}>
             Leer la historia<span class="sr-only"> completa: {title}</span>
             <span aria-hidden="true">→</span>
         </a>
@@ -137,7 +137,7 @@ const Titulo = `h${nivelTitulo}` as const;
     }
 
     /* El shimmer solo se activa cuando hay una foto en camino (lo decide el
-       propio componente, en el servidor, según haya o no `imagen`) — el
+       propio componente, en el servidor, según haya o no `image`) — el
        marcador permanente de una historia sin foto se queda estático.
        `prefers-reduced-motion` ya lo cubre la regla global de base.css, que
        colapsa la duración de cualquier `animation` a 0.01ms. */
