@@ -234,7 +234,7 @@ signifiquen lo mismo, el orden es:
 1. Fusiona el PR de versión (`chore: la versión va de X a Y`, rama
    `version/subir`). Lo abre cada noche el workflow `subir-version.yml`, que
    calcula la versión según los commits desde el último tag (ver
-   [ADR 0026](docs/adr/0026-subida-automatica-de-version.md)). Para ver qué
+   [ADR 0027](docs/adr/0027-subida-automatica-de-version.md)). Para ver qué
    versión propondría, corre `pnpm next-version` en local y luego descarta el
    cambio en `package.json`.
 2. Etiqueta ese commit con `v` + esa misma versión: `git tag v0.2.0`.

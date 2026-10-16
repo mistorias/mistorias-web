@@ -1,4 +1,4 @@
-# ADR 0026: Un workflow propone la subida de versión según los commits
+# ADR 0027: Un workflow propone la subida de versión según los commits
 
 ## Estado
 
