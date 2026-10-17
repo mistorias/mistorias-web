@@ -43,7 +43,7 @@ nombre del archivo y siguen en castellano (`params: { tema }`).
 No son identificadores, así que la regla no los toca: las clases CSS y las
 custom properties (`.quipu-semana`, `--tamano`), los valores de texto de una prop
 (`redondeo="arriba"`) y los `id` del HTML. El porqué de este borde está en el
-[ADR 0027](adr/0027-identificadores-internos-de-componentes-en-ingles.md).
+[ADR 0031](adr/0031-identificadores-internos-de-componentes-en-ingles.md).
 
 ## Excepción: lenguaje de cara al lector
 

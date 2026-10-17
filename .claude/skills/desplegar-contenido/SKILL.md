@@ -72,7 +72,7 @@ mencionarlo en el commit del bump (`chore(contenido): ...`, ver
 ### 2. Regenerar el orden cronológico de historias
 
 `data/story-order.json` es el cache versionado (commiteado en git, ver
-[ADR 0012](../../../docs/adr/0012-cache-versionado-orden-cronologico-historias.md))
+[ADR 0028](../../../docs/adr/0028-cache-versionado-orden-cronologico-historias.md))
 que usa cada página de historia para calcular los enlaces "anterior" y
 "siguiente". El build nunca lo escribe — es responsabilidad de quien trae
 contenido nuevo correrlo y commitearlo:
@@ -94,7 +94,7 @@ submódulo). Si se omite este paso, el build falla: su campo `latest` decide a
 qué historia lleva `/ultima`, y la integración `latestStoryRedirect` se
 detiene si no coincide con la historia más reciente por fecha (ADR 0025). La
 navegación anterior/siguiente sí recalcularía en memoria, pero el cache
-commiteado dejaría de ser el artefacto auditable que busca el ADR 0012.
+commiteado dejaría de ser el artefacto auditable que busca el ADR 0028.
 
 ### 3. Validar el contenido: schema y gates de seguridad
 

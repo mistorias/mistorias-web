@@ -1,4 +1,4 @@
-# ADR 0015: `sitemap.xml` y `robots.txt` por destino de despliegue
+# ADR 0030: `sitemap.xml` y `robots.txt` por destino de despliegue
 
 ## Estado
 

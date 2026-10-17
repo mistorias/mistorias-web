@@ -7,7 +7,7 @@ import { hashOrderedIds, neighborsFor, type StoryNeighbors } from "./story-order
 
 /**
  * Cache versionado del orden cronológico de las historias (issue #34, ver
- * ADR 0012). Se guarda como JSON legible en `data/story-order.json`,
+ * ADR 0028). Se guarda como JSON legible en `data/story-order.json`,
  * trackeado en git —no en `.gitignore`— para que sea reusable entre
  * máquinas y CI sin regenerarse en cada checkout.
  */

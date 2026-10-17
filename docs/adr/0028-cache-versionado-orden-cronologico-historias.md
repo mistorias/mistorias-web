@@ -1,4 +1,4 @@
-# ADR 0012: Cache versionado del orden cronológico de historias
+# ADR 0028: Cache versionado del orden cronológico de historias
 
 ## Estado
 

@@ -1,4 +1,4 @@
-# ADR 0027: Los identificadores internos de los componentes van en inglés
+# ADR 0031: Los identificadores internos de los componentes van en inglés
 
 ## Estado
 
