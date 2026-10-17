@@ -1,8 +1,12 @@
-# ADR 0015: Feedback de lectores con Netlify Forms, sin JavaScript
+# ADR 0029: Feedback de lectores con Netlify Forms, sin JavaScript
 
 ## Estado
 
 Aceptado
+
+Renumerado: antes era ADR 0015, número que compartía con
+[ADR 0015](0015-tarjeta-como-enlace-unico-accesible.md) y
+[ADR 0030](0030-sitemap-y-robots-txt-por-destino.md).
 
 ## Contexto
 

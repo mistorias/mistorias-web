@@ -42,7 +42,7 @@ Página sin cabecera propia (portada, temas, acerca, una historia sin
 `public/imagenes/og-default.jpg`. Ese archivo no sale de `astro:assets`: lo
 genera `scripts/generate-default-og-image.ts` (`pnpm og-default-image`) y se
 versiona en git, mismo patrón que `data/story-order.json`
-(`docs/adr/0012-cache-versionado-orden-cronologico-historias.md`) — un
+(`docs/adr/0028-cache-versionado-orden-cronologico-historias.md`) — un
 artefacto commiteado en vez de recalculado, porque no depende de contenido
 editorial y solo cambiaría si cambia la ilustración de marca.
 

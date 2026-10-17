@@ -1,9 +1,12 @@
-# ADR 0027: Los identificadores internos de los componentes van en inglés
+# ADR 0031: Los identificadores internos de los componentes van en inglés
 
 ## Estado
 
 Aceptado. Reemplaza la parte de [docs/IDIOMA.md](../IDIOMA.md) que extendía la
 excepción del castellano a las variables de los componentes.
+
+Renumerado: antes era ADR 0027, número que compartía con
+[ADR 0027](0027-subida-automatica-de-version.md).
 
 ## Contexto
 

@@ -194,7 +194,7 @@ git submodule update --init --recursive
 
 `data/story-order.json` es el cache versionado del orden de publicación de
 las historias, que usa la navegación anterior/siguiente de cada página de
-historia (issue #34, ver [ADR 0012](docs/adr/0012-cache-versionado-orden-cronologico-historias.md)).
+historia (issue #34, ver [ADR 0028](docs/adr/0028-cache-versionado-orden-cronologico-historias.md)).
 Se commitea junto con el contenido: no está en `.gitignore`.
 
 Regenéralo después de agregar, quitar, renombrar o cambiarle la fecha a una

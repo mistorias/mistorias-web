@@ -24,7 +24,7 @@ una URL vieja: se lee como un sitio que no sostiene lo que publicó.
 
 La primera razón sigue siendo cierta, pero pesa distinto que en ADR 0009. Desde
 [ADR 0008](0008-marcador-de-build-en-desarrollo.md) y
-[ADR 0015](0015-sitemap-y-robots-txt-por-destino.md), GitHub Pages es el build
+[ADR 0030](0030-sitemap-y-robots-txt-por-destino.md), GitHub Pages es el build
 de trabajo en progreso: se marca `noindex, nofollow` en cada página y no genera
 sitemap. Las URLs `/etiquetas/…` que guardaron los buscadores son de
 mistorias.pe, el único destino que se indexa —y el único de los dos que sí

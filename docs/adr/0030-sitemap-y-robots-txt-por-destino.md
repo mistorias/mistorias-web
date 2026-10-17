@@ -1,8 +1,12 @@
-# ADR 0015: `sitemap.xml` y `robots.txt` por destino de despliegue
+# ADR 0030: `sitemap.xml` y `robots.txt` por destino de despliegue
 
 ## Estado
 
 Aceptado
+
+Renumerado: antes era ADR 0015, número que compartía con
+[ADR 0015](0015-tarjeta-como-enlace-unico-accesible.md) y
+[ADR 0029](0029-formularios-de-feedback-con-netlify-forms.md).
 
 ## Contexto
 
