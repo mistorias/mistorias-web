@@ -4,6 +4,10 @@
 
 Aceptado
 
+Renumerado: antes era ADR 0015, número que compartía con
+[ADR 0015](0015-tarjeta-como-enlace-unico-accesible.md) y
+[ADR 0029](0029-formularios-de-feedback-con-netlify-forms.md).
+
 ## Contexto
 
 El [issue #44](https://github.com/mistorias/mistorias-gestion-de-producto/issues/44)

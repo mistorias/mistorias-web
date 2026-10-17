@@ -4,6 +4,10 @@
 
 Aceptado
 
+Renumerado: antes era ADR 0015, número que compartía con
+[ADR 0015](0015-tarjeta-como-enlace-unico-accesible.md) y
+[ADR 0030](0030-sitemap-y-robots-txt-por-destino.md).
+
 ## Contexto
 
 El [issue #42 de gestión de producto](https://github.com/mistorias/mistorias-gestion-de-producto/issues/42)

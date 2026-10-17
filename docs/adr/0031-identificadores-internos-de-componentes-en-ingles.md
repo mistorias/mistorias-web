@@ -5,6 +5,9 @@
 Aceptado. Reemplaza la parte de [docs/IDIOMA.md](../IDIOMA.md) que extendía la
 excepción del castellano a las variables de los componentes.
 
+Renumerado: antes era ADR 0027, número que compartía con
+[ADR 0027](0027-subida-automatica-de-version.md).
+
 ## Contexto
 
 `docs/IDIOMA.md` pone el código en inglés y hace una excepción para los

@@ -4,6 +4,9 @@
 
 Aceptado
 
+Renumerado: antes era ADR 0012, número que compartía con
+[ADR 0012](0012-ilustracion-de-portada.md).
+
 ## Contexto
 
 El [issue #34](https://github.com/mistorias/mistorias-gestion-de-producto/issues/34)
