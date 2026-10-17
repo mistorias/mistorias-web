@@ -18,7 +18,7 @@ import { readStoryDates } from "../src/lib/content/story-order-source.ts";
  * Genera o actualiza `data/story-order.json`: el cache versionado del orden
  * cronológico de las historias que consume
  * `src/pages/historias/[...id].astro` para la navegación anterior/siguiente
- * (issue #34, ver docs/adr/0012-cache-versionado-orden-cronologico-historias.md).
+ * (issue #34, ver docs/adr/0028-cache-versionado-orden-cronologico-historias.md).
  *
  * Uso:
  *   pnpm story-order                 # regenera solo si el orden cambió

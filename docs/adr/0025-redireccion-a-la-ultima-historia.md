@@ -17,7 +17,7 @@ o en Linktree— que siempre lleve a la última historia publicada. Pide además
 3. Que el build tome el valor de ese archivo.
 
 Ese archivo ya existe: `data/story-order.json`, el cache del orden
-cronológico de [ADR 0012](0012-cache-versionado-orden-cronologico-historias.md),
+cronológico de [ADR 0028](0028-cache-versionado-orden-cronologico-historias.md),
 que escribe `pnpm story-order` y que el workflow diario de contenido ya
 regenera antes de abrir su PR.
 
@@ -60,7 +60,7 @@ integración compara `latest` con la historia más reciente según las fechas
 coinciden, o el archivo no existe, falla con el mensaje
 "Run `pnpm story-order` and commit the result".
 
-Es la decisión contraria a la de `resolveNeighbors` (ADR 0012), que ante un
+Es la decisión contraria a la de `resolveNeighbors` (ADR 0028), que ante un
 cache desfasado recalcula en silencio. La diferencia es deliberada: la
 navegación anterior/siguiente se recalcula sin consecuencias, pero si el build
 recalculara `latest`, el archivo dejaría de ser la fuente de verdad que pide

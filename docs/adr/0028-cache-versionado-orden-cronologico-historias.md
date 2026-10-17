@@ -1,8 +1,11 @@
-# ADR 0012: Cache versionado del orden cronológico de historias
+# ADR 0028: Cache versionado del orden cronológico de historias
 
 ## Estado
 
 Aceptado
+
+Renumerado: antes era ADR 0012, número que compartía con
+[ADR 0012](0012-ilustracion-de-portada.md).
 
 ## Contexto
 
