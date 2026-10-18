@@ -37,6 +37,32 @@ async function writeAsset(
   await writeFile(assetPath, "contenido-de-prueba");
 }
 
+async function writePublications(
+  storiesDirectory: string,
+  slug: string,
+  contents: string
+): Promise<void> {
+  const folder = path.join(storiesDirectory, slug);
+  await mkdir(folder, { recursive: true });
+  await writeFile(path.join(folder, "publicaciones.json"), contents);
+}
+
+const validPublications = JSON.stringify({
+  story: "valid-story",
+  posts: [
+    {
+      network: "instagram",
+      bufferId: "6710a1",
+      status: "publicado",
+      scheduledAt: "2026-10-20T19:05:00-05:00",
+      publishedAt: "2026-10-20T19:05:12-05:00",
+      text: "Texto enviado a Buffer.",
+      url: "https://mistorias.pe/historias/valid-story/?utm_source=instagram",
+      utmCampaign: "valid-story"
+    }
+  ]
+});
+
 async function runConfigSetupHook(directory: string): Promise<void> {
   const hook = storyAssetFolders(directory).hooks["astro:config:setup"];
   await hook?.({} as ConfigSetupOptions);
@@ -82,6 +108,120 @@ describe("assertStoryAssetFoldersAreValid", () => {
     ).resolves.toBeUndefined();
   });
 
+  it("acepta una carpeta anidada que solo trae un publicaciones.json válido", async () => {
+    const storiesDirectory = await prepareStoriesDirectory();
+    await writeStory(storiesDirectory, "valid-story");
+    await writePublications(storiesDirectory, "valid-story", validPublications);
+
+    await expect(
+      assertStoryAssetFoldersAreValid(storiesDirectory)
+    ).resolves.toBeUndefined();
+  });
+
+  it("acepta principal.jpg y publicaciones.json juntos en la misma carpeta", async () => {
+    const storiesDirectory = await prepareStoriesDirectory();
+    await writeStory(storiesDirectory, "valid-story");
+    await writeAsset(storiesDirectory, "valid-story", "principal.jpg");
+    await writePublications(storiesDirectory, "valid-story", validPublications);
+
+    await expect(
+      assertStoryAssetFoldersAreValid(storiesDirectory)
+    ).resolves.toBeUndefined();
+  });
+
+  it("acepta un post fallido sin fecha de publicación", async () => {
+    const storiesDirectory = await prepareStoriesDirectory();
+    await writeStory(storiesDirectory, "valid-story");
+    await writePublications(
+      storiesDirectory,
+      "valid-story",
+      JSON.stringify({
+        story: "valid-story",
+        posts: [
+          {
+            network: "x",
+            bufferId: "6710a2",
+            status: "fallido",
+            scheduledAt: "2026-10-20T19:05:00-05:00",
+            publishedAt: null,
+            text: "Texto enviado a Buffer.",
+            url: "https://mistorias.pe/historias/valid-story/?utm_source=x",
+            utmCampaign: "valid-story"
+          }
+        ]
+      })
+    );
+
+    await expect(
+      assertStoryAssetFoldersAreValid(storiesDirectory)
+    ).resolves.toBeUndefined();
+  });
+
+  it("rechaza un publicaciones.json que no es JSON", async () => {
+    const storiesDirectory = await prepareStoriesDirectory();
+    await writeStory(storiesDirectory, "valid-story");
+    await writePublications(storiesDirectory, "valid-story", "{ no es json");
+
+    await expect(
+      assertStoryAssetFoldersAreValid(storiesDirectory)
+    ).rejects.toThrow(/publicaciones\.json no es JSON válido/);
+  });
+
+  it("rechaza un publicaciones.json cuyo story no coincide con su carpeta", async () => {
+    const storiesDirectory = await prepareStoriesDirectory();
+    await writeStory(storiesDirectory, "valid-story");
+    await writePublications(
+      storiesDirectory,
+      "valid-story",
+      validPublications.replace('"story":"valid-story"', '"story":"otra-historia"')
+    );
+
+    await expect(
+      assertStoryAssetFoldersAreValid(storiesDirectory)
+    ).rejects.toThrow(/dice "otra-historia" pero está en la carpeta de "valid-story"/);
+  });
+
+  it("rechaza un publicaciones.json con un estado fuera del esquema", async () => {
+    const storiesDirectory = await prepareStoriesDirectory();
+    await writeStory(storiesDirectory, "valid-story");
+    await writePublications(
+      storiesDirectory,
+      "valid-story",
+      validPublications.replace('"status":"publicado"', '"status":"agendado"')
+    );
+
+    await expect(
+      assertStoryAssetFoldersAreValid(storiesDirectory)
+    ).rejects.toThrow(/publicaciones\.json no cumple el esquema/);
+  });
+
+  it("rechaza un publicaciones.json con campos que el esquema no declara", async () => {
+    const storiesDirectory = await prepareStoriesDirectory();
+    await writeStory(storiesDirectory, "valid-story");
+    await writePublications(
+      storiesDirectory,
+      "valid-story",
+      validPublications.replace('"story":', '"html":"<script></script>","story":')
+    );
+
+    await expect(
+      assertStoryAssetFoldersAreValid(storiesDirectory)
+    ).rejects.toThrow(/publicaciones\.json no cumple el esquema/);
+  });
+
+  it("rechaza una carpeta llamada publicaciones.json", async () => {
+    const storiesDirectory = await prepareStoriesDirectory();
+    await writeStory(storiesDirectory, "valid-story");
+    await mkdir(
+      path.join(storiesDirectory, "valid-story", "publicaciones.json"),
+      { recursive: true }
+    );
+
+    await expect(
+      assertStoryAssetFoldersAreValid(storiesDirectory)
+    ).rejects.toThrow(/más de un nivel/);
+  });
+
   it("rechaza una carpeta anidada que no coincide con ninguna historia", async () => {
     const storiesDirectory = await prepareStoriesDirectory();
     await writeStory(storiesDirectory, "valid-story");
@@ -106,6 +246,16 @@ describe("assertStoryAssetFoldersAreValid", () => {
     const storiesDirectory = await prepareStoriesDirectory();
     await writeStory(storiesDirectory, "valid-story");
     await writeAsset(storiesDirectory, "valid-story", "Principal.jpg");
+
+    await expect(
+      assertStoryAssetFoldersAreValid(storiesDirectory)
+    ).rejects.toThrow(/no está permitido/);
+  });
+
+  it("rechaza variantes del nombre del registro (mayúsculas o extensión distinta)", async () => {
+    const storiesDirectory = await prepareStoriesDirectory();
+    await writeStory(storiesDirectory, "valid-story");
+    await writeAsset(storiesDirectory, "valid-story", "Publicaciones.json");
 
     await expect(
       assertStoryAssetFoldersAreValid(storiesDirectory)
