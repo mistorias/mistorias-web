@@ -2,7 +2,8 @@
 
 ## Estado
 
-Aceptado
+Aceptado. El [ADR 0032](0032-registro-de-publicaciones-en-la-carpeta-de-la-historia.md)
+suma `publicaciones.json` a la allow list de la carpeta de la historia.
 
 ## Contexto
 

@@ -1,12 +1,17 @@
 import type { Dirent } from "node:fs";
-import { readdir } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
+import {
+  assertSocialPublicationsAreValid,
+  SOCIAL_PUBLICATIONS_FILENAME
+} from "./social-publications";
 import {
   defaultStoriesDirectory,
   readStoriesDirectoryEntries
 } from "./stories-directory";
 
-const ALLOWED_ASSET_FILENAME = "principal.jpg";
+const IMAGE_FILENAME = "principal.jpg";
+const ALLOWED_ASSET_FILENAMES = [IMAGE_FILENAME, SOCIAL_PUBLICATIONS_FILENAME];
 const STORY_EXTENSION = ".md";
 
 function storySlugsIn(entries: Dirent[]): Set<string> {
@@ -40,20 +45,30 @@ function assertAssetEntryIsAllowed(assetEntry: Dirent, assetPath: string): void 
     );
   }
 
-  if (assetEntry.name !== ALLOWED_ASSET_FILENAME) {
+  if (!ALLOWED_ASSET_FILENAMES.includes(assetEntry.name)) {
     throw new Error(
-      `${assetPath} no está permitido. Solo se admite "${ALLOWED_ASSET_FILENAME}" dentro de la carpeta de una historia.`
+      `${assetPath} no está permitido. Solo se admiten ${ALLOWED_ASSET_FILENAMES.map((name) => `"${name}"`).join(" y ")} dentro de la carpeta de una historia.`
     );
   }
 }
 
 async function assertAssetFolderContentsAreValid(
+  folderName: string,
   folderPath: string
 ): Promise<void> {
   const assetEntries = await readdir(folderPath, { withFileTypes: true });
 
   for (const assetEntry of assetEntries) {
-    assertAssetEntryIsAllowed(assetEntry, path.join(folderPath, assetEntry.name));
+    const assetPath = path.join(folderPath, assetEntry.name);
+    assertAssetEntryIsAllowed(assetEntry, assetPath);
+
+    if (assetEntry.name === SOCIAL_PUBLICATIONS_FILENAME) {
+      assertSocialPublicationsAreValid(
+        await readFile(assetPath, "utf8"),
+        folderName,
+        assetPath
+      );
+    }
   }
 }
 
@@ -61,9 +76,10 @@ async function assertAssetFolderContentsAreValid(
  * Rechaza cualquier carpeta anidada dentro de `stories/` que no cumpla las
  * reglas de la imagen de una historia (issue #29, prerrequisito del ADR 0005):
  * la carpeta debe espejar el nombre de una historia existente, no puede
- * anidar otra carpeta, y solo puede contener `principal.jpg`. Un `.md` (u
- * otro archivo) colado ahí es exactamente el hallazgo que el ADR describe
- * como agujero del gate anti-HTML cuando no era recursivo.
+ * anidar otra carpeta, y solo puede contener `principal.jpg` y el registro
+ * `publicaciones.json` (ADR 0032), este último validado contra su esquema. Un
+ * `.md` (u otro archivo) colado ahí es exactamente el hallazgo que el ADR 0005
+ * describe como agujero del gate anti-HTML cuando no era recursivo.
  */
 export async function assertStoryAssetFoldersAreValid(
   directory = defaultStoriesDirectory
@@ -74,6 +90,6 @@ export async function assertStoryAssetFoldersAreValid(
   for (const folder of assetFoldersIn(entries)) {
     const folderPath = path.join(directory, folder.name);
     assertFolderMatchesAStory(folder.name, folderPath, storySlugs);
-    await assertAssetFolderContentsAreValid(folderPath);
+    await assertAssetFolderContentsAreValid(folder.name, folderPath);
   }
 }
