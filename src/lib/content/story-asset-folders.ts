@@ -2,16 +2,16 @@ import type { Dirent } from "node:fs";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import {
-  assertSocialPublicationsAreValid,
-  SOCIAL_PUBLICATIONS_FILENAME
-} from "./social-publications";
+  assertBroadcastRecordIsValid,
+  BROADCAST_RECORD_FILENAME
+} from "./story-broadcast";
 import {
   defaultStoriesDirectory,
   readStoriesDirectoryEntries
 } from "./stories-directory";
 
 const IMAGE_FILENAME = "principal.jpg";
-const ALLOWED_ASSET_FILENAMES = [IMAGE_FILENAME, SOCIAL_PUBLICATIONS_FILENAME];
+const ALLOWED_ASSET_FILENAMES = [IMAGE_FILENAME, BROADCAST_RECORD_FILENAME];
 const STORY_EXTENSION = ".md";
 
 function storySlugsIn(entries: Dirent[]): Set<string> {
@@ -62,8 +62,8 @@ async function assertAssetFolderContentsAreValid(
     const assetPath = path.join(folderPath, assetEntry.name);
     assertAssetEntryIsAllowed(assetEntry, assetPath);
 
-    if (assetEntry.name === SOCIAL_PUBLICATIONS_FILENAME) {
-      assertSocialPublicationsAreValid(
+    if (assetEntry.name === BROADCAST_RECORD_FILENAME) {
+      assertBroadcastRecordIsValid(
         await readFile(assetPath, "utf8"),
         folderName,
         assetPath
@@ -77,7 +77,7 @@ async function assertAssetFolderContentsAreValid(
  * reglas de la imagen de una historia (issue #29, prerrequisito del ADR 0005):
  * la carpeta debe espejar el nombre de una historia existente, no puede
  * anidar otra carpeta, y solo puede contener `principal.jpg` y el registro
- * `publicaciones.json` (ADR 0032), este último validado contra su esquema. Un
+ * de difusión `difusion.json` (ADR 0032), este último validado contra su esquema. Un
  * `.md` (u otro archivo) colado ahí es exactamente el hallazgo que el ADR 0005
  * describe como agujero del gate anti-HTML cuando no era recursivo.
  */
