@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-16T23:20:14.151Z",
-  "hash": "aeffbc07fa1efb4b49b6f622029bfe0a5e4fb06a4e1943a1be9a832e7dc71996",
+  "generatedAt": "2026-10-23T21:36:21.770Z",
+  "hash": "efbb16b3f009ce1b9fa9ad5cd17ee1d71bc89b2626066e33db7cb61d48e5fc60",
   "order": [
     "2026-07-24-el-aula-de-madera-donde-ximena-aprende",
     "2026-07-31-los-libros-tambien-llegan-a-cotahuasi",
@@ -15,9 +15,10 @@
     "2026-09-27-el-acoso-a-dani-sobrevive-gracias-a-quienes-miran-y-callan",
     "2026-10-04-las-estrellas-de-calamina-que-un-profesor-quiere-devolver-a-su-sitio",
     "2026-10-09-freddy-hizo-todo-bien-para-beca-18-pero-el-presupuesto-decide-si-hay-cupo",
-    "2026-10-16-dayana-es-la-mejor-en-matematica"
+    "2026-10-16-dayana-es-la-mejor-en-matematica",
+    "2026-10-23-yesenia-quiere-estudiar-literatura"
   ],
-  "latest": "2026-10-16-dayana-es-la-mejor-en-matematica",
+  "latest": "2026-10-23-yesenia-quiere-estudiar-literatura",
   "stories": {
     "2026-07-24-el-aula-de-madera-donde-ximena-aprende": {
       "previous": null,
@@ -73,6 +74,10 @@
     },
     "2026-10-16-dayana-es-la-mejor-en-matematica": {
       "previous": "2026-10-09-freddy-hizo-todo-bien-para-beca-18-pero-el-presupuesto-decide-si-hay-cupo",
+      "next": "2026-10-23-yesenia-quiere-estudiar-literatura"
+    },
+    "2026-10-23-yesenia-quiere-estudiar-literatura": {
+      "previous": "2026-10-16-dayana-es-la-mejor-en-matematica",
       "next": null
     }
   }
