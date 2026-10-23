@@ -17,7 +17,11 @@ Cuando la versión actual del sitio es accesible desde uno de los proveedores de
 
 **Publicación**:
 Poner en producción la versión actual del sitio en Netlify. Solo ocurre cuando se empuja una etiqueta de versión al repositorio — no automáticamente al fusionar en `main`.
-*Avoid*: Deploy, release (como verbo genérico), go-live
+*Avoid*: Deploy, release (como verbo genérico), go-live, y usarlo para los posts en redes (eso es una Difusión).
+
+**Difusión**:
+Llevar una historia ya publicada a las redes sociales (Facebook, Instagram, X). La ejecuta mistorias-redes-sociales a partir del feed `/historias.json` y queda registrada en `stories/<slug>/difusion.json` de mistorias-contenido. En el código se llama `broadcast`. Sus demás términos (borrador, aprobación de la difusión, difundido) se definen en el [CONTEXT.md de redes-sociales](https://github.com/mistorias/mistorias-redes-sociales/blob/main/CONTEXT.md).
+*Avoid*: Publicación (reservada para el sitio en producción), post, anuncio.
 
 **Tema**:
 El eje editorial que distingue una historia de las demás y que agrupa a las que lo comparten. Entre tres y siete por historia; el sitio los publica en `/temas/`. En el código se llama `theme` — ver [docs/IDIOMA.md](docs/IDIOMA.md).
