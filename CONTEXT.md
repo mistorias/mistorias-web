@@ -20,7 +20,7 @@ Poner en producción la versión actual del sitio en Netlify. Solo ocurre cuando
 *Avoid*: Deploy, release (como verbo genérico), go-live, y usarlo para los posts en redes (eso es una Difusión).
 
 **Difusión**:
-Llevar una historia ya publicada a las redes sociales (Facebook, Instagram, X). La ejecuta mistorias-redes-sociales a partir del feed `/historias.json` y queda registrada en `stories/<slug>/difusion.json` de mistorias-contenido. En el código se llama `broadcast`. Sus demás términos (borrador, aprobación de la difusión, difundido) se definen en el [CONTEXT.md de redes-sociales](https://github.com/mistorias/mistorias-redes-sociales/blob/main/CONTEXT.md).
+Llevar una historia ya publicada a las redes sociales (Facebook, Instagram, X). La ejecuta mistorias-redes-sociales a partir del feed `/historias.json` y queda registrada en `stories/<slug>/difusion.json` de mistorias-contenido. En el código se llama `broadcast`. Sus demás términos (borrador, autoaprobación de la difusión, difundido) se definen en el [CONTEXT.md de redes-sociales](https://github.com/mistorias/mistorias-redes-sociales/blob/main/CONTEXT.md).
 *Avoid*: Publicación (reservada para el sitio en producción), post, anuncio.
 
 **Tema**:
