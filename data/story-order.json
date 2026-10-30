@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-23T21:36:21.770Z",
-  "hash": "efbb16b3f009ce1b9fa9ad5cd17ee1d71bc89b2626066e33db7cb61d48e5fc60",
+  "generatedAt": "2026-10-30T18:51:51.491Z",
+  "hash": "af86b29e05282275331689b9e6c0e8e0d0c3eb45f6d500f879fad5bc5809ff37",
   "order": [
     "2026-07-24-el-aula-de-madera-donde-ximena-aprende",
     "2026-07-31-los-libros-tambien-llegan-a-cotahuasi",
@@ -16,9 +16,10 @@
     "2026-10-04-las-estrellas-de-calamina-que-un-profesor-quiere-devolver-a-su-sitio",
     "2026-10-09-freddy-hizo-todo-bien-para-beca-18-pero-el-presupuesto-decide-si-hay-cupo",
     "2026-10-16-dayana-es-la-mejor-en-matematica",
-    "2026-10-23-yesenia-quiere-estudiar-literatura"
+    "2026-10-23-yesenia-quiere-estudiar-literatura",
+    "2026-10-29-a-rosalia-le-faltan-dos-anos-para-jubilarse-y-un-dia-para-decidir"
   ],
-  "latest": "2026-10-23-yesenia-quiere-estudiar-literatura",
+  "latest": "2026-10-29-a-rosalia-le-faltan-dos-anos-para-jubilarse-y-un-dia-para-decidir",
   "stories": {
     "2026-07-24-el-aula-de-madera-donde-ximena-aprende": {
       "previous": null,
@@ -78,6 +79,10 @@
     },
     "2026-10-23-yesenia-quiere-estudiar-literatura": {
       "previous": "2026-10-16-dayana-es-la-mejor-en-matematica",
+      "next": "2026-10-29-a-rosalia-le-faltan-dos-anos-para-jubilarse-y-un-dia-para-decidir"
+    },
+    "2026-10-29-a-rosalia-le-faltan-dos-anos-para-jubilarse-y-un-dia-para-decidir": {
+      "previous": "2026-10-23-yesenia-quiere-estudiar-literatura",
       "next": null
     }
   }
