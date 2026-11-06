@@ -1,0 +1,88 @@
+---
+// Envuelve el texto de una historia y dibuja arriba de la ventana un cordón de
+// quipu que se llena a medida que se lee. Solo CSS: el sitio no envía
+// JavaScript (`script-src 'none'`), así que el avance lo lleva una
+// scroll-driven animation atada a este mismo envoltorio.
+---
+
+<div class="progreso-de-lectura">
+    <span class="progreso-de-lectura__cordon" aria-hidden="true">
+        <span class="progreso-de-lectura__avance"></span>
+    </span>
+    <slot />
+</div>
+
+<style>
+    /*
+     * La línea de tiempo es el envoltorio, no la página: así el cordón llega
+     * al final cuando termina el texto, no cuando termina el pie del sitio.
+     */
+    .progreso-de-lectura {
+        view-timeline: --progreso-de-lectura block;
+    }
+
+    /*
+     * Mejora progresiva: sin scroll-driven animations el cordón no se dibuja,
+     * porque uno que nunca avanza diría algo falso. La historia se lee igual.
+     *
+     * Es decorativo (`aria-hidden`): un lector de pantalla ya informa la
+     * posición en la página. `pointer-events: none` para no tapar nada.
+     * `z-index` 5, el mismo de `CompartirHistoria`: debajo del enlace para
+     * saltar al contenido (10) y del aviso de los enlaces externos (20).
+     */
+    .progreso-de-lectura__cordon {
+        display: none;
+    }
+
+    @supports (animation-timeline: view()) {
+        .progreso-de-lectura__cordon {
+            position: fixed;
+            inset-block-start: 0;
+            inset-inline: 0;
+            z-index: 5;
+            display: block;
+            block-size: 0.25rem;
+            background-color: var(--color-borde);
+            pointer-events: none;
+        }
+
+        /*
+         * `scaleX` y no `width`: se resuelve en el compositor, sin recalcular
+         * el layout en cada paso del scroll. Los tokens ya cambian con el
+         * tema, así que el modo oscuro no necesita regla propia.
+         */
+        .progreso-de-lectura__avance {
+            display: block;
+            block-size: 100%;
+            background-color: var(--color-acento);
+            border-start-end-radius: 3px;
+            border-end-end-radius: 3px;
+            transform-origin: left;
+            animation: progreso-de-lectura-avance linear both;
+        }
+
+        /*
+         * La línea de tiempo va en otra regla, con más especificidad: el
+         * minificador junta las propiedades de una misma regla en el atajo
+         * `animation`, que no admite `animation-timeline`, y descartaba la
+         * animación entera (la misma lección de `IndiceDeLetras`).
+         *
+         * `contain`: 0% cuando el inicio del texto llega arriba de la ventana
+         * y 100% cuando su final llega abajo, o sea, cuando ya se leyó todo.
+         */
+        .progreso-de-lectura .progreso-de-lectura__avance {
+            animation-timeline: --progreso-de-lectura;
+            animation-range: contain;
+        }
+    }
+
+    @keyframes progreso-de-lectura-avance {
+        from {
+            transform: scaleX(0);
+        }
+
+        to {
+            transform: scaleX(1);
+        }
+    }
+</style>
