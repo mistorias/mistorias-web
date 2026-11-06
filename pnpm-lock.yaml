@@ -190,6 +190,9 @@ importers:
       '@astrojs/check':
         specifier: ^0.9.12
         version: 0.9.12(@emnapi/runtime@1.11.3)(prettier@3.9.6)(typescript@6.0.3)
+      '@astrojs/markdown-satteri':
+        specifier: 0.4.5
+        version: 0.4.5
       '@astrojs/sitemap':
         specifier: ^3.7.4
         version: 3.7.4

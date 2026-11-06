@@ -1,0 +1,126 @@
+---
+// Envuelve el texto de una historia y dibuja arriba de la ventana un cordón de
+// quipu que se llena a medida que se lee su primera sección: del primer `h2`
+// al siguiente, sin importar cómo se titulen. La sección la marca
+// `firstSectionPlugin` (`src/lib/content/first-section.ts`) al compilar el
+// Markdown. Solo CSS: el sitio no envía JavaScript (`script-src 'none'`), así
+// que el avance lo lleva una scroll-driven animation.
+---
+
+<div class="progreso-de-lectura">
+    <span class="progreso-de-lectura__cordon" aria-hidden="true">
+        <span class="progreso-de-lectura__avance"></span>
+    </span>
+    <slot />
+</div>
+
+<style>
+    /*
+     * Mejora progresiva: sin scroll-driven animations, o en un texto sin dos
+     * `h2` (no hay sección que medir), el cordón no se dibuja, porque uno
+     * que nunca avanza diría algo falso. La historia se lee igual.
+     *
+     * Es decorativo (`aria-hidden`): un lector de pantalla ya informa la
+     * posición en la página. `pointer-events: none` para no tapar nada.
+     * `z-index` 5, el mismo de `CompartirHistoria`: debajo del enlace para
+     * saltar al contenido (10) y del aviso de los enlaces externos (20).
+     */
+    .progreso-de-lectura__cordon {
+        display: none;
+    }
+
+    @supports (animation-timeline: view()) and (timeline-scope: none) {
+        /*
+         * La línea de tiempo la declara la sección, que vive dentro del
+         * Markdown; `timeline-scope` la sube hasta este envoltorio para que
+         * el cordón, que es hermano del texto y no hijo, pueda usarla.
+         */
+        .progreso-de-lectura {
+            timeline-scope: --progreso-de-lectura;
+        }
+
+        .progreso-de-lectura :global(.first-section) {
+            view-timeline: --progreso-de-lectura block;
+        }
+
+        .progreso-de-lectura__cordon {
+            animation: progreso-de-lectura-aparece linear both;
+        }
+
+        .progreso-de-lectura:has(:global(.first-section))
+            .progreso-de-lectura__cordon {
+            position: fixed;
+            inset-block-start: 0;
+            inset-inline: 0;
+            z-index: 5;
+            display: block;
+            block-size: 0.25rem;
+            background-color: var(--color-borde);
+            pointer-events: none;
+        }
+
+        /*
+         * `scaleX` y no `width`: se resuelve en el compositor, sin recalcular
+         * el layout en cada paso del scroll. Los tokens ya cambian con el
+         * tema, así que el modo oscuro no necesita regla propia.
+         */
+        .progreso-de-lectura__avance {
+            display: block;
+            block-size: 100%;
+            background-color: var(--color-acento);
+            border-start-end-radius: 3px;
+            border-end-end-radius: 3px;
+            transform-origin: left;
+            animation: progreso-de-lectura-avance linear both;
+        }
+
+        /*
+         * Las líneas de tiempo van en reglas aparte, con más especificidad
+         * que la del atajo `animation`: el minificador junta las propiedades
+         * de una misma regla en ese atajo, que no admite `animation-timeline`,
+         * y descartaba la animación entera (la misma lección de
+         * `IndiceDeLetras`). Y un atajo en una regla más específica pisaría la
+         * línea de tiempo con `auto`.
+         *
+         * Aparece: el cordón baja y se funde mientras el inicio de la sección
+         * recorre el último 30% de la ventana hasta llegar arriba. Atado al
+         * scroll, así que al volver hacia arriba se va por el mismo camino.
+         *
+         * Avanza (`contain`): 0% cuando el inicio de la sección llega arriba
+         * de la ventana y 100% cuando su final llega abajo, o sea, cuando ya
+         * se leyó todo.
+         */
+        .progreso-de-lectura:has(:global(.first-section))
+            .progreso-de-lectura__cordon {
+            animation-timeline: --progreso-de-lectura;
+            animation-range: entry 70% entry 100%;
+        }
+
+        .progreso-de-lectura .progreso-de-lectura__avance {
+            animation-timeline: --progreso-de-lectura;
+            animation-range: contain;
+        }
+    }
+
+    @keyframes progreso-de-lectura-aparece {
+        from {
+            opacity: 0;
+            transform: translateY(-100%);
+        }
+
+        to {
+            opacity: 1;
+            transform: none;
+        }
+    }
+
+    @keyframes progreso-de-lectura-avance {
+        from {
+            transform: scaleX(0);
+        }
+
+        to {
+            transform: scaleX(1);
+        }
+    }
+</style>

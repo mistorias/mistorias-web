@@ -12,6 +12,7 @@ import ListaTemas from "../../components/ListaTemas.astro";
 import FirmaAutoria from "../../components/FirmaAutoria.astro";
 import NavegacionHistorias from "../../components/NavegacionHistorias.astro";
 import OpinionHistoria from "../../components/OpinionHistoria.astro";
+import ProgresoDeLectura from "../../components/ProgresoDeLectura.astro";
 import SimboloMistorias from "../../components/SimboloMistorias.astro";
 import TiempoDeLectura from "../../components/TiempoDeLectura.astro";
 import { dateForAttribute, readableDate } from "../../lib/dates";
@@ -96,60 +97,64 @@ if (author === undefined) {
             urlImagen={shareImageUrl}
         />
 
-        <header class="columna historia__cabecera">
-            <h1>{story.data.title}</h1>
+        {/* El cordón mide la primera sección del texto (del primer h2 al
+            siguiente); el envoltorio solo tiene que contenerla. */}
+        <ProgresoDeLectura>
+            <header class="columna historia__cabecera">
+                <h1>{story.data.title}</h1>
 
-            <p class="historia__metadatos">
-                Por <a href={authorRoute(base, author.id)}>{author.data.name}</a>
-                <span aria-hidden="true">·</span>
-                <time datetime={dateForAttribute(story.data.date)}>
-                    {readableDate(story.data.date)}
-                </time>
+                <p class="historia__metadatos">
+                    Por <a href={authorRoute(base, author.id)}>{author.data.name}</a>
+                    <span aria-hidden="true">·</span>
+                    <time datetime={dateForAttribute(story.data.date)}>
+                        {readableDate(story.data.date)}
+                    </time>
+                </p>
+
+                <TiempoDeLectura minutos={story.data.readingTimeMinutes} />
+
+                <p class="historia__resumen">{story.data.summary}</p>
+            </header>
+
+            {
+                // El gate de contenido (story-image-requirements.ts) exige
+                // imageAlt siempre que exista principal.jpg: si `image` está
+                // presente, `imageAlt` también, por construcción.
+                image && (
+                    <figure class="columna historia__imagen">
+                        <span class="historia__marcador">
+                            <SimboloMistorias />
+                        </span>
+                        <Picture
+                            src={image}
+                            alt={story.data.imageAlt!}
+                            width={1200}
+                            formats={["webp"]}
+                            fallbackFormat="jpg"
+                            loading="lazy"
+                            class="historia__foto"
+                        />
+                        <figcaption class="historia__credito">
+                            {story.data.imageCredit}
+                            <span aria-hidden="true">·</span>
+                            {story.data.imageLicense}
+                        </figcaption>
+                    </figure>
+                )
+            }
+
+            {/* La prosa recibe un solo tratamiento tipográfico: el esquema no
+                garantiza qué secciones trae una historia, así que el diseño no se
+                acopla a sus títulos. */}
+            <div class="columna prosa">
+                <Content />
+            </div>
+
+            <p class="columna historia__aviso">
+                Los personajes de esta historia son ficticios; cualquier parecido
+                con personas reales es pura coincidencia.
             </p>
-
-            <TiempoDeLectura minutos={story.data.readingTimeMinutes} />
-
-            <p class="historia__resumen">{story.data.summary}</p>
-        </header>
-
-        {
-            // El gate de contenido (story-image-requirements.ts) exige
-            // imageAlt siempre que exista principal.jpg: si `image` está
-            // presente, `imageAlt` también, por construcción.
-            image && (
-                <figure class="columna historia__imagen">
-                    <span class="historia__marcador">
-                        <SimboloMistorias />
-                    </span>
-                    <Picture
-                        src={image}
-                        alt={story.data.imageAlt!}
-                        width={1200}
-                        formats={["webp"]}
-                        fallbackFormat="jpg"
-                        loading="lazy"
-                        class="historia__foto"
-                    />
-                    <figcaption class="historia__credito">
-                        {story.data.imageCredit}
-                        <span aria-hidden="true">·</span>
-                        {story.data.imageLicense}
-                    </figcaption>
-                </figure>
-            )
-        }
-
-        {/* La prosa recibe un solo tratamiento tipográfico: el esquema no
-            garantiza qué secciones trae una historia, así que el diseño no se
-            acopla a sus títulos. */}
-        <div class="columna prosa">
-            <Content />
-        </div>
-
-        <p class="columna historia__aviso">
-            Los personajes de esta historia son ficticios; cualquier parecido
-            con personas reales es pura coincidencia.
-        </p>
+        </ProgresoDeLectura>
 
         {
             (story.data.themes ?? []).length > 0 && (
