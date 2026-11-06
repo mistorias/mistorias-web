@@ -97,8 +97,8 @@ if (author === undefined) {
             urlImagen={shareImageUrl}
         />
 
-        {/* El progreso mide solo el texto de la historia: lo que viene
-            después (temas, firma, opinión) ya no es lectura pendiente. */}
+        {/* El cordón mide la primera sección del texto (del primer h2 al
+            siguiente); el envoltorio solo tiene que contenerla. */}
         <ProgresoDeLectura>
             <header class="columna historia__cabecera">
                 <h1>{story.data.title}</h1>
