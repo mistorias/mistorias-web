@@ -147,15 +147,17 @@ a {
 
 /* --- Prosa editorial ---------------------------------------------------- */
 
-.prosa > * + * {
+/* `.first-section` envuelve la primera sección del texto (ADR 0035): sus
+   hijos se espacian igual que si estuvieran sueltos en la prosa. */
+:is(.prosa, .prosa > .first-section) > * + * {
   margin-block-start: var(--esp-m);
 }
 
-.prosa > h2 {
+:is(.prosa, .prosa > .first-section) > h2 {
   margin-block-start: var(--esp-xl);
 }
 
-.prosa > h3 {
+:is(.prosa, .prosa > .first-section) > h3 {
   margin-block-start: var(--esp-l);
 }
 

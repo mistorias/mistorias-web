@@ -8,6 +8,8 @@ import { latestStoryRedirect } from "./src/lib/content/latest-story-redirect-int
 import { brandSymbol } from "./src/lib/brand/symbol-gate-integration";
 import { publicSvg } from "./src/lib/assets/public-svg-gate-integration";
 import { coverIllustration } from "./src/lib/assets/illustration-gate-integration";
+import { satteri } from "@astrojs/markdown-satteri";
+import { firstSectionPlugin } from "./src/lib/content/first-section";
 import { isDevelopmentTarget, resolveDeploymentConfig } from "./src/lib/deployment";
 
 const { site, base } = resolveDeploymentConfig(process.env.DEPLOY_TARGET);
@@ -43,6 +45,9 @@ if (!isDevelopmentTarget(process.env.DEPLOY_TARGET)) {
 export default defineConfig({
   srcDir: "src",
   integrations,
+  // Envuelve la primera sección de cada texto para que el progreso de
+  // lectura mida solo esa parte (ADR 0035).
+  markdown: { processor: satteri({ hastPlugins: [firstSectionPlugin] }) },
   site,
   base
 });
