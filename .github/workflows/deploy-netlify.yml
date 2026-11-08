@@ -65,13 +65,18 @@ jobs:
 
       # --no-build publica exactamente el artefacto que este workflow construyó
       # y verificó; sin esa bandera el CLI lo reconstruye con su propia
-      # configuración y descarta el destino declarado arriba.
+      # configuración y descarta el destino declarado arriba. Con --no-build el
+      # CLI tampoco busca las funciones por su cuenta: --functions le dice dónde
+      # está `form-submitted.ts` (ADR 0036) para que la empaquete y la suba con
+      # el sitio; sin la bandera, el sitio saldría sin la función y los
+      # comentarios públicos nunca abrirían su PR.
       - name: Deploy production site to Netlify
         run: >
           pnpm --package=netlify-cli dlx netlify
           deploy
           --dir=dist
           --no-build
+          --functions=netlify/functions
           --prod
           --site="$NETLIFY_SITE_ID"
           --message="Release $GITHUB_REF_NAME"

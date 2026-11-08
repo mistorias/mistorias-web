@@ -157,6 +157,8 @@ Pages ship a strict Content-Security-Policy from `src/layouts/BaseLayout.astro`.
 
 Reader comments are the one thing the story folders accept beyond literal names: `comentario-<16 hex>.json`, validated by `src/lib/content/story-comment.ts` (strict schema; `story` must match the folder, `id` the filename) and written by a Netlify function through a public PR that a person merges to approve. See [ADR 0036](docs/adr/0036-comentarios-publicos-de-lectores-sin-javascript.md).
 
+The only server-side code is `netlify/functions/form-submitted.ts`, a thin `formSubmitted` adapter (Netlify only fires it for submissions Forms already verified, and it is signed, so it cannot be called from outside) over `src/lib/comments/`, which has no runtime dependency beyond `fetch` and `node:crypto`: it ignores everything that is not a valid public comment *before* any network call, then opens one PR in mistorias-contenido as the scoped GitHub App installation token (target repo and branch hardcoded, no reader data in paths, branches, titles or logs, name and text only inside a code fence longer than any backtick run in them). Config comes from the `COMMENTS_GITHUB_APP_*` Netlify env vars; without them it logs `comments-misconfigured` and the submission just stays in the Netlify panel. `netlify.toml` declares `[functions]` and `deploy-netlify.yml` passes `--functions=netlify/functions` because the deploy uses `--no-build`. See [ADR 0036](docs/adr/0036-comentarios-publicos-de-lectores-sin-javascript.md).
+
 See [ADR 0004](docs/adr/0004-triaje-reportes-seguridad-github-pages.md) for the full security triage and [SECURITY.md](SECURITY.md) for how to report vulnerabilities.
 
 ## Testing Astro Components
