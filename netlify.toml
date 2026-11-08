@@ -16,3 +16,10 @@
 
 [build.environment]
   DEPLOY_TARGET = "netlify"
+
+# Funciones de Netlify (ADR 0036): `form-submitted.ts` abre un PR por cada
+# comentario público. Se empaquetan con esbuild, que incrusta
+# `data/story-order.json` y el esquema de `src/lib/` en un solo archivo.
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
