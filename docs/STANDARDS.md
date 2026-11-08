@@ -122,6 +122,16 @@ clicable extendida, y cómo estirar ese enlace con CSS puro sin duplicar el
 destino para quien navega con lector de pantalla: ver
 [docs/ENLACES.md](ENLACES.md).
 
+### Navegadores soportados
+
+Lo esencial (leer, navegar, plegar, saltar, enviar un formulario) solo usa
+funciones *Baseline ampliamente disponible*. Lo decorativo puede usar
+funciones más nuevas si degrada solo (el navegador la ignora, o va en
+`@supports`) y un comentario junto a la regla dice qué se pierde sin ella. No
+se usa nada que web-features marque como desaconsejado. Criterio completo y
+alternativas descartadas en
+[ADR 0036](adr/0036-politica-de-navegadores-soportados.md).
+
 ---
 
 ## Estándares de Commits

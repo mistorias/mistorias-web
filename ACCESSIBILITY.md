@@ -167,8 +167,12 @@ mismo cambio.
 
 ## Entornos de uso
 
-El sitio es HTML estático sin JavaScript, así que debería funcionar en
-cualquier navegador actual. Lo que revisamos de forma habitual:
+El sitio es HTML estático sin JavaScript. Lo esencial (leer, navegar,
+plegar, saltar, enviar un formulario) solo usa funciones disponibles desde
+hace al menos 30 meses en Chrome, Edge, Firefox y Safari, también en celular;
+las animaciones y pistas visuales pueden faltar en navegadores más antiguos
+sin que se pierda nada más ([ADR 0036](docs/adr/0036-politica-de-navegadores-soportados.md)).
+Lo que revisamos de forma habitual:
 
 - **Escritorio y celular:** Chromium, en celular vertical (390×844), celular
   horizontal (844×390) y escritorio (1440×900), en modo claro y oscuro.
