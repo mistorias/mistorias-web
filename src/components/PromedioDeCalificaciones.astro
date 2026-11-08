@@ -1,0 +1,56 @@
+---
+import { ratingSummary } from "../lib/ratings/rating-summary";
+import type { RatingDistribution } from "../lib/ratings/ratings-file";
+
+type Props = {
+    distribucion?: RatingDistribution;
+};
+
+// Perú escribe el decimal con punto: "4.3 de 5".
+const averageFormat = new Intl.NumberFormat("es-PE", {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1
+});
+
+const { distribucion } = Astro.props;
+const summary = ratingSummary(distribucion);
+---
+
+{
+    summary && (
+        <div class="columna promedio-calificaciones">
+            <p class="promedio-calificaciones__texto">
+                <strong class="promedio-calificaciones__valor">
+                    {averageFormat.format(summary.average)} de 5
+                </strong>{" "}
+                <span aria-hidden="true">·</span>{" "}
+                {summary.count} calificaciones de quienes la leyeron
+            </p>
+        </div>
+    )
+}
+
+<style>
+    /* El texto va en un <p> aparte: `.columna` mide su ancho en `ch` y, con la
+       fuente menuda del metadato, el contenedor quedaría más angosto que sus
+       vecinos. */
+    /* Es un dato más de la historia, junto al formulario donde se origina:
+       texto de metadato, sin gráfico, para que se lea igual con lector de
+       pantalla. */
+    .promedio-calificaciones {
+        padding-block-start: var(--esp-m);
+        margin-block-start: var(--esp-l);
+        border-block-start: 1px solid var(--color-borde);
+    }
+
+    .promedio-calificaciones__texto {
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        color: var(--color-metadato);
+    }
+
+    .promedio-calificaciones__valor {
+        font-size: var(--paso-0);
+        color: var(--color-analitico);
+    }
+</style>
