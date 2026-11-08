@@ -1,5 +1,6 @@
 import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
+import { storyCommentSchema } from "./lib/content/story-comment";
 import { authorSchema, storySchema } from "./lib/content/schema";
 
 const stories = defineCollection({
@@ -20,4 +21,16 @@ const authors = defineCollection({
   schema: authorSchema
 });
 
-export const collections = { stories, authors };
+// Comentarios públicos de lectores (ADR 0036): un JSON por comentario, al lado
+// de la historia. El patrón del glob es el mismo que admite el gate de
+// carpetas, así que lo que entra aquí ya pasó por `storyCommentSchema` dos
+// veces.
+const comments = defineCollection({
+  loader: glob({
+    base: "./content/mistorias-contenido/stories",
+    pattern: "*/comentario-*.json"
+  }),
+  schema: storyCommentSchema
+});
+
+export const collections = { stories, authors, comments };

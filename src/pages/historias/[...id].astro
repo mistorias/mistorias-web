@@ -7,6 +7,7 @@ import {
     type CollectionEntry
 } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import ComentariosDeLectores from "../../components/ComentariosDeLectores.astro";
 import CompartirHistoria from "../../components/CompartirHistoria.astro";
 import ListaTemas from "../../components/ListaTemas.astro";
 import FirmaAutoria from "../../components/FirmaAutoria.astro";
@@ -15,6 +16,7 @@ import OpinionHistoria from "../../components/OpinionHistoria.astro";
 import ProgresoDeLectura from "../../components/ProgresoDeLectura.astro";
 import SimboloMistorias from "../../components/SimboloMistorias.astro";
 import TiempoDeLectura from "../../components/TiempoDeLectura.astro";
+import { commentsForStory } from "../../lib/comments/story-comments";
 import { dateForAttribute, readableDate } from "../../lib/dates";
 import { authorRoute, storyRoute, themesRoute } from "../../lib/routes";
 import { getStoryImage } from "../../lib/content/story-images";
@@ -24,6 +26,8 @@ import { resolveNeighbors } from "../../lib/content/story-order-cache";
 
 export async function getStaticPaths() {
     const stories = await getCollection("stories");
+    // Una sola lectura de la colección para todas las páginas.
+    const allComments = await getCollection("comments");
     const storiesById = new Map(stories.map((story) => [story.id, story]));
 
     const orderedIds = orderStoriesByDate(
@@ -43,6 +47,7 @@ export async function getStaticPaths() {
             params: { id: story.id },
             props: {
                 story,
+                comments: commentsForStory(allComments, story.id),
                 previousStory: previous
                     ? storiesById.get(previous)
                     : undefined,
@@ -54,11 +59,12 @@ export async function getStaticPaths() {
 
 type Props = {
     story: CollectionEntry<"stories">;
+    comments: CollectionEntry<"comments">[];
     previousStory?: CollectionEntry<"stories">;
     nextStory?: CollectionEntry<"stories">;
 };
 
-const { story, previousStory, nextStory } = Astro.props;
+const { story, comments, previousStory, nextStory } = Astro.props;
 const { Content } = await render(story);
 const base = import.meta.env.BASE_URL;
 const image = getStoryImage(story.id);
@@ -172,6 +178,8 @@ if (author === undefined) {
         }
 
         <FirmaAutoria autor={author} autoria={story.data.authorship} />
+
+        <ComentariosDeLectores comentarios={comments} />
 
         <OpinionHistoria historiaId={story.id} />
 
