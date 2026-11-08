@@ -47,3 +47,23 @@ export function parseRatingsFile(contents: string): RatingsFile {
 
   return result.data;
 }
+
+/**
+ * Escribe el archivo de forma determinista: historias ordenadas por slug,
+ * calificaciones del 1 al 5, sangría de 2 espacios y salto de línea final. Dos
+ * corridas con los mismos datos dan el mismo texto, así el PR diario solo se
+ * abre cuando algo cambió de verdad.
+ */
+export function serializeRatingsFile(file: RatingsFile): string {
+  const stories = Object.fromEntries(
+    Object.keys(file.stories)
+      .sort()
+      .map((slug) => {
+        const { "1": one, "2": two, "3": three, "4": four, "5": five } =
+          file.stories[slug];
+        return [slug, { "1": one, "2": two, "3": three, "4": four, "5": five }];
+      })
+  );
+
+  return `${JSON.stringify({ stories }, null, 2)}\n`;
+}
