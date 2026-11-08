@@ -15,8 +15,15 @@
 //
 // Mismo mecanismo que "Reportar un problema": Netlify Forms sin JavaScript,
 // un formulario por historia identificado con un campo oculto.
+//
+// El comentario puede ser anónimo (queda privado, solo lo lee el equipo) o
+// público con nombre (ADR 0036): elegir "público" es el consentimiento expreso
+// que pide la Ley 29733. La calificación nunca se publica por separado. Que
+// nombre y comentario sean obligatorios para publicar lo valida la función de
+// Netlify, no el navegador: un envío público incompleto queda como opinión
+// privada en vez de perderse.
 import AvisoSoloNetlify from "./AvisoSoloNetlify.astro";
-import { gratitudeRoute } from "../lib/routes";
+import { gratitudeRoute, reportRoute } from "../lib/routes";
 
 type Props = {
     historiaId: string;
@@ -25,6 +32,7 @@ type Props = {
 const { historiaId } = Astro.props;
 const base = import.meta.env.BASE_URL;
 const formAction = gratitudeRoute(base);
+const reportHref = reportRoute(base);
 
 // El punto crece con el valor (14px→30px) y su borde se acerca al acento de
 // marca a la misma velocidad (20%→100%): tamaño y color cuentan la misma
@@ -95,6 +103,11 @@ const scale = [1, 2, 3, 4, 5].map((value) => ({
                     ))
                 }
             </div>
+
+            <p class="opinion-historia__nota">
+                Tu calificación nunca se publica de forma individual: solo
+                cuenta para el promedio.
+            </p>
         </fieldset>
 
         <p class="opinion-historia__campo">
@@ -105,9 +118,46 @@ const scale = [1, 2, 3, 4, 5].map((value) => ({
                 id={`opinion-comentario-${historiaId}`}
                 name="comentario"
                 rows="4"
+                maxlength="1500"
                 placeholder="Qué te gustó o qué podríamos mejorar"
             ></textarea>
         </p>
+
+        <fieldset class="opinion-historia__visibilidad">
+            <legend>¿Quién puede leer tu comentario?</legend>
+
+            <label class="opinion-historia__eleccion">
+                <input type="radio" name="visibilidad" value="anonimo" checked />
+                <span>Solo el equipo de Mistorias. Es anónimo y no se publica</span>
+            </label>
+            <label class="opinion-historia__eleccion">
+                <input type="radio" name="visibilidad" value="publico" />
+                <span>Todos: publícalo bajo la historia con mi nombre</span>
+            </label>
+        </fieldset>
+
+        {/* Se oculta con `:has` mientras esté marcada la opción anónima; un
+            navegador sin `:has` lo deja siempre visible, que es lo seguro. */}
+        <div class="opinion-historia__publico">
+            <p class="opinion-historia__campo">
+                <label for={`opinion-nombre-${historiaId}`}>Tu nombre</label>
+                <input
+                    id={`opinion-nombre-${historiaId}`}
+                    name="nombre"
+                    type="text"
+                    maxlength="60"
+                    autocomplete="name"
+                />
+            </p>
+
+            <p class="opinion-historia__nota">
+                Para publicarlo necesitamos tu nombre y tu comentario. Los
+                comentarios con enlaces o correos no se publican. Lo revisamos
+                en público, en GitHub: mientras tanto se verá ahí y ese
+                registro no se puede borrar. Para retirarlo después, escríbenos
+                desde <a href={reportHref}>Reportar un problema</a>.
+            </p>
+        </div>
 
         <button type="submit">Enviar opinión</button>
     </form>
@@ -272,7 +322,8 @@ const scale = [1, 2, 3, 4, 5].map((value) => ({
         color: var(--color-texto);
     }
 
-    .opinion-historia__campo textarea {
+    .opinion-historia__campo textarea,
+    .opinion-historia__campo input {
         padding: var(--esp-xs) var(--esp-s);
         border: 1px solid var(--color-borde);
         border-radius: var(--radio);
@@ -281,6 +332,66 @@ const scale = [1, 2, 3, 4, 5].map((value) => ({
         font: inherit;
         font-size: var(--paso--1);
         resize: vertical;
+    }
+
+    .opinion-historia__campo input {
+        min-height: 44px;
+    }
+
+    .opinion-historia__nota {
+        margin-block-start: var(--esp-2xs);
+        font-size: var(--paso--1);
+        color: var(--color-metadato);
+    }
+
+    .opinion-historia__visibilidad {
+        display: grid;
+        gap: var(--esp-2xs);
+        padding: 0;
+        border: none;
+    }
+
+    .opinion-historia__visibilidad legend {
+        padding: 0;
+        margin-block-end: var(--esp-2xs);
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        font-weight: 600;
+        color: var(--color-texto);
+    }
+
+    /* Cada opción es un `label` entero: toda la fila se puede tocar y mide al
+       menos 44px de alto. El radio es el nativo, así que el teclado y el foco
+       visible (regla global de base.css) funcionan sin trabajo extra. */
+    .opinion-historia__eleccion {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--esp-xs);
+        min-height: 44px;
+        font-size: var(--paso--1);
+        cursor: pointer;
+    }
+
+    .opinion-historia__eleccion input {
+        flex: none;
+        width: 1.25rem;
+        height: 1.25rem;
+        margin-block: 0.6rem 0;
+        accent-color: var(--color-acento);
+    }
+
+    .opinion-historia__eleccion span {
+        align-self: center;
+    }
+
+    .opinion-historia__publico {
+        display: grid;
+        gap: var(--esp-2xs);
+    }
+
+    .opinion-historia__formulario:has([value="anonimo"]:checked)
+        .opinion-historia__publico {
+        display: none;
     }
 
     .opinion-historia__formulario button {
