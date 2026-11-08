@@ -27,6 +27,14 @@ Llevar una historia ya publicada a las redes sociales (Facebook, Instagram, X). 
 El eje editorial que distingue una historia de las demás y que agrupa a las que lo comparten. Entre tres y siete por historia; el sitio los publica en `/temas/`. En el código se llama `theme` — ver [docs/IDIOMA.md](docs/IDIOMA.md).
 *Avoid*: Etiqueta (reservada para la Etiqueta de versión), tag, categoría.
 
+**Comentario**:
+Texto que un lector escribe sobre una historia y que pidió publicar con su nombre. Es público y moderado: una persona del equipo lo aprueba (fusiona su PR) antes de que aparezca bajo la historia. En el código se llama `comment`; ver [ADR 0036](docs/adr/0036-comentarios-publicos-de-lectores-sin-javascript.md).
+*Avoid*: Opinión (es privada), reseña, review.
+
+**Opinión**:
+Lo que un lector envía por el formulario al final de una historia: la calificación y, si quiere, un comentario. Es privada y solo la ve el equipo; la calificación solo cuenta para el promedio. Si el lector elige publicar su comentario, esa parte pasa a ser un Comentario. En el código se llama `opinion`.
+*Avoid*: Comentario (es público), feedback.
+
 **Etiqueta de versión**:
 Marcador semver en git (p. ej. `v1.2.0`) que autoriza una Publicación. Crear y empujar la etiqueta es el acto de aprobación para publicar.
 *Avoid*: Tag (en documentación de dominio), release tag
