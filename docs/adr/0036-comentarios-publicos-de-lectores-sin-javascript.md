@@ -116,6 +116,17 @@ sin webhook. Pide en cada envío un token de instalación que dura una hora y se
 acota a ese repositorio. El repositorio y la rama de destino están fijos en el
 código, y ningún dato del usuario llega a rutas, ramas ni logs.
 
+### Qué handler de Netlify se usa
+
+El handler `formSubmitted` existe en los tipos de `@netlify/functions` (6.1.1,
+`FormSubmittedEvent`), así que `netlify/functions/form-submitted.ts` exporta
+`{ formSubmitted }` y no la convención legada `submission-created`. El
+empaquetador de Netlify lo registra como suscripción al evento de envío de
+formularios. Los tipos se importan solo como tipos: `@netlify/functions` es una
+`devDependency` y no entra en el bundle. La función es un adaptador delgado;
+todo lo demás vive en `src/lib/comments/`, con las dependencias inyectadas
+(`fetch`, reloj, entorno) para probarlo sin red.
+
 ## Orden de fusión
 
 Este cambio va **antes** del primer `comentario-*.json` en mistorias-contenido:
