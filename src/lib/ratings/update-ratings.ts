@@ -51,7 +51,7 @@ export function buildRatingsPullRequestBody(
 
 ## Por qué
 
-El promedio que muestra cada historia sale de ese archivo ([ADR 0037](docs/adr/0037-promedio-de-calificaciones-con-conteo-diario.md)). No hay identidad de por medio, así que una persona revisa el cambio antes de que se publique.
+El promedio que muestra cada historia sale de ese archivo ([ADR 0037](https://github.com/mistorias/mistorias-web/blob/main/docs/adr/0037-promedio-de-calificaciones-con-conteo-diario.md)). No hay identidad de por medio, así que una persona revisa el cambio antes de que se publique.
 
 ## Cómo verificar
 
