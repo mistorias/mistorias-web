@@ -24,6 +24,10 @@
 // privada en vez de perderse.
 import AvisoSoloNetlify from "./AvisoSoloNetlify.astro";
 import { gratitudeRoute, reportRoute } from "../lib/routes";
+import {
+    COMMENT_AUTHOR_MAX_LENGTH,
+    COMMENT_TEXT_MAX_LENGTH
+} from "../lib/content/story-comment";
 
 type Props = {
     historiaId: string;
@@ -118,7 +122,7 @@ const scale = [1, 2, 3, 4, 5].map((value) => ({
                 id={`opinion-comentario-${historiaId}`}
                 name="comentario"
                 rows="4"
-                maxlength="1500"
+                maxlength={COMMENT_TEXT_MAX_LENGTH}
                 placeholder="Qué te gustó o qué podríamos mejorar"
             ></textarea>
         </p>
@@ -145,7 +149,7 @@ const scale = [1, 2, 3, 4, 5].map((value) => ({
                     id={`opinion-nombre-${historiaId}`}
                     name="nombre"
                     type="text"
-                    maxlength="60"
+                    maxlength={COMMENT_AUTHOR_MAX_LENGTH}
                     autocomplete="name"
                 />
             </p>
