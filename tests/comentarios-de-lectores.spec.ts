@@ -3,8 +3,8 @@ import ComentariosDeLectores from "../src/components/ComentariosDeLectores.astro
 import { buildCommentFixture } from "./support/comment-fixture";
 import { renderAstroComponent } from "./support/render-astro-component";
 
-function render(comentarios: ReturnType<typeof buildCommentFixture>[]) {
-  return renderAstroComponent(ComentariosDeLectores, { props: { comentarios } });
+function render(comments: ReturnType<typeof buildCommentFixture>[]) {
+  return renderAstroComponent(ComentariosDeLectores, { props: { comentarios: comments } });
 }
 
 describe("ComentariosDeLectores", () => {
