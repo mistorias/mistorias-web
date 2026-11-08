@@ -131,7 +131,7 @@ This allows the same codebase to deploy to either platform with correct base pat
 
 ## CI Deployments
 
-Four workflows in `.github/workflows/` (two deploy, one content sync, one version bump):
+Five workflows in `.github/workflows/` (two deploy, one content sync, one version bump, one ratings tally):
 
 1. **GitHub Pages** (`deploy-github-pages.yml`): Triggers on push to `main` or manual dispatch; uses `DEPLOY_TARGET=development`
 2. **Netlify** (`deploy-netlify.yml`): Triggers on tag push or manual dispatch; uses `DEPLOY_TARGET=netlify`
@@ -139,6 +139,8 @@ Four workflows in `.github/workflows/` (two deploy, one content sync, one versio
 A third workflow, `actualizar-contenido.yml`, runs daily (and on demand): it advances the content submodule to the latest `mistorias-contenido`, regenerates `data/story-order.json`, checks that `pnpm build` passes, and opens or updates a single PR on the `contenido/actualizar` branch. It never merges or tags — publishing stays a human decision (see below). It authenticates as a GitHub App (variable `CONTENT_BOT_CLIENT_ID`, secret `CONTENT_BOT_PRIVATE_KEY`) rather than `GITHUB_TOKEN`, because events created with `GITHUB_TOKEN` do not trigger CI on the PR.
 
 A fourth workflow, `subir-version.yml`, runs daily at 00:00 Lima time (and on demand): `scripts/next-version.ts` (`pnpm next-version` locally, over `src/lib/release/version-bump.ts`) computes the next version from the commits since the latest `v*` tag (SemVer + Conventional Commits, ignoring commits that only touch non-reader paths such as `docs/`, `.github/`, `.claude/`, `tests/`, `*.md`; a non-conventional commit that reaches readers fails the run), `scripts/check_version_only_diff.sh` asserts the change is only the `"version"` line, and it opens or updates a single PR on `version/subir` with the same GitHub App. It never merges or tags. Because the commit type decides the bump, commits that only change GitHub automation use `ci`, never `feat` ([docs/STANDARDS.md](docs/STANDARDS.md#conventional-commits)). See [ADR 0027](docs/adr/0027-subida-automatica-de-version.md).
+
+A fifth workflow, `actualizar-calificaciones.yml`, runs daily at 09:43 Lima time (and on demand): `pnpm ratings` (`scripts/update-ratings.ts`, over `src/lib/ratings/`) reads the verified submissions of the `opinion-historia` form through the Netlify API with `NETLIFY_FORMS_TOKEN`, recounts them per published story into `data/ratings.json` (sorted keys, no timestamp, so it only changes when the ratings do), and `scripts/open_ratings_pr.sh` opens or updates a single PR on `calificaciones/actualizar` — only when the file changed — whose body lists the new ratings per story and flags any story with more than `ANOMALY_THRESHOLD` (50) in a day. The secret lives in the GitHub environment `calificaciones` (restricted to `main`) and the Netlify token must be personal, expiring and separate from the deploy one. If the API answers with anything unexpected the run fails instead of writing zeros. It never merges or tags. See [ADR 0037](docs/adr/0037-promedio-de-calificaciones-con-conteo-diario.md).
 
 Both deploy workflows check out with `--recursive` (initializes submodules) and run `pnpm install --frozen-lockfile` before building.
 
