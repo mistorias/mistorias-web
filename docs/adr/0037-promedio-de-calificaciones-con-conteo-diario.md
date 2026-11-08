@@ -33,8 +33,8 @@ Las condiciones:
 
 ## Decisión
 
-**Un conteo diario en git.** El workflow `actualizar-calificaciones` (PR
-siguiente de esta serie) llama a la API de Netlify Forms, cuenta las
+**Un conteo diario en git.** El workflow `actualizar-calificaciones`
+llama a la API de Netlify Forms, cuenta las
 calificaciones por historia y abre un PR si `data/ratings.json` cambió. La
 página de la historia lee ese archivo al construirse, lo valida con
 `parseRatingsFile` (esquema estricto) y muestra el promedio con
