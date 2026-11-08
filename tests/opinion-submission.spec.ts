@@ -55,15 +55,15 @@ describe("parsePublicComment", () => {
 
   it.each(["anonimo", "", undefined, "Publico", "publico "])(
     "ignora visibilidad %j",
-    (visibilidad) => {
-      expect(parse({ visibilidad })).toEqual({ skipped: "not-public" });
+    (visibility) => {
+      expect(parse({ visibilidad: visibility })).toEqual({ skipped: "not-public" });
     }
   );
 
   it.each(["Historia-A", "historia a", "../historia-a", "", undefined, "-a", "a--b"])(
     "ignora la historia con forma inválida %j",
-    (historia) => {
-      expect(parse({ historia })).toEqual({ skipped: "invalid-story" });
+    (story) => {
+      expect(parse({ historia: story })).toEqual({ skipped: "invalid-story" });
     }
   );
 
