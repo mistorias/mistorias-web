@@ -36,6 +36,9 @@ export const coverageConfig = {
     "src/components/EnlaceExterno.astro",
     "src/components/NotaDeFuente.astro",
     "src/components/ProgresoDeLectura.astro",
+    "src/components/OpinionHistoria.astro",
+    "src/components/AvisoSoloNetlify.astro",
+    "src/pages/gracias.astro",
   ],
   reporter: ["text", ["text-summary", { file: "cobertura.txt" }]] as Array<
     "text" | ["text-summary", { file: string }]
