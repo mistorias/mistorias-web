@@ -1,0 +1,103 @@
+---
+// Los comentarios que los lectores pidieron publicar y que una persona del
+// equipo aprobó al fusionar su PR (ADR 0036). Todo lo que llega aquí es texto
+// de terceros: se imprime siempre con `{}`, que lo escapa. Nunca `set:html` ni
+// Markdown, y los enlaces no se vuelven enlaces — el gate de la función ya los
+// rechaza, pero esta es la última barrera antes del lector.
+import type { CollectionEntry } from "astro:content";
+import { dateForAttribute, readableDate } from "../lib/dates";
+
+type Props = {
+    comentarios: CollectionEntry<"comments">[];
+};
+
+const { comentarios } = Astro.props;
+const comments = comentarios.map((comment) => ({
+    id: comment.data.id,
+    author: comment.data.author,
+    text: comment.data.text,
+    date: new Date(comment.data.submittedAt)
+}));
+---
+
+{
+    comments.length > 0 && (
+        <section class="columna comentarios" aria-labelledby="comentarios-titulo">
+            <h2 id="comentarios-titulo" class="comentarios__titulo">
+                Lo que dicen quienes la leyeron
+            </h2>
+
+            <ol class="comentarios__lista">
+                {comments.map((comment) => (
+                    <li>
+                        <figure class="comentarios__comentario">
+                            <blockquote>
+                                <p>{comment.text}</p>
+                            </blockquote>
+                            <figcaption>
+                                <span class="comentarios__autor">{comment.author}</span>
+                                <span aria-hidden="true">·</span>
+                                <time datetime={dateForAttribute(comment.date)}>
+                                    {readableDate(comment.date)}
+                                </time>
+                            </figcaption>
+                        </figure>
+                    </li>
+                ))}
+            </ol>
+        </section>
+    )
+}
+
+<style>
+    .comentarios {
+        padding-block-start: var(--esp-l);
+        margin-block-start: var(--esp-xl);
+        border-block-start: 1px solid var(--color-borde);
+    }
+
+    .comentarios__titulo {
+        font-size: var(--paso-1);
+    }
+
+    .comentarios__lista {
+        display: grid;
+        gap: var(--esp-m);
+        margin: var(--esp-m) 0 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .comentarios__comentario {
+        margin: 0;
+        padding-inline-start: var(--esp-s);
+        border-inline-start: 3px solid var(--color-borde);
+    }
+
+    .comentarios__comentario blockquote {
+        margin: 0;
+    }
+
+    /* `pre-line` respeta los saltos de línea que escribió el lector sin dejar
+       que un espacio de más deforme la caja; `overflow-wrap` evita que una
+       palabra larguísima ensanche la página en un teléfono. */
+    .comentarios__comentario p {
+        white-space: pre-line;
+        overflow-wrap: anywhere;
+    }
+
+    .comentarios__comentario figcaption {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0 0.6ch;
+        margin-block-start: var(--esp-2xs);
+        font-family: var(--fuente-info);
+        font-size: var(--paso--1);
+        color: var(--color-metadato);
+    }
+
+    .comentarios__autor {
+        font-weight: 600;
+        color: var(--color-texto);
+    }
+</style>
