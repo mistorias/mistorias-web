@@ -156,6 +156,8 @@ Any SVG injected in line with `set:html` is executable markup, not just an image
 
 Pages ship a strict Content-Security-Policy from `src/layouts/BaseLayout.astro`. `script-src` is `'none'` because the site sends no JavaScript; adding an Astro island or view transitions requires relaxing it to `'self'` in both the layout and `public/_headers`, which would otherwise break in the browser without failing the build. `form-action` is `'self'`: the site's feedback forms (`reportar.astro`, `OpinionHistoria.astro`) use Netlify Forms with a plain HTML POST, no JavaScript involved. See [ADR 0029](docs/adr/0029-formularios-de-feedback-con-netlify-forms.md) for why, and for why the same form still renders (with a visible notice) on the GitHub Pages build that has no Netlify backend to receive it.
 
+Reader comments are the one thing the story folders accept beyond literal names: `comentario-<16 hex>.json`, validated by `src/lib/content/story-comment.ts` (strict schema; `story` must match the folder, `id` the filename) and written by a Netlify function through a public PR that a person merges to approve. See [ADR 0036](docs/adr/0036-comentarios-publicos-de-lectores-sin-javascript.md).
+
 See [ADR 0004](docs/adr/0004-triaje-reportes-seguridad-github-pages.md) for the full security triage and [SECURITY.md](SECURITY.md) for how to report vulnerabilities.
 
 ## Testing Astro Components

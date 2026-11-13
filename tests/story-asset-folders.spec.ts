@@ -63,6 +63,30 @@ const validBroadcastRecord = JSON.stringify({
   ]
 });
 
+const validCommentId = "0123456789abcdef";
+
+function commentContents(overrides: Record<string, unknown> = {}): string {
+  return JSON.stringify({
+    story: "valid-story",
+    id: validCommentId,
+    author: "Rosa Quispe",
+    text: "Me hizo pensar en mi abuela.",
+    submittedAt: "2026-11-02T15:30:00-05:00",
+    ...overrides
+  });
+}
+
+async function writeComment(
+  storiesDirectory: string,
+  slug: string,
+  fileName: string,
+  contents: string
+): Promise<void> {
+  const folder = path.join(storiesDirectory, slug);
+  await mkdir(folder, { recursive: true });
+  await writeFile(path.join(folder, fileName), contents);
+}
+
 async function runConfigSetupHook(directory: string): Promise<void> {
   const hook = storyAssetFolders(directory).hooks["astro:config:setup"];
   await hook?.({} as ConfigSetupOptions);
@@ -207,6 +231,111 @@ describe("assertStoryAssetFoldersAreValid", () => {
     await expect(
       assertStoryAssetFoldersAreValid(storiesDirectory)
     ).rejects.toThrow(/difusion\.json no cumple el esquema/);
+  });
+
+  it("acepta un comentario válido junto a la imagen y el registro", async () => {
+    const storiesDirectory = await prepareStoriesDirectory();
+    await writeStory(storiesDirectory, "valid-story");
+    await writeAsset(storiesDirectory, "valid-story", "principal.jpg");
+    await writeBroadcastRecord(storiesDirectory, "valid-story", validBroadcastRecord);
+    await writeComment(
+      storiesDirectory,
+      "valid-story",
+      `comentario-${validCommentId}.json`,
+      commentContents()
+    );
+
+    await expect(
+      assertStoryAssetFoldersAreValid(storiesDirectory)
+    ).resolves.toBeUndefined();
+  });
+
+  it("rechaza un comentario que no es JSON", async () => {
+    const storiesDirectory = await prepareStoriesDirectory();
+    await writeStory(storiesDirectory, "valid-story");
+    await writeComment(
+      storiesDirectory,
+      "valid-story",
+      `comentario-${validCommentId}.json`,
+      "{ no es json"
+    );
+
+    await expect(
+      assertStoryAssetFoldersAreValid(storiesDirectory)
+    ).rejects.toThrow(/no es JSON válido/);
+  });
+
+  it("rechaza un comentario con un campo que el esquema no declara", async () => {
+    const storiesDirectory = await prepareStoriesDirectory();
+    await writeStory(storiesDirectory, "valid-story");
+    await writeComment(
+      storiesDirectory,
+      "valid-story",
+      `comentario-${validCommentId}.json`,
+      commentContents({ html: "<script></script>" })
+    );
+
+    await expect(
+      assertStoryAssetFoldersAreValid(storiesDirectory)
+    ).rejects.toThrow(/no cumple el esquema/);
+  });
+
+  it("rechaza un comentario cuya historia no es la de su carpeta", async () => {
+    const storiesDirectory = await prepareStoriesDirectory();
+    await writeStory(storiesDirectory, "valid-story");
+    await writeComment(
+      storiesDirectory,
+      "valid-story",
+      `comentario-${validCommentId}.json`,
+      commentContents({ story: "otra-historia" })
+    );
+
+    await expect(
+      assertStoryAssetFoldersAreValid(storiesDirectory)
+    ).rejects.toThrow(/dice "otra-historia" pero está en la carpeta de "valid-story"/);
+  });
+
+  it("rechaza un comentario cuyo id no es el de su nombre de archivo", async () => {
+    const storiesDirectory = await prepareStoriesDirectory();
+    await writeStory(storiesDirectory, "valid-story");
+    await writeComment(
+      storiesDirectory,
+      "valid-story",
+      `comentario-${validCommentId}.json`,
+      commentContents({ id: "fedcba9876543210" })
+    );
+
+    await expect(
+      assertStoryAssetFoldersAreValid(storiesDirectory)
+    ).rejects.toThrow(/no coincide con el del nombre del archivo/);
+  });
+
+  it.each([
+    `Comentario-${validCommentId}.json`,
+    `comentario-${validCommentId}.yml`,
+    `comentario-${validCommentId}.md`,
+    "comentario-corto.json"
+  ])("rechaza la variante %s del nombre de un comentario", async (fileName) => {
+    const storiesDirectory = await prepareStoriesDirectory();
+    await writeStory(storiesDirectory, "valid-story");
+    await writeComment(storiesDirectory, "valid-story", fileName, commentContents());
+
+    await expect(
+      assertStoryAssetFoldersAreValid(storiesDirectory)
+    ).rejects.toThrow(/no está permitido/);
+  });
+
+  it("rechaza una carpeta llamada como un comentario", async () => {
+    const storiesDirectory = await prepareStoriesDirectory();
+    await writeStory(storiesDirectory, "valid-story");
+    await mkdir(
+      path.join(storiesDirectory, "valid-story", `comentario-${validCommentId}.json`),
+      { recursive: true }
+    );
+
+    await expect(
+      assertStoryAssetFoldersAreValid(storiesDirectory)
+    ).rejects.toThrow(/más de un nivel/);
   });
 
   it("rechaza una carpeta llamada difusion.json", async () => {
