@@ -1,4 +1,8 @@
 overrides:
+  # Sin esto el lockfile resuelve @emnapi/runtime 2.0.0-beta.2 y `astro check`
+  # se cae (setLastError is not a function). Retirar cuando @astrojs/check
+  # deje de aceptar la beta o publique una versión estable 2.x.
+  '@emnapi/runtime@>=2.0.0-0': '^1.11.3'
   esbuild@<=0.24.2: '>=0.25.0'
   yaml@>=2.0.0 <2.8.3: '>=2.8.3'
   vite@<=6.4.1: '>=6.4.2'
