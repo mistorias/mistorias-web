@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-14T23:21:01.717Z",
-  "hash": "51b6708926523b7be76ccff55c913b588c5ff77a1e67f7c8d791944846e5d5a8",
+  "generatedAt": "2026-11-20T17:10:26.719Z",
+  "hash": "3d4c82216f2ade5b3f1507af74ed3178496fcf1b45e2afa205c2c1114b0c8aad",
   "order": [
     "2026-07-24-el-aula-de-madera-donde-ximena-aprende",
     "2026-07-31-los-libros-tambien-llegan-a-cotahuasi",
@@ -19,9 +19,10 @@
     "2026-10-23-yesenia-quiere-estudiar-literatura",
     "2026-10-29-a-rosalia-le-faltan-dos-anos-para-jubilarse-y-un-dia-para-decidir",
     "2026-11-06-la-cocina-y-el-banco-central-tienen-algo-que-el-colegio-de-celeste-no",
-    "2026-11-12-felicita-aprendio-a-traducir-la-libreta-de-brayan-pero-el-reglamento-nuevo-pide-otra-cosa"
+    "2026-11-12-felicita-aprendio-a-traducir-la-libreta-de-brayan-pero-el-reglamento-nuevo-pide-otra-cosa",
+    "2026-11-19-la-ultima-clase-de-matematica-de-ruth-fue-medir-el-techo-que-se-volo"
   ],
-  "latest": "2026-11-12-felicita-aprendio-a-traducir-la-libreta-de-brayan-pero-el-reglamento-nuevo-pide-otra-cosa",
+  "latest": "2026-11-19-la-ultima-clase-de-matematica-de-ruth-fue-medir-el-techo-que-se-volo",
   "stories": {
     "2026-07-24-el-aula-de-madera-donde-ximena-aprende": {
       "previous": null,
@@ -93,6 +94,10 @@
     },
     "2026-11-12-felicita-aprendio-a-traducir-la-libreta-de-brayan-pero-el-reglamento-nuevo-pide-otra-cosa": {
       "previous": "2026-11-06-la-cocina-y-el-banco-central-tienen-algo-que-el-colegio-de-celeste-no",
+      "next": "2026-11-19-la-ultima-clase-de-matematica-de-ruth-fue-medir-el-techo-que-se-volo"
+    },
+    "2026-11-19-la-ultima-clase-de-matematica-de-ruth-fue-medir-el-techo-que-se-volo": {
+      "previous": "2026-11-12-felicita-aprendio-a-traducir-la-libreta-de-brayan-pero-el-reglamento-nuevo-pide-otra-cosa",
       "next": null
     }
   }
