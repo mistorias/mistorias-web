@@ -21,7 +21,8 @@ vi.mock("astro:content", () => ({
           buildStoryFixture({
             id: STORY_ID_WITHOUT_IMAGE,
             date: new Date("2026-11-12"),
-            summary: "Una historia que llega al feed sin imagen propia."
+            summary: "Una historia que llega al feed sin imagen propia.",
+            body: "## Noticias principales\n\n**La noticia sin foto.** Texto."
           }),
           buildStoryFixture({
             id: STORY_ID_WITH_IMAGE,
@@ -29,7 +30,8 @@ vi.mock("astro:content", () => ({
             summary: "Una historia que llega al feed con su imagen principal.",
             imageAlt: "Descripción de la imagen de prueba",
             imageCredit: "Foto de prueba",
-            imageLicense: "CC BY 4.0"
+            imageLicense: "CC BY 4.0",
+            body: "## Noticias principales\n\n- **La noticia con foto.** Texto."
           })
         ]
 }));
@@ -109,5 +111,17 @@ describe("el endpoint /historias.json", () => {
     // archivo original como parámetro: lo que importa es no apuntar a él.
     expect(feed.items[0].image).not.toMatch(/principal\.jpg$/);
     expect(feed.items[1]).not.toHaveProperty("image");
+  });
+
+  it("trae la primera noticia y el texto alternativo en _mistorias (issue #264)", async () => {
+    const { feed } = await requestFeed();
+
+    expect(feed.items[0]._mistorias).toEqual({
+      primeraNoticia: "La noticia con foto.",
+      imageAlt: "Descripción de la imagen de prueba"
+    });
+    expect(feed.items[1]._mistorias).toEqual({
+      primeraNoticia: "La noticia sin foto."
+    });
   });
 });

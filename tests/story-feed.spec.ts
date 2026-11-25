@@ -55,7 +55,12 @@ describe("buildStoryFeed", () => {
 
   it("respeta la base de GitHub Pages en cada URL", () => {
     const feed = buildStoryFeed(SITE_PAGES, "/mistorias-web/", [
-      buildFeedStory({ imageSrc: "/mistorias-web/_astro/principal.abc.jpg" })
+      buildFeedStory({
+        image: {
+          src: "/mistorias-web/_astro/principal.abc.jpg",
+          alt: "Ruth mide el techo del aula con una wincha"
+        }
+      })
     ]);
 
     expect(feed.home_page_url).toBe("https://mistorias.github.io/mistorias-web/");
@@ -91,5 +96,43 @@ describe("buildStoryFeed", () => {
       "intermedia",
       "antigua"
     ]);
+  });
+
+  // Extensión propia (issue #264): mistorias-redes-sociales arma «Noticia de
+  // la semana: …» y Buffer exige un texto alternativo por imagen, y ninguno de
+  // los dos datos tiene campo en el estándar.
+  describe("la extensión _mistorias", () => {
+    it("trae el título de la primera noticia y el texto alternativo de la imagen", () => {
+      const [item] = buildStoryFeed(SITE_NETLIFY, "/", [
+        buildFeedStory({
+          leadNewsTitle: "Cuatro regiones del norte adelantan el cierre escolar",
+          image: {
+            src: "/_astro/principal.abc.jpg",
+            alt: "Ruth mide el techo del aula con una wincha"
+          }
+        })
+      ]).items;
+
+      expect(item._mistorias).toEqual({
+        primeraNoticia: "Cuatro regiones del norte adelantan el cierre escolar",
+        imageAlt: "Ruth mide el techo del aula con una wincha"
+      });
+    });
+
+    it("omite el texto alternativo cuando la historia no tiene imagen", () => {
+      const [item] = buildStoryFeed(SITE_NETLIFY, "/", [
+        buildFeedStory({ leadNewsTitle: "La noticia de la semana" })
+      ]).items;
+
+      expect(item._mistorias).toEqual({
+        primeraNoticia: "La noticia de la semana"
+      });
+    });
+
+    it("omite la extensión entera cuando no hay ningún dato que poner", () => {
+      const [item] = buildStoryFeed(SITE_NETLIFY, "/", [buildFeedStory()]).items;
+
+      expect(item).not.toHaveProperty("_mistorias");
+    });
   });
 });

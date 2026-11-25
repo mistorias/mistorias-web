@@ -31,8 +31,25 @@ export type FeedStory = {
   readonly date: Date;
   readonly themes: readonly string[];
   readonly author: { readonly slug: string; readonly name: string };
-  /** Ruta, con la base del despliegue, de la imagen optimizada. */
-  readonly imageSrc?: string;
+  /**
+   * La imagen optimizada: su ruta, con la base del despliegue, y su texto
+   * alternativo. Van juntos porque el alt sin imagen no describe nada.
+   */
+  readonly image?: { readonly src: string; readonly alt: string };
+  /** Ver `findLeadNewsTitle` (src/lib/content/lead-news.ts). */
+  readonly leadNewsTitle?: string;
+};
+
+/**
+ * Extensión propia del feed (issue #264). JSON Feed admite claves con prefijo
+ * `_` para datos que el estándar no trae: mistorias-redes-sociales arma
+ * «Noticia de la semana: …» con `primeraNoticia`, y Buffer exige un texto
+ * alternativo por imagen. Los nombres los fija el issue #264 como contrato con
+ * ese repositorio: cambiarlos lo rompe.
+ */
+export type MistoriasExtension = {
+  readonly primeraNoticia?: string;
+  readonly imageAlt?: string;
 };
 
 export type JsonFeedItem = {
@@ -45,6 +62,7 @@ export type JsonFeedItem = {
   readonly date_published: string;
   readonly authors: readonly { readonly name: string; readonly url: string }[];
   readonly tags: readonly string[];
+  readonly _mistorias?: MistoriasExtension;
 };
 
 export type JsonFeed = {
@@ -59,6 +77,18 @@ export type JsonFeed = {
 const absoluteUrl = (path: string, site: string | URL): string =>
   new URL(path, site).toString();
 
+// Sin datos no va la extensión: un objeto vacío no le dice nada a nadie.
+const extensionOf = (
+  story: FeedStory
+): { readonly _mistorias?: MistoriasExtension } => {
+  const extension: MistoriasExtension = {
+    ...(story.leadNewsTitle && { primeraNoticia: story.leadNewsTitle }),
+    ...(story.image && { imageAlt: story.image.alt })
+  };
+
+  return Object.keys(extension).length > 0 ? { _mistorias: extension } : {};
+};
+
 const buildItem = (
   story: FeedStory,
   site: string | URL,
@@ -71,7 +101,7 @@ const buildItem = (
   // El estándar exige un contenido; el cuerpo de la historia vive en su
   // página, así que va el mismo resumen.
   content_text: story.summary,
-  ...(story.imageSrc && { image: absoluteUrl(story.imageSrc, site) }),
+  ...(story.image && { image: absoluteUrl(story.image.src, site) }),
   date_published: story.date.toISOString(),
   authors: [
     {
@@ -79,7 +109,8 @@ const buildItem = (
       url: absoluteUrl(authorRoute(base, story.author.slug), site)
     }
   ],
-  tags: story.themes
+  tags: story.themes,
+  ...extensionOf(story)
 });
 
 export const buildStoryFeed = (

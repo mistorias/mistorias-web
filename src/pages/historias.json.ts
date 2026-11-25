@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { getCollection, type CollectionEntry } from "astro:content";
 import { authorNameFor, buildAuthorNameMap } from "../lib/content/authors";
+import { findLeadNewsTitle } from "../lib/content/lead-news";
 import { getStoryImage } from "../lib/content/story-images";
 import { buildStoryFeed, type FeedStory } from "../lib/feed/story-feed";
 import { ogImageFromStoryImage } from "../lib/social/og-image";
@@ -14,16 +15,18 @@ import { ogImageFromStoryImage } from "../lib/social/og-image";
 
 // La imagen es el mismo recorte 1200×630 en JPEG que ya va en og:image: es lo
 // que se comparte en redes, y JPEG es lo que todas aceptan.
-const optimizedImageSrc = async (
+const optimizedImage = async (
   story: CollectionEntry<"stories">
-): Promise<string | undefined> => {
+): Promise<FeedStory["image"]> => {
   const image = getStoryImage(story.id);
+
+  if (!image) return undefined;
 
   // El gate de imágenes (story-image-requirements.ts) exige `imageAlt` siempre
   // que exista principal.jpg.
-  return image
-    ? (await ogImageFromStoryImage(image, story.data.imageAlt!)).src
-    : undefined;
+  const { src, alt } = await ogImageFromStoryImage(image, story.data.imageAlt!);
+
+  return { src, alt };
 };
 
 export const GET: APIRoute = async ({ site }) => {
@@ -49,7 +52,8 @@ export const GET: APIRoute = async ({ site }) => {
         slug: story.data.author.id,
         name: authorNameFor(authorNames, story.data.author.id)
       },
-      imageSrc: await optimizedImageSrc(story)
+      image: await optimizedImage(story),
+      leadNewsTitle: findLeadNewsTitle(story.body ?? "")
     }))
   );
 
