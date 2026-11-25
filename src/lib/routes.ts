@@ -20,6 +20,7 @@ const BRAND_SECTION = "marca";
 const REPORT_SECTION = "reportar";
 const GRATITUDE_SECTION = "gracias";
 const LATEST_STORY_SECTION = "ultima";
+const STORY_FEED_FILENAME = "historias.json";
 
 const splitIntoSegments = (value: string): readonly string[] =>
   value.split("/").filter((segment) => segment.length > 0);
@@ -99,3 +100,10 @@ export const gratitudeRoute = (base: string): string =>
  */
 export const latestStoryRoute = (base: string): string =>
   buildRoute(base, LATEST_STORY_SECTION);
+
+/**
+ * Feed de historias en JSON Feed 1.1 (ADR 0033). Es un archivo y no una
+ * página, así que se arma como `assetRoute`: `historias.json/` no existe.
+ */
+export const storyFeedRoute = (base: string): string =>
+  assetRoute(base, STORY_FEED_FILENAME);

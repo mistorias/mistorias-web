@@ -11,6 +11,7 @@ import {
   latestStoryRoute,
   reportRoute,
   siteCodeRoute,
+  storyFeedRoute,
   storyRoute,
   storiesRoute,
   themeRoute,
@@ -151,6 +152,18 @@ describe("rutas con nombre", () => {
   it("publica el atajo a la última historia bajo /ultima/", () => {
     expect(latestStoryRoute(BASE_NETLIFY)).toBe("/ultima/");
     expect(latestStoryRoute(BASE_PAGES)).toBe("/mistorias-web/ultima/");
+  });
+});
+
+// El feed lo lee otro sistema (mistorias-redes-sociales, ADR 0033): es un
+// archivo, no una página, así que termina en su nombre y no en barra.
+describe("storyFeedRoute", () => {
+  it("publica el feed de historias como /historias.json", () => {
+    expect(storyFeedRoute(BASE_NETLIFY)).toBe("/historias.json");
+  });
+
+  it("conserva la base de GitHub Pages", () => {
+    expect(storyFeedRoute(BASE_PAGES)).toBe("/mistorias-web/historias.json");
   });
 });
 
