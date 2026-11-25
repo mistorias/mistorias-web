@@ -1,6 +1,9 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { parseRatingsFile } from "../src/lib/ratings/ratings-file";
+import {
+  parseRatingsFile,
+  serializeRatingsFile
+} from "../src/lib/ratings/ratings-file";
 
 const distribution = { "1": 0, "2": 1, "3": 2, "4": 5, "5": 9 };
 
@@ -65,5 +68,51 @@ describe("parseRatingsFile", () => {
     const contents = readFileSync("data/ratings.json", "utf8");
 
     expect(() => parseRatingsFile(contents)).not.toThrow();
+  });
+});
+
+describe("serializeRatingsFile", () => {
+  it("ordena las historias por slug y termina en un salto de línea", () => {
+    const contents = serializeRatingsFile({
+      stories: {
+        "b-historia": { "1": 0, "2": 0, "3": 0, "4": 0, "5": 5 },
+        "a-historia": { "1": 5, "2": 0, "3": 0, "4": 0, "5": 0 }
+      }
+    });
+
+    expect(contents).toBe(`{
+  "stories": {
+    "a-historia": {
+      "1": 5,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0
+    },
+    "b-historia": {
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 5
+    }
+  }
+}
+`);
+  });
+
+  it("escribe el archivo vacío igual que el del repositorio", () => {
+    expect(serializeRatingsFile({ stories: {} })).toBe(
+      '{\n  "stories": {}\n}\n'
+    );
+  });
+
+  it("ordena las calificaciones del 1 al 5 aunque lleguen desordenadas", () => {
+    const contents = serializeRatingsFile({
+      stories: { a: { "5": 1, "3": 1, "1": 1, "4": 1, "2": 1 } }
+    });
+
+    expect(contents.indexOf('"1"')).toBeLessThan(contents.indexOf('"2"'));
+    expect(contents.indexOf('"4"')).toBeLessThan(contents.indexOf('"5"'));
   });
 });
