@@ -1,6 +1,6 @@
 {
   "name": "mistorias-web",
-  "version": "1.12.3",
+  "version": "1.13.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -17,10 +17,10 @@
   "dependencies": {
     "@astrojs/check": "^0.9.12",
     "@astrojs/markdown-satteri": "0.4.10",
-    "@astrojs/sitemap": "^3.7.4",
+    "@astrojs/sitemap": "^3.7.6",
     "@fontsource-variable/ibm-plex-sans": "^5.3.0",
     "@fontsource-variable/lora": "^5.3.0",
-    "astro": "^7.4.12",
+    "astro": "^7.4.13",
     "sharp": "^0.35.5"
   },
   "devDependencies": {
@@ -28,6 +28,8 @@
     "@stryker-mutator/vitest-runner": "^10.0.0",
     "@types/node": "^26.6.6",
     "@vitest/coverage-v8": "4.1.11",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
     "typescript": "^6.0.3",
     "vitest": "4.1.11"
   },
