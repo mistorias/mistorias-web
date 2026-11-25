@@ -6,6 +6,10 @@ import {
   BROADCAST_RECORD_FILENAME
 } from "./story-broadcast";
 import {
+  assertStoryCommentIsValid,
+  COMMENT_FILENAME_PATTERN
+} from "./story-comment";
+import {
   defaultStoriesDirectory,
   readStoriesDirectoryEntries
 } from "./stories-directory";
@@ -45,9 +49,12 @@ function assertAssetEntryIsAllowed(assetEntry: Dirent, assetPath: string): void 
     );
   }
 
-  if (!ALLOWED_ASSET_FILENAMES.includes(assetEntry.name)) {
+  if (
+    !ALLOWED_ASSET_FILENAMES.includes(assetEntry.name) &&
+    !COMMENT_FILENAME_PATTERN.test(assetEntry.name)
+  ) {
     throw new Error(
-      `${assetPath} no está permitido. Solo se admiten ${ALLOWED_ASSET_FILENAMES.map((name) => `"${name}"`).join(" y ")} dentro de la carpeta de una historia.`
+      `${assetPath} no está permitido. Solo se admiten ${ALLOWED_ASSET_FILENAMES.map((name) => `"${name}"`).join(", ")} y "comentario-<id>.json" dentro de la carpeta de una historia.`
     );
   }
 }
@@ -69,6 +76,15 @@ async function assertAssetFolderContentsAreValid(
         assetPath
       );
     }
+
+    if (COMMENT_FILENAME_PATTERN.test(assetEntry.name)) {
+      assertStoryCommentIsValid(
+        await readFile(assetPath, "utf8"),
+        folderName,
+        assetEntry.name,
+        assetPath
+      );
+    }
   }
 }
 
@@ -76,8 +92,11 @@ async function assertAssetFolderContentsAreValid(
  * Rechaza cualquier carpeta anidada dentro de `stories/` que no cumpla las
  * reglas de la imagen de una historia (issue #29, prerrequisito del ADR 0005):
  * la carpeta debe espejar el nombre de una historia existente, no puede
- * anidar otra carpeta, y solo puede contener `principal.jpg` y el registro
- * de difusión `difusion.json` (ADR 0032), este último validado contra su esquema. Un
+ * anidar otra carpeta, y solo puede contener `principal.jpg`, el registro
+ * de difusión `difusion.json` (ADR 0032) y los comentarios públicos de
+ * lectores `comentario-<id>.json` (ADR 0036), estos dos validados contra su
+ * esquema. Los comentarios son el único nombre que admite un patrón y no un
+ * literal: hay uno por archivo y no se conoce de antemano cuántos. Un
  * `.md` (u otro archivo) colado ahí es exactamente el hallazgo que el ADR 0005
  * describe como agujero del gate anti-HTML cuando no era recursivo.
  */
