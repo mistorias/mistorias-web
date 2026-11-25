@@ -15,3 +15,8 @@ rules:
       # menciona a @claude, los permisos del job son de solo lectura y la acción
       # verifica que quien comenta tenga permiso de escritura en el repositorio.
       - claude.yml
+      # politica-semver.yml usa pull_request_target a propósito: es lo que hace que
+      # la regla se ejecute desde la rama base y un PR no pueda reescribirla. El
+      # job no baja ni ejecuta código del PR (solo lee datos por la API de GitHub),
+      # sus permisos son de solo lectura y no recibe secretos.
+      - politica-semver.yml
