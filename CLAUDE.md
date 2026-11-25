@@ -131,7 +131,7 @@ This allows the same codebase to deploy to either platform with correct base pat
 
 ## CI Deployments
 
-Four workflows in `.github/workflows/` (two deploy, one content sync, one version bump):
+Five workflows in `.github/workflows/` (two deploy, one content sync, one version bump, one merge policy):
 
 1. **GitHub Pages** (`deploy-github-pages.yml`): Triggers on push to `main` or manual dispatch; uses `DEPLOY_TARGET=development`
 2. **Netlify** (`deploy-netlify.yml`): Triggers on tag push or manual dispatch; uses `DEPLOY_TARGET=netlify`
@@ -139,6 +139,8 @@ Four workflows in `.github/workflows/` (two deploy, one content sync, one versio
 A third workflow, `actualizar-contenido.yml`, runs daily (and on demand): it advances the content submodule to the latest `mistorias-contenido`, regenerates `data/story-order.json`, checks that `pnpm build` passes, and opens or updates a single PR on the `contenido/actualizar` branch. It never merges or tags — publishing stays a human decision (see below). It authenticates as a GitHub App (variable `CONTENT_BOT_CLIENT_ID`, secret `CONTENT_BOT_PRIVATE_KEY`) rather than `GITHUB_TOKEN`, because events created with `GITHUB_TOKEN` do not trigger CI on the PR.
 
 A fourth workflow, `subir-version.yml`, runs daily at 00:00 Lima time (and on demand): `scripts/next-version.ts` (`pnpm next-version` locally, over `src/lib/release/version-bump.ts`) computes the next version from the commits since the latest `v*` tag (SemVer + Conventional Commits, ignoring commits that only touch non-reader paths such as `docs/`, `.github/`, `.claude/`, `tests/`, `*.md`; a non-conventional commit that reaches readers fails the run), `scripts/check_version_only_diff.sh` asserts the change is only the `"version"` line, and it opens or updates a single PR on `version/subir` with the same GitHub App. It never merges or tags. Because the commit type decides the bump, commits that only change GitHub automation use `ci`, never `feat` ([docs/STANDARDS.md](docs/STANDARDS.md#conventional-commits)). See [ADR 0027](docs/adr/0027-subida-automatica-de-version.md).
+
+A fifth workflow, `politica-semver.yml`, is the required check that decides whether a bot PR merges alone or waits for a person; it runs from the base branch and is reusable from mistorias-contenido. See [ADR 0037](docs/adr/0037-seguridad-del-pipeline.md).
 
 Both deploy workflows check out with `--recursive` (initializes submodules) and run `pnpm install --frozen-lockfile` before building.
 
@@ -155,6 +157,8 @@ Stories reject raw HTML (`assertStoriesHaveNoRawHtml` in `raw-html-gate.ts`) to 
 Any SVG injected in line with `set:html` is executable markup, not just an image, so it goes through `assertInlineSvgIsThemeReady` in `src/lib/assets/inline-svg-gate.ts`: it requires a cropped `viewBox` and rejects fixed colors (as attributes *or* inside a `style` attribute, which is how SVGO writes them), `<style>`, `<script>`, event handlers, `foreignObject`, and external references. Two files consume it, both registered in `astro.config.mjs`: the brand symbol (`src/lib/brand/symbol-gate.ts`) and the cover illustration (`src/lib/assets/illustration-gate.ts`), which additionally requires the `ink-base` and `ink-acento` classes — without them the drawing gets no token and renders black on black in dark mode.
 
 Pages ship a strict Content-Security-Policy from `src/layouts/BaseLayout.astro`. `script-src` is `'none'` because the site sends no JavaScript; adding an Astro island or view transitions requires relaxing it to `'self'` in both the layout and `public/_headers`, which would otherwise break in the browser without failing the build. `form-action` is `'self'`: the site's feedback forms (`reportar.astro`, `OpinionHistoria.astro`) use Netlify Forms with a plain HTML POST, no JavaScript involved. See [ADR 0029](docs/adr/0029-formularios-de-feedback-con-netlify-forms.md) for why, and for why the same form still renders (with a visible notice) on the GitHub Pages build that has no Netlify backend to receive it.
+
+The pipeline itself is checked, not trusted (ADR 0037, flow diagram in [docs/fabrica.svg](docs/fabrica.svg)): `ci.yml` audits the workflows with zizmor and actionlint (exceptions, each with its reason, in `.github/zizmor.yml`), reviews new dependencies, asserts that the CSP in `BaseLayout.astro` and in `public/_headers` stay identical (`tests/csp-parity.spec.ts`), and runs `pnpm check-dist` on the built HTML of both targets — no `<script>`, no event handlers, no cross-origin subresources, `noopener noreferrer` on every `target="_blank"`. The required check `politica-semver` decides whether a bot PR merges alone (SemVer none or patch, no protected paths) or waits for a person (minor, major, protected path); a revert inherits the bump of what it reverts. Workflows pass inputs to scripts through `env:`, never interpolated in `run:`, and a new workflow needs `timeout-minutes` and `persist-credentials: false` unless a script pushes with the checkout token.
 
 See [ADR 0004](docs/adr/0004-triaje-reportes-seguridad-github-pages.md) for the full security triage and [SECURITY.md](SECURITY.md) for how to report vulnerabilities.
 

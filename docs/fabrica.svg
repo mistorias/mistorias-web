@@ -1,0 +1,289 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" role="img" aria-labelledby="t d">
+<title id="t">Flujo de la fábrica de Mistorias</title>
+<desc id="d">Carriles: tú, bot, estaciones de control, merge, desarrollo y producción. Los cuatro sets de implementación se distinguen por color.</desc>
+<style>
+:root{--sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--mono:ui-monospace,Menlo,Consolas,monospace;--bg:#F2F5F8;--surface:#FFFFFF;--ink:#14202C;--muted:#566474;--line:#7C8A9A;--lane-a:#E8EDF2;--lane-b:#F2F5F8;
+--s0:#7B8794;--s0-bg:#EEF1F4;--s1:#B3400C;--s1-bg:#FCE9DD;--s2:#0A6B63;--s2-bg:#DAF1EE;--s3:#5845C0;--s3-bg:#E8E4FA;--s4:#1A5FB0;--s4-bg:#DDEBFB;}
+@media (prefers-color-scheme:dark){:root{--bg:#0F1419;--surface:#171E26;--ink:#E7EDF3;--muted:#9AA7B6;--line:#6F7D8D;--lane-a:#151B22;--lane-b:#101519;
+--s0:#8592A0;--s0-bg:#1D252E;--s1:#F4A073;--s1-bg:#3A2418;--s2:#62D3C7;--s2-bg:#12302D;--s3:#ADA1F6;--s3-bg:#29244F;--s4:#80B8F3;--s4-bg:#17304F;}}
+svg{background:var(--bg)}
+
+.lane.l0{fill:var(--lane-a)}.lane.l1{fill:var(--lane-b)}
+.lane-t{font:600 10.5px var(--sans);letter-spacing:.09em;fill:var(--muted)}
+.lane-s{font:500 10.5px var(--sans);fill:var(--muted)}
+.band{fill:none;stroke:var(--line);stroke-width:1.2;stroke-dasharray:5 4}
+.lbl{font:500 10px var(--sans);fill:var(--muted)}
+.note{font:500 11px var(--sans);fill:var(--muted)}
+.arr{fill:none;stroke:var(--line);stroke-width:1.5}.arr.dash{stroke-dasharray:4 3}
+#ah path{fill:var(--line)}
+.n{cursor:pointer;outline:none;transition:opacity .15s}
+.n rect{fill:var(--bg-s);stroke:var(--c-s);stroke-width:1.5}
+.n text{font:500 11px var(--sans);fill:var(--ink);text-anchor:middle;pointer-events:none}
+.n text.id{font:700 10px var(--mono);fill:var(--c-s)}
+.n.s0{--c-s:var(--s0);--bg-s:var(--s0-bg)}.n.s1{--c-s:var(--s1);--bg-s:var(--s1-bg)}
+.n.s2{--c-s:var(--s2);--bg-s:var(--s2-bg)}.n.s3{--c-s:var(--s3);--bg-s:var(--s3-bg)}.n.s4{--c-s:var(--s4);--bg-s:var(--s4-bg)}
+.n.dashed rect{stroke-dasharray:5 3}
+.n.human rect{stroke-width:2.6}
+.n .badge circle{fill:var(--ink)}.n .badge path{fill:var(--bg)}
+.n:hover rect,.n:focus-visible rect,.n.on rect{stroke-width:3}
+.n:focus-visible rect{stroke:var(--ink)}
+
+</style>
+<defs><marker id="ah" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z"/></marker></defs><rect class="lane l0" x="0" y="8" width="1200" height="84"/>
+<text class="lane-t" x="14" y="26">TÚ</text>
+<rect class="lane l1" x="0" y="96" width="1200" height="126"/>
+<text class="lane-t" x="14" y="114">BOT</text>
+<rect class="lane l0" x="0" y="226" width="1200" height="214"/>
+<text class="lane-t" x="14" y="244">ESTACIONES</text>
+<rect class="lane l1" x="0" y="444" width="1200" height="112"/>
+<text class="lane-t" x="14" y="462">MERGE</text>
+<rect class="lane l0" x="0" y="560" width="1200" height="112"/>
+<text class="lane-t" x="14" y="578">DESARROLLO</text>
+<rect class="lane l1" x="0" y="676" width="1200" height="80"/>
+<text class="lane-t" x="14" y="694">PRODUCCIÓN</text>
+<text class="lane-s" x="14" y="289">contenido</text><text class="lane-s" x="14" y="372">web</text><rect class="band" x="152" y="232" width="1040" height="204" rx="10"/><text class="lbl" x="1184" y="248" text-anchor="end">todas deben pasar para seguir</text><text class="note" x="905" y="40">Cuatro decisiones tuyas:</text><text class="note" x="905" y="56">Ready, imagen, aprobar minor o major, y el tag.</text>
+<path class="arr" d="M227,68 V112" marker-end="url(#ah)"/>
+<path class="arr" d="M280,132 H305" marker-end="url(#ah)"/>
+<path class="arr" d="M455,132 H480" marker-end="url(#ah)"/>
+<path class="arr dash" d="M630,132 H665" marker-end="url(#ah)"/>
+<path class="arr dash" d="M555,112 V48 H700" marker-end="url(#ah)"/>
+<path class="arr" d="M785,68 V112" marker-end="url(#ah)"/>
+<path class="arr dash" d="M575,152 V168" marker-end="url(#ah)"/>
+<path class="arr" d="M495,152 V232" marker-end="url(#ah)"/>
+<path class="arr dash" d="M750,152 V232" marker-end="url(#ah)"/>
+<path class="arr" d="M215,434 V480" marker-end="url(#ah)"/>
+<path class="arr" d="M270,500 H300" marker-end="url(#ah)"/>
+<path class="arr" d="M430,500 H450 V474 H470" marker-end="url(#ah)"/>
+<path class="arr" d="M450,500 V526 H470" marker-end="url(#ah)"/>
+<path class="arr" d="M670,474 H695 V576" marker-end="url(#ah)"/>
+<path class="arr" d="M670,526 H695"/>
+<path class="arr" d="M765,596 H785" marker-end="url(#ah)"/>
+<path class="arr" d="M935,596 H955" marker-end="url(#ah)"/>
+<path class="arr" d="M1060,596 H1080" marker-end="url(#ah)"/>
+<path class="arr dash" d="M695,616 V640 H965 V616" marker-end="url(#ah)"/>
+<path class="arr" d="M1135,616 V624" marker-end="url(#ah)"/>
+<path class="arr" d="M1045,616 V670 H860 V698" marker-end="url(#ah)"/>
+<path class="arr" d="M940,718 H980" marker-end="url(#ah)"/>
+<text class="lbl" x="563" y="43" text-anchor="start">prompt de Midjourney</text>
+<text class="lbl" x="487" y="198" text-anchor="end">corren las estaciones</text>
+<text class="lbl" x="703" y="562" text-anchor="start">fusionado</text>
+<text class="lbl" x="830" y="634" text-anchor="middle">cambios de web: directo a Pages</text>
+<text class="lbl" x="952" y="688" text-anchor="middle">la versión sube cada noche</text>
+<g class="n s4 human" data-id="H1" tabindex="0" role="button" aria-label="Tú: pasas el ítem a Ready">
+<rect x="165" y="28" width="125" height="40" rx="7"/>
+<text x="227.5" y="51.8">Ítem → Ready</text>
+<g class="badge" transform="translate(286,30)"><circle r="10"/><path d="M-4 -6 V6.5 L-1 3.8 L1.2 8.6 L3 7.8 L0.9 3.2 L5 3.2 Z"/></g>
+</g>
+<g class="n s4 human" data-id="H2" tabindex="0" role="button" aria-label="Tú: la imagen de Midjourney">
+<rect x="700" y="28" width="170" height="40" rx="7"/>
+<text x="785.0" y="45.2">/imagen + adjunto</text>
+<text x="785.0" y="58.4">(Midjourney)</text>
+<g class="badge" transform="translate(866,30)"><circle r="10"/><path d="M-4 -6 V6.5 L-1 3.8 L1.2 8.6 L3 7.8 L0.9 3.2 L5 3.2 Z"/></g>
+</g>
+<g class="n s4" data-id="B1" tabindex="0" role="button" aria-label="Despachador">
+<rect x="160" y="112" width="120" height="40" rx="7"/>
+<text x="220.0" y="129.2">Despachador</text>
+<text x="220.0" y="142.4">(cron)</text>
+</g>
+<g class="n s4" data-id="B2" tabindex="0" role="button" aria-label="Fábrica de historias y de funcionalidades">
+<rect x="305" y="112" width="150" height="40" rx="7"/>
+<text x="380.0" y="129.2">Fábrica (Claude)</text>
+<text x="380.0" y="142.4">redacta o codifica</text>
+</g>
+<g class="n s4" data-id="B3" tabindex="0" role="button" aria-label="PR del bot">
+<rect x="480" y="112" width="150" height="40" rx="7"/>
+<text x="555.0" y="129.2">Abre el PR</text>
+<text x="555.0" y="142.4">(Closes #n)</text>
+</g>
+<g class="n s4 dashed" data-id="B4" tabindex="0" role="button" aria-label="Imagen desde comentario (solo historias)">
+<rect x="665" y="112" width="170" height="40" rx="7"/>
+<text x="750.0" y="129.2">Prepara JPEG, alt</text>
+<text x="750.0" y="142.4">y vistas previas</text>
+</g>
+<g class="n s4 dashed" data-id="R" tabindex="0" role="button" aria-label="Rollback preparado">
+<rect x="520" y="168" width="150" height="40" rx="7"/>
+<text x="595.0" y="185.2">↺ PR de rollback</text>
+<text x="595.0" y="198.4">(borrador, apilado)</text>
+</g>
+<g class="n s2" data-id="C1" tabindex="0" role="button" aria-label="Frontmatter">
+<rect x="165" y="262" width="112" height="44" rx="7"/>
+<text x="221.0" y="281.2" class="id">C1</text>
+<text x="221.0" y="294.4">Frontmatter</text>
+</g>
+<g class="n s2" data-id="C2" tabindex="0" role="button" aria-label="Estructura">
+<rect x="285" y="262" width="112" height="44" rx="7"/>
+<text x="341.0" y="281.2" class="id">C2</text>
+<text x="341.0" y="294.4">Estructura</text>
+</g>
+<g class="n s0" data-id="C3" tabindex="0" role="button" aria-label="Tiempo de lectura">
+<rect x="405" y="262" width="112" height="44" rx="7"/>
+<text x="461.0" y="281.2" class="id">C3</text>
+<text x="461.0" y="294.4">Lectura</text>
+</g>
+<g class="n s2" data-id="C4" tabindex="0" role="button" aria-label="Auditoría de marca">
+<rect x="525" y="262" width="112" height="44" rx="7"/>
+<text x="581.0" y="281.2" class="id">C4</text>
+<text x="581.0" y="294.4">Auditoría</text>
+</g>
+<g class="n s2" data-id="C5" tabindex="0" role="button" aria-label="Nombres de personajes">
+<rect x="645" y="262" width="112" height="44" rx="7"/>
+<text x="701.0" y="281.2" class="id">C5</text>
+<text x="701.0" y="294.4">Nombres</text>
+</g>
+<g class="n s2" data-id="C7" tabindex="0" role="button" aria-label="Imagen de la historia">
+<rect x="765" y="262" width="112" height="44" rx="7"/>
+<text x="821.0" y="281.2" class="id">C7</text>
+<text x="821.0" y="294.4">Imagen</text>
+</g>
+<g class="n s2" data-id="C8" tabindex="0" role="button" aria-label="Build de mistorias-web">
+<rect x="885" y="262" width="112" height="44" rx="7"/>
+<text x="941.0" y="281.2" class="id">C8</text>
+<text x="941.0" y="294.4">Build web</text>
+</g>
+<g class="n s1" data-id="C9" tabindex="0" role="button" aria-label="Workflows seguros">
+<rect x="1005" y="262" width="112" height="44" rx="7"/>
+<text x="1061.0" y="281.2" class="id">C9</text>
+<text x="1061.0" y="294.4">Workflows</text>
+</g>
+<g class="n s0" data-id="W1" tabindex="0" role="button" aria-label="Tests, cobertura y mutación">
+<rect x="165" y="322" width="128" height="46" rx="7"/>
+<text x="229.0" y="335.6" class="id">W1</text>
+<text x="229.0" y="348.8">Tests, cobertura</text>
+<text x="229.0" y="362.0">y mutación</text>
+</g>
+<g class="n s2" data-id="W2" tabindex="0" role="button" aria-label="Enlaces internos en los dos destinos">
+<rect x="303" y="322" width="128" height="46" rx="7"/>
+<text x="367.0" y="335.6" class="id">W2</text>
+<text x="367.0" y="348.8">Enlaces internos</text>
+<text x="367.0" y="362.0">en 2 destinos</text>
+</g>
+<g class="n s2" data-id="W3" tabindex="0" role="button" aria-label="HTML válido">
+<rect x="441" y="322" width="128" height="46" rx="7"/>
+<text x="505.0" y="335.6" class="id">W3</text>
+<text x="505.0" y="348.8">HTML válido</text>
+<text x="505.0" y="362.0">(html-validate)</text>
+</g>
+<g class="n s2" data-id="W4" tabindex="0" role="button" aria-label="Accesibilidad con axe">
+<rect x="579" y="322" width="128" height="46" rx="7"/>
+<text x="643.0" y="335.6" class="id">W4</text>
+<text x="643.0" y="348.8">axe · WCAG 2.2 AA</text>
+<text x="643.0" y="362.0">8 páginas × 2 temas</text>
+</g>
+<g class="n s2" data-id="W5" tabindex="0" role="button" aria-label="Teclado y foco">
+<rect x="717" y="322" width="128" height="46" rx="7"/>
+<text x="781.0" y="335.6" class="id">W5</text>
+<text x="781.0" y="348.8">Teclado y foco</text>
+<text x="781.0" y="362.0">visible</text>
+</g>
+<g class="n s2" data-id="W6" tabindex="0" role="button" aria-label="Contraste de tokens">
+<rect x="855" y="322" width="128" height="46" rx="7"/>
+<text x="919.0" y="335.6" class="id">W6</text>
+<text x="919.0" y="348.8">Contraste</text>
+<text x="919.0" y="362.0">de tokens</text>
+</g>
+<g class="n s2" data-id="W7" tabindex="0" role="button" aria-label="Reflow">
+<rect x="993" y="322" width="128" height="46" rx="7"/>
+<text x="1057.0" y="335.6" class="id">W7</text>
+<text x="1057.0" y="348.8">Reflow</text>
+<text x="1057.0" y="362.0">320 px</text>
+</g>
+<g class="n s1" data-id="W8" tabindex="0" role="button" aria-label="Paridad de la CSP">
+<rect x="165" y="376" width="128" height="46" rx="7"/>
+<text x="229.0" y="389.6" class="id">W8</text>
+<text x="229.0" y="402.8">Paridad CSP</text>
+<text x="229.0" y="416.0">meta = _headers</text>
+</g>
+<g class="n s1" data-id="W9" tabindex="0" role="button" aria-label="Sin scripts en dist/">
+<rect x="303" y="376" width="128" height="46" rx="7"/>
+<text x="367.0" y="389.6" class="id">W9</text>
+<text x="367.0" y="402.8">Sin scripts</text>
+<text x="367.0" y="416.0">en dist/</text>
+</g>
+<g class="n s1" data-id="W10" tabindex="0" role="button" aria-label="Dependencias y análisis estático">
+<rect x="441" y="376" width="128" height="46" rx="7"/>
+<text x="505.0" y="389.6" class="id">W10</text>
+<text x="505.0" y="402.8">Dependencias</text>
+<text x="505.0" y="416.0">CodeQL</text>
+</g>
+<g class="n s3" data-id="W11" tabindex="0" role="button" aria-label="Mantenibilidad">
+<rect x="579" y="376" width="128" height="46" rx="7"/>
+<text x="643.0" y="389.6" class="id">W11</text>
+<text x="643.0" y="402.8">Mantenibilidad</text>
+<text x="643.0" y="416.0">W11 a W15</text>
+</g>
+<g class="n s2" data-id="W16" tabindex="0" role="button" aria-label="Rendimiento">
+<rect x="717" y="376" width="128" height="46" rx="7"/>
+<text x="781.0" y="389.6" class="id">W16</text>
+<text x="781.0" y="402.8">Lighthouse</text>
+<text x="781.0" y="416.0">portada e historia</text>
+</g>
+<g class="n s2" data-id="W20" tabindex="0" role="button" aria-label="E2E con Serenity.js y Playwright">
+<rect x="855" y="376" width="128" height="46" rx="7"/>
+<text x="919.0" y="389.6" class="id">W20</text>
+<text x="919.0" y="402.8">E2E Serenity.js</text>
+<text x="919.0" y="416.0">@smoke y suite</text>
+</g>
+<g class="n s2" data-id="W18" tabindex="0" role="button" aria-label="Capturas de pantalla">
+<rect x="993" y="376" width="128" height="46" rx="7"/>
+<text x="1057.0" y="389.6" class="id">W18</text>
+<text x="1057.0" y="402.8">Capturas</text>
+<text x="1057.0" y="416.0">(informativo)</text>
+</g>
+<g class="n s0" data-id="M1" tabindex="0" role="button" aria-label="Checks requeridos">
+<rect x="160" y="480" width="110" height="40" rx="7"/>
+<text x="215.0" y="497.2">Checks</text>
+<text x="215.0" y="510.4">en verde</text>
+</g>
+<g class="n s1" data-id="M2" tabindex="0" role="button" aria-label="politica-semver">
+<rect x="300" y="480" width="130" height="40" rx="7"/>
+<text x="365.0" y="497.2">politica-semver</text>
+<text x="365.0" y="510.4">(SemVer + rutas)</text>
+</g>
+<g class="n s1" data-id="M3" tabindex="0" role="button" aria-label="Subida none o patch">
+<rect x="470" y="454" width="200" height="40" rx="7"/>
+<text x="570.0" y="471.2">none · patch</text>
+<text x="570.0" y="484.4">se fusiona sola</text>
+</g>
+<g class="n s1 human" data-id="M4" tabindex="0" role="button" aria-label="Subida minor o major">
+<rect x="470" y="506" width="200" height="40" rx="7"/>
+<text x="570.0" y="523.2">minor · major · ruta protegida</text>
+<text x="570.0" y="536.4">espera tu aprobación</text>
+<g class="badge" transform="translate(666,508)"><circle r="10"/><path d="M-4 -6 V6.5 L-1 3.8 L1.2 8.6 L3 7.8 L0.9 3.2 L5 3.2 Z"/></g>
+</g>
+<g class="n s0" data-id="D1" tabindex="0" role="button" aria-label="main">
+<rect x="625" y="576" width="140" height="40" rx="7"/>
+<text x="695.0" y="593.2">Fusionado</text>
+<text x="695.0" y="606.4">a main</text>
+</g>
+<g class="n s4" data-id="D2" tabindex="0" role="button" aria-label="Contenido avisa a web">
+<rect x="785" y="576" width="150" height="40" rx="7"/>
+<text x="860.0" y="593.2">Contenido avisa a web:</text>
+<text x="860.0" y="606.4">PR de puntero (patch)</text>
+</g>
+<g class="n s0" data-id="D3" tabindex="0" role="button" aria-label="GitHub Pages">
+<rect x="955" y="576" width="105" height="40" rx="7"/>
+<text x="1007.5" y="593.2">GitHub Pages</text>
+<text x="1007.5" y="606.4">desarrollo</text>
+</g>
+<g class="n s2" data-id="D4" tabindex="0" role="button" aria-label="Humo post-despliegue">
+<rect x="1080" y="576" width="110" height="40" rx="7"/>
+<text x="1135.0" y="593.2">W19 humo</text>
+<text x="1135.0" y="606.4">test:smoke</text>
+</g>
+<g class="n s4 dashed" data-id="D5" tabindex="0" role="button" aria-label="Rollback ante un humo fallido">
+<rect x="1070" y="624" width="120" height="40" rx="7"/>
+<text x="1130.0" y="641.2">↺ si falla:</text>
+<text x="1130.0" y="654.4">rollback</text>
+</g>
+<g class="n s0" data-id="P1" tabindex="0" role="button" aria-label="PR de versión">
+<rect x="780" y="698" width="160" height="40" rx="7"/>
+<text x="860.0" y="715.2">PR de versión</text>
+<text x="860.0" y="728.4">(bot, cada noche)</text>
+</g>
+<g class="n s0 human" data-id="P2" tabindex="0" role="button" aria-label="Producción es tuya">
+<rect x="980" y="698" width="210" height="40" rx="7"/>
+<text x="1085.0" y="715.2">Tú: tag vX.Y.Z</text>
+<text x="1085.0" y="728.4">→ Netlify (mistorias.pe)</text>
+<g class="badge" transform="translate(1186,700)"><circle r="10"/><path d="M-4 -6 V6.5 L-1 3.8 L1.2 8.6 L3 7.8 L0.9 3.2 L5 3.2 Z"/></g>
+</g>
+</svg>

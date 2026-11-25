@@ -39,12 +39,12 @@ export function scanBuiltHtml(html: string): DistViolation[] {
   const violations: DistViolation[] = [];
 
   if (SCRIPT_TAG.test(html)) {
-    violations.push({ rule: "script", detail: "contiene una etiqueta <script>" });
+    violations.push({ rule: "script", detail: "contains a <script> tag" });
   }
 
   for (const [tag, name, attributes] of [...html.matchAll(OPENING_TAG)].map((m) => [m[0], m[1].toLowerCase(), m[2]] as const)) {
     if (EVENT_HANDLER_ATTRIBUTE.test(attributes)) {
-      violations.push({ rule: "manejador-de-evento", detail: tag });
+      violations.push({ rule: "event-handler", detail: tag });
     }
     if (JAVASCRIPT_URL.test(tag)) {
       violations.push({ rule: "javascript-url", detail: tag });
@@ -52,12 +52,12 @@ export function scanBuiltHtml(html: string): DistViolation[] {
     if (name === "a" && attributeValue(attributes, "target")?.toLowerCase() === "_blank") {
       const rel = (attributeValue(attributes, "rel") ?? "").toLowerCase().split(/\s+/);
       if (!rel.includes("noopener") || !rel.includes("noreferrer")) {
-        violations.push({ rule: "blank-sin-noopener", detail: tag });
+        violations.push({ rule: "blank-without-noopener", detail: tag });
       }
     }
     const external = externalSubresource(name, attributes);
     if (external) {
-      violations.push({ rule: "recurso-externo", detail: `${tag} (${external})` });
+      violations.push({ rule: "external-resource", detail: `${tag} (${external})` });
     }
   }
 

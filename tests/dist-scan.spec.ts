@@ -19,8 +19,8 @@ describe("scanBuiltHtml", () => {
   });
 
   it("rechaza un manejador de evento en cualquier etiqueta", () => {
-    expect(rules('<button onclick="x()">a</button>')).toEqual(["manejador-de-evento"]);
-    expect(rules('<img src="/a.jpg" onerror = "x()">')).toEqual(["manejador-de-evento"]);
+    expect(rules('<button onclick="x()">a</button>')).toEqual(["event-handler"]);
+    expect(rules('<img src="/a.jpg" onerror = "x()">')).toEqual(["event-handler"]);
   });
 
   it("no confunde un atributo que solo contiene 'on' con un manejador", () => {
@@ -33,20 +33,20 @@ describe("scanBuiltHtml", () => {
   });
 
   it("exige noopener y noreferrer en cada target=_blank", () => {
-    expect(rules('<a href="https://a.org" target="_blank">a</a>')).toEqual(["blank-sin-noopener"]);
-    expect(rules('<a href="https://a.org" target="_blank" rel="noopener">a</a>')).toEqual(["blank-sin-noopener"]);
+    expect(rules('<a href="https://a.org" target="_blank">a</a>')).toEqual(["blank-without-noopener"]);
+    expect(rules('<a href="https://a.org" target="_blank" rel="noopener">a</a>')).toEqual(["blank-without-noopener"]);
     expect(rules('<a href="https://a.org" target="_blank" rel="me noopener noreferrer">a</a>')).toEqual([]);
     expect(rules('<a href="https://a.org" target="_self">a</a>')).toEqual([]);
   });
 
   it("rechaza recursos que la CSP bloquearía por venir de otro origen", () => {
-    expect(rules('<link rel="stylesheet" href="https://cdn.example/a.css">')).toEqual(["recurso-externo"]);
-    expect(rules('<link rel="preload icon" href="//cdn.example/f.ico">')).toEqual(["recurso-externo"]);
-    expect(rules('<img src="https://cdn.example/a.jpg">')).toEqual(["recurso-externo"]);
-    expect(rules('<img src="/a.jpg" srcset="/a.webp 1x, https://cdn.example/b.webp 2x">')).toEqual(["recurso-externo"]);
-    expect(rules('<iframe src="https://www.youtube.com/embed/x"></iframe>')).toEqual(["recurso-externo"]);
-    expect(rules('<form action="https://forms.example/post"></form>')).toEqual(["recurso-externo"]);
-    expect(rules('<object data="https://a.org/x.swf"></object>')).toEqual(["recurso-externo"]);
+    expect(rules('<link rel="stylesheet" href="https://cdn.example/a.css">')).toEqual(["external-resource"]);
+    expect(rules('<link rel="preload icon" href="//cdn.example/f.ico">')).toEqual(["external-resource"]);
+    expect(rules('<img src="https://cdn.example/a.jpg">')).toEqual(["external-resource"]);
+    expect(rules('<img src="/a.jpg" srcset="/a.webp 1x, https://cdn.example/b.webp 2x">')).toEqual(["external-resource"]);
+    expect(rules('<iframe src="https://www.youtube.com/embed/x"></iframe>')).toEqual(["external-resource"]);
+    expect(rules('<form action="https://forms.example/post"></form>')).toEqual(["external-resource"]);
+    expect(rules('<object data="https://a.org/x.swf"></object>')).toEqual(["external-resource"]);
   });
 
   it("deja pasar enlaces y rel=canonical externos, que no cargan nada", () => {
@@ -55,13 +55,13 @@ describe("scanBuiltHtml", () => {
   });
 
   it("acepta URL sin comillas y con comillas simples", () => {
-    expect(rules("<img src=https://cdn.example/a.jpg>")).toEqual(["recurso-externo"]);
+    expect(rules("<img src=https://cdn.example/a.jpg>")).toEqual(["external-resource"]);
     expect(rules("<img src='/a.jpg'>")).toEqual([]);
   });
 
   it("acumula todas las infracciones de una misma página", () => {
     const html = '<script></script><a href="https://a.org" target="_blank">a</a><img src="https://x.y/a.jpg">';
 
-    expect(rules(html)).toEqual(["script", "blank-sin-noopener", "recurso-externo"]);
+    expect(rules(html)).toEqual(["script", "blank-without-noopener", "external-resource"]);
   });
 });

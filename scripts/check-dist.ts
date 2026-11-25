@@ -24,7 +24,7 @@ function main(): void {
   const directory = process.argv[2] ?? "dist";
   const files = htmlFiles(directory);
   if (files.length === 0) {
-    throw new Error(`No hay HTML en ${directory}: ¿se corrió el build?`);
+    throw new Error(`No HTML found in ${directory}: did the build run?`);
   }
 
   const problems = files.flatMap((file) =>
@@ -34,11 +34,11 @@ function main(): void {
   );
 
   if (problems.length > 0) {
-    console.error(`El HTML construido rompe lo que promete la CSP:\n${problems.join("\n")}`);
+    console.error(`The built HTML breaks what the CSP promises:\n${problems.join("\n")}`);
     process.exitCode = 1;
     return;
   }
-  console.log(`${files.length} páginas revisadas en ${directory}: sin scripts, manejadores ni recursos externos.`);
+  console.log(`${files.length} pages checked in ${directory}: no scripts, event handlers or external resources.`);
 }
 
 main();
