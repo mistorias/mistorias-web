@@ -12,6 +12,7 @@ import ListaTemas from "../../components/ListaTemas.astro";
 import FirmaAutoria from "../../components/FirmaAutoria.astro";
 import NavegacionHistorias from "../../components/NavegacionHistorias.astro";
 import OpinionHistoria from "../../components/OpinionHistoria.astro";
+import PromedioDeCalificaciones from "../../components/PromedioDeCalificaciones.astro";
 import ProgresoDeLectura from "../../components/ProgresoDeLectura.astro";
 import SimboloMistorias from "../../components/SimboloMistorias.astro";
 import TiempoDeLectura from "../../components/TiempoDeLectura.astro";
@@ -21,6 +22,8 @@ import { getStoryImage } from "../../lib/content/story-images";
 import { resolveOgImage } from "../../lib/social/og-image";
 import { orderStoriesByDate } from "../../lib/content/story-order";
 import { resolveNeighbors } from "../../lib/content/story-order-cache";
+import { parseRatingsFile } from "../../lib/ratings/ratings-file";
+import ratingsContents from "../../../data/ratings.json?raw";
 
 export async function getStaticPaths() {
     const stories = await getCollection("stories");
@@ -82,6 +85,11 @@ if (author === undefined) {
         `La historia ${story.id} firma como "${story.data.author.id}" y no hay ficha para esa persona en authors/.`
     );
 }
+
+// El conteo lo trae a diario el workflow `actualizar-calificaciones` (ADR 0037).
+// Se valida al leerlo: una forma inesperada rompe el build, no publica un
+// promedio falso.
+const ratings = parseRatingsFile(ratingsContents);
 ---
 
 <BaseLayout
@@ -172,6 +180,8 @@ if (author === undefined) {
         }
 
         <FirmaAutoria autor={author} autoria={story.data.authorship} />
+
+        <PromedioDeCalificaciones distribucion={ratings.stories[story.id]} />
 
         <OpinionHistoria historiaId={story.id} />
 
