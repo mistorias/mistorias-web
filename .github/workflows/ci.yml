@@ -166,3 +166,50 @@ jobs:
         with:
           fail-on-severity: moderate
           deny-licenses: GPL-2.0-only, GPL-2.0-or-later, GPL-3.0-only, GPL-3.0-or-later, AGPL-3.0-only, AGPL-3.0-or-later
+
+  # Construye el sitio para cada destino y revisa el HTML resultante: un
+  # <script>, un manejador de evento o un recurso de otro origen no hacen
+  # fallar el build, pero la CSP los bloquea y la página se rompe solo en el
+  # navegador. Los dos destinos porque cambian la base de cada enlace, y un
+  # error que aparece en uno no aparece en el otro (issue #29, ADR 0037).
+  revisar-dist:
+    name: Revisar el HTML de ${{ matrix.target }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [development, netlify]
+    steps:
+      - name: Checkout repository and content
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install pnpm
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+        env:
+          DEPLOY_TARGET: ${{ matrix.target }}
+
+      - name: Sin scripts, manejadores ni recursos externos
+        run: pnpm check-dist
+
+      # La base de GitHub Pages en el artefacto de Netlify publica el sitio
+      # sin estilos y con cada enlace roto (issue #29).
+      - name: La base del artefacto es la del destino
+        if: matrix.target == 'netlify'
+        run: scripts/check_build_base.sh dist
