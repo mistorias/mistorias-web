@@ -2,7 +2,8 @@
 
 ## Estado
 
-Aceptado. La implementación está pendiente.
+Aceptado e implementado en `src/pages/historias.json.ts`, sobre
+`buildStoryFeed` (`src/lib/feed/story-feed.ts`).
 
 ## Contexto
 
@@ -54,12 +55,16 @@ del más reciente al más antiguo:
 | `items[].title`         | `title`                                                               |
 | `items[].summary`       | `summary`                                                             |
 | `items[].content_text`  | `summary` (el estándar exige un contenido; el cuerpo vive en la página) |
-| `items[].image`         | La imagen optimizada, si la historia tiene                            |
+| `items[].image`         | La imagen optimizada, si la historia tiene: el mismo recorte JPEG de 1200×630 que `og:image` |
 | `items[].date_published`| `date`, en ISO 8601                                                   |
 | `items[].authors`       | Nombre y URL de la ficha del autor                                    |
 | `items[].tags`          | Los temas                                                             |
 
 mistorias-redes-sociales lo lee con un cron horario.
+
+El endpoint declara `application/feed+json`, el tipo propio de JSON Feed, pero
+en un build estático esa cabecera no llega: el servidor decide el tipo por la
+extensión `.json`. Los lectores de feeds aceptan `application/json` igual.
 
 ## Consecuencias
 
@@ -70,6 +75,9 @@ mistorias-redes-sociales lo lee con un cron horario.
   respectivos. El cron de redes lee solo el de producción.
 - La implementación sigue las reglas de siempre: rutas desde `src/lib/routes.ts`
   y un test del endpoint que valide el resultado contra el esquema de JSON Feed.
+- El esquema contra el que se valida es el de SchemaStore, copiado en
+  `tests/fixtures/json-feed/`, y no uno escrito acá: uno propio repetiría la
+  misma lectura del estándar que hizo el código.
 - Un retraso de hasta una hora entre la publicación y el inicio de la difusión
   es aceptable.
 - Enlazar el feed desde el `<head>` (`<link rel="alternate" type="application/feed+json">`)
