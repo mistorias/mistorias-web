@@ -3,6 +3,7 @@
 import { execFileSync } from "node:child_process";
 import { appendFileSync, readFileSync, writeFileSync } from "node:fs";
 import {
+  type Commit,
   bumpForCommits,
   compareVersions,
   describeCountedCommits,
@@ -37,7 +38,7 @@ function main(): void {
     git("log", `${tag}..HEAD`, "--format=%x1e%H%x1f%s%x1f%b%x1f", "--name-only")
   );
 
-  const bump = bumpForCommits(commits);
+  const bump = bumpForCommits(commits, lookupCommit);
   const candidate = nextVersion(releasedVersion, bump);
   const packageJson = readFileSync(packageJsonPath, "utf8");
   const currentVersion = JSON.parse(packageJson).version as string;
@@ -63,6 +64,16 @@ function main(): void {
   }
 
   setOutputs({ hay_cambios: "true", anterior: currentVersion, nueva: candidate });
+}
+
+// Un revert de algo que ya salió en un release anterior: su subida es la del
+// commit original, que ya no está en el rango, así que se lee de git.
+function lookupCommit(hash: string): Commit | undefined {
+  try {
+    return parseGitLog(git("show", "-s", "--name-only", "--format=%x1e%H%x1f%s%x1f%b%x1f", hash))[0];
+  } catch {
+    return undefined;
+  }
 }
 
 function buildSummary(tag: string, bump: string, countedCommits: string[]): string {

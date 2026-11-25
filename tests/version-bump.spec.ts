@@ -10,6 +10,7 @@ import {
   nextVersion,
   parseGitLog,
   replaceVersionLine,
+  revertedHashes,
   versionFromTag
 } from "../src/lib/release/version-bump";
 
@@ -110,6 +111,119 @@ describe("classifyCommit", () => {
     ["feat(): alcance vacío"]
   ])("devuelve null para un commit no convencional que llega a los lectores: %s", (subject) => {
     expect(classifyCommit(commit(subject))).toBeNull();
+  });
+});
+
+describe("revertedHashes", () => {
+  it("lee el pie que escribe git revert, uno por commit", () => {
+    const body = "This reverts commit ABC1234DEF0.\n\nThis reverts commit 1234567.";
+
+    expect(revertedHashes(body)).toEqual(["abc1234def0", "1234567"]);
+  });
+
+  it("ignora un hash demasiado corto o una mención dentro de una línea", () => {
+    expect(revertedHashes("This reverts commit abc12.")).toEqual([]);
+    expect(revertedHashes("Aviso: This reverts commit abc1234def")).toEqual([]);
+    expect(revertedHashes("")).toEqual([]);
+  });
+});
+
+describe("classifyCommit con revert", () => {
+  const original = (subject: string): Commit => ({
+    hash: "aaaaaaa1111",
+    subject,
+    body: "",
+    paths: ["src/components/Dialogo.astro"]
+  });
+  const revert = (body: string, paths = ["src/components/Dialogo.astro"]): Commit => ({
+    hash: "bbbbbbb2222",
+    subject: "revert: quitar el cuadro de diálogo",
+    body,
+    paths
+  });
+  const lookup = (found: Commit) => (hash: string) => (found.hash.startsWith(hash) ? found : undefined);
+
+  it("revertir una funcionalidad es minor, no patch: el sitio pierde esa funcionalidad", () => {
+    const result = classifyCommit(
+      revert("This reverts commit aaaaaaa1111."),
+      lookup(original("feat: cuadro de diálogo"))
+    );
+
+    expect(result).toBe("minor");
+  });
+
+  it("revertir una corrección es patch", () => {
+    const result = classifyCommit(
+      revert("This reverts commit aaaaaaa1111."),
+      lookup(original("fix: foco visible"))
+    );
+
+    expect(result).toBe("patch");
+  });
+
+  it("revertir un cambio mayor es mayor", () => {
+    const result = classifyCommit(
+      revert("This reverts commit aaaaaaa1111."),
+      lookup(original("feat!: cambia las rutas"))
+    );
+
+    expect(result).toBe("major");
+  });
+
+  it("un revert que revierte solo docs es none por sus rutas", () => {
+    expect(classifyCommit(revert("This reverts commit aaaaaaa1111.", ["docs/a.md"]))).toBe("none");
+  });
+
+  it("sin saber qué revierte, se queda en patch como cualquier otro tipo", () => {
+    expect(classifyCommit(revert(""))).toBe("patch");
+    expect(classifyCommit(revert("This reverts commit aaaaaaa1111."))).toBe("patch");
+    expect(
+      classifyCommit(revert("This reverts commit ccccccc3333."), lookup(original("feat: x")))
+    ).toBe("patch");
+  });
+
+  it("si el original tampoco es convencional, cuenta como patch", () => {
+    const result = classifyCommit(revert("This reverts commit aaaaaaa1111."), lookup(original("Cambio suelto")));
+
+    expect(result).toBe("patch");
+  });
+});
+
+describe("bumpForCommits con revert", () => {
+  const feature: Commit = {
+    hash: "aaaaaaa1111",
+    subject: "feat: cuadro de diálogo",
+    body: "",
+    paths: ["src/components/Dialogo.astro"]
+  };
+  const undo: Commit = {
+    hash: "bbbbbbb2222",
+    subject: "revert: quitar el cuadro de diálogo",
+    body: "This reverts commit aaaaaaa1111.",
+    paths: ["src/components/Dialogo.astro"]
+  };
+
+  it("una funcionalidad y su revert dentro del mismo rango no suben la versión", () => {
+    expect(bumpForCommits([feature, undo])).toBe("none");
+  });
+
+  it("los demás commits del rango siguen contando", () => {
+    const fix: Commit = { hash: "ccccccc3333", subject: "fix: foco", body: "", paths: ["src/a.ts"] };
+
+    expect(bumpForCommits([feature, undo, fix])).toBe("patch");
+  });
+
+  it("un revert de algo ya publicado hereda la subida del original, que se busca fuera del rango", () => {
+    const published = (hash: string) => (feature.hash.startsWith(hash) ? feature : undefined);
+
+    expect(bumpForCommits([undo], published)).toBe("minor");
+  });
+
+  it("revertir una vez cada una de dos funcionalidades anula las dos parejas", () => {
+    const second: Commit = { ...feature, hash: "ddddddd4444", subject: "feat: otro" };
+    const undoSecond: Commit = { ...undo, hash: "eeeeeee5555", body: "This reverts commit ddddddd4444." };
+
+    expect(bumpForCommits([feature, second, undo, undoSecond])).toBe("none");
   });
 });
 
