@@ -109,3 +109,60 @@ jobs:
           name: reporte-mutacion
           path: reports/mutation/index.html
           if-no-files-found: ignore
+
+  # Audita los propios workflows: son código que corre con permisos sobre el
+  # repositorio, así que se revisan igual que el sitio (ADR 0037). Los dos son
+  # bloqueantes. zizmor corre en línea (con el token de solo lectura) para
+  # detectar también acciones con vulnerabilidades conocidas; sus excepciones
+  # viven, con su motivo, en .github/zizmor.yml.
+  workflows:
+    name: Auditar workflows
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: zizmor
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: pipx run --spec zizmor==1.33.1 zizmor --no-progress .github/workflows
+
+      # La versión y su suma de verificación van fijas: un binario descargado
+      # sin verificar sería el eslabón flojo de esta cadena.
+      - name: actionlint
+        env:
+          ACTIONLINT_VERSION: 1.7.7
+          ACTIONLINT_SHA256: 023070a287cd8cccd71515fedc843f1985bf96c436b7effaecce67290e7e0757
+        run: |
+          curl -sSfL -o "$RUNNER_TEMP/actionlint.tgz" \
+            "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+          echo "${ACTIONLINT_SHA256}  ${RUNNER_TEMP}/actionlint.tgz" | sha256sum --check
+          tar -xzf "$RUNNER_TEMP/actionlint.tgz" -C "$RUNNER_TEMP" actionlint
+          "$RUNNER_TEMP/actionlint" -color
+
+  # Una dependencia nueva con una vulnerabilidad conocida o con una licencia
+  # de copyleft fuerte (el repositorio es Apache-2.0) no entra. Complementa a
+  # `pnpm audit --prod`, que mira lo que ya estaba instalado.
+  revisar-dependencias:
+    name: Revisar dependencias nuevas
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Dependency review
+        uses: actions/dependency-review-action@bbc44d14a204704ccc493733616cd1e93a0321ec # v5.0.1
+        with:
+          fail-on-severity: moderate
+          deny-licenses: GPL-2.0-only, GPL-2.0-or-later, GPL-3.0-only, GPL-3.0-or-later, AGPL-3.0-only, AGPL-3.0-or-later
