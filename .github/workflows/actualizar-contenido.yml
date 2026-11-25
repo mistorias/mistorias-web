@@ -26,6 +26,7 @@ env:
 jobs:
   actualizar:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       # Un token de GitHub App de vida corta (1 hora) en vez de GITHUB_TOKEN:
       # con GITHUB_TOKEN el PR se abre, pero GitHub no dispara los workflows
@@ -37,6 +38,9 @@ jobs:
         with:
           client-id: ${{ vars.CONTENT_BOT_CLIENT_ID }}
           private-key: ${{ secrets.CONTENT_BOT_PRIVATE_KEY }}
+          # Solo lo que este workflow necesita: empujar la rama y abrir el PR.
+          permission-contents: write
+          permission-pull-requests: write
 
       - name: Checkout repository and content
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -87,4 +91,5 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.token.outputs.token }}
           NUEVO: ${{ steps.contenido.outputs.nuevo }}
-        run: scripts/open_content_pr.sh "$NUEVO" "$RUNNER_TEMP/cuerpo-pr.md" "${{ github.event.repository.default_branch }}"
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: scripts/open_content_pr.sh "$NUEVO" "$RUNNER_TEMP/cuerpo-pr.md" "$DEFAULT_BRANCH"

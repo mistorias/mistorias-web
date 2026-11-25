@@ -1,0 +1,17 @@
+# Configuración de zizmor, el auditor de workflows (ver docs/adr/0037-seguridad-del-pipeline.md).
+# Cada excepción dice por qué existe: una excepción sin motivo es una puerta abierta.
+rules:
+  artipacked:
+    ignore:
+      # Estos dos workflows empujan una rama con `git push` (lo hacen los scripts
+      # open_content_pr.sh y open_version_pr.sh) y por eso necesitan que el
+      # checkout deje el token del App en la configuración de git. El token vive
+      # una hora, solo tiene contents y pull-requests, y no se sube ningún artefacto.
+      - actualizar-contenido.yml
+      - subir-version.yml
+  dangerous-triggers:
+    ignore:
+      # El patrón oficial de claude-code-action. El job solo corre si el comentario
+      # menciona a @claude, los permisos del job son de solo lectura y la acción
+      # verifica que quien comenta tenga permiso de escritura en el repositorio.
+      - claude.yml

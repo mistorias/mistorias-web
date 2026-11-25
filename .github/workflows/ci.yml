@@ -17,11 +17,13 @@ concurrency:
 jobs:
   verificar:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout repository and content
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: recursive
+          persist-credentials: false
           # Historial completo: el paso de mutation testing más abajo
           # necesita diffear contra la base del PR o el commit anterior.
           fetch-depth: 0
@@ -77,20 +79,28 @@ jobs:
       - name: Detectar archivos .ts modificados
         id: cambios
         if: github.event_name == 'pull_request' || github.event_name == 'push'
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+          PUSH_SHA: ${{ github.sha }}
         run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            BASE="${{ github.event.pull_request.base.sha }}"
-            HEAD="${{ github.event.pull_request.head.sha }}"
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            BASE="$PR_BASE"
+            HEAD="$PR_HEAD"
           else
-            BASE="${{ github.event.before }}"
-            HEAD="${{ github.sha }}"
+            BASE="$PUSH_BEFORE"
+            HEAD="$PUSH_SHA"
           fi
           ARCHIVOS=$(git diff --name-only --diff-filter=d "$BASE" "$HEAD" -- 'src/**/*.ts' | paste -sd, -)
           echo "archivos=$ARCHIVOS" >> "$GITHUB_OUTPUT"
 
       - name: Mutation testing en los archivos modificados
         if: steps.cambios.outputs.archivos != ''
-        run: pnpm mutation-test --mutate "${{ steps.cambios.outputs.archivos }}"
+        env:
+          ARCHIVOS: ${{ steps.cambios.outputs.archivos }}
+        run: pnpm mutation-test --mutate "$ARCHIVOS"
 
       - name: Publicar el reporte de mutation testing
         if: steps.cambios.outputs.archivos != '' && always()

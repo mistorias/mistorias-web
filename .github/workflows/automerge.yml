@@ -2,17 +2,22 @@ name: Auto-merge de Dependabot
 
 on: pull_request
 
-permissions:
-  contents: write
-  pull-requests: write
+# Sin permisos por defecto: cada job pide solo los que usa.
+permissions: {}
 
 jobs:
   automerge:
     runs-on: ubuntu-latest
-    # github.actor viene del sistema (Dependabot no puede ser suplantado por
-    # un contribuidor abriendo un PR normal), así que esta comparación es la
-    # verificación de identidad del bot.
-    if: github.actor == 'dependabot[bot]'
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      pull-requests: write
+    # El autor del PR es dato del sistema: un PR normal no puede suplantar a
+    # Dependabot (a diferencia de github.actor, que cambia con quien empuja).
+    # Si una persona agrega un commit a la rama, `fetch-metadata` falla porque
+    # verifica que todos los commits lleven la firma de Dependabot, y el PR
+    # pasa a revisión humana.
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
     steps:
       - name: Leer metadata de Dependabot
         id: metadata
