@@ -25,16 +25,21 @@ jobs:
       name: development
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       - name: Checkout repository and content
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: recursive
+          persist-credentials: false
 
       - name: Set up Node.js
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
+          # Este job publica artefactos: sin caché del gestor de paquetes, para
+          # que una caché envenenada no llegue a lo desplegado.
+          package-manager-cache: false
 
       - name: Install pnpm
         run: corepack enable
@@ -78,8 +83,10 @@ jobs:
 
       - name: Enlazar el reporte en el resumen del job
         if: hashFiles('reports/mutation/index.html') != ''
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
         run: |
-          echo "## Reporte de mutation testing: ${{ steps.deployment.outputs.page_url }}reporte-mutacion/" >> "$GITHUB_STEP_SUMMARY"
+          echo "## Reporte de mutation testing: ${PAGE_URL}reporte-mutacion/" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Fallar si el mutation testing no alcanzó el umbral
         if: steps.mutacion.outcome == 'failure'

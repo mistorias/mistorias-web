@@ -39,6 +39,17 @@ const BREAKING_FOOTER = /^BREAKING[ -]CHANGE: /m;
 
 const SEMVER = /^(\d+)\.(\d+)\.(\d+)$/;
 
+// El pie que escribe `git revert`: una línea por commit revertido.
+const REVERTS_COMMIT = /^This reverts commit ([0-9a-f]{7,40})\b/gim;
+
+/** Busca un commit por su hash completo o abreviado. Devuelve `undefined` si no lo conoce. */
+export type CommitLookup = (hash: string) => Commit | undefined;
+
+/** Los hashes que un commit declara revertir (pie `This reverts commit <hash>`). */
+export function revertedHashes(body: string): string[] {
+  return [...body.matchAll(REVERTS_COMMIT)].map((match) => match[1].toLowerCase());
+}
+
 export function isReaderFacing(paths: readonly string[]): boolean {
   return paths.some((filePath) => !IGNORED_PATHS.some((pattern) => pattern.test(filePath)));
 }
@@ -48,7 +59,7 @@ export function isReaderFacing(paths: readonly string[]): boolean {
  * lectores pero no sigue Conventional Commits: ahí no hay cómo decidir sin
  * adivinar, así que quien llama debe detenerse.
  */
-export function classifyCommit(commit: Commit): Bump | null {
+export function classifyCommit(commit: Commit, lookup?: CommitLookup): Bump | null {
   if (!isReaderFacing(commit.paths)) {
     return "none";
   }
@@ -64,7 +75,27 @@ export function classifyCommit(commit: Commit): Bump | null {
   if (match.groups.type === "feat") {
     return "minor";
   }
+  if (match.groups.type === "revert") {
+    return bumpOfRevertedCommits(commit, lookup) ?? "patch";
+  }
   return TYPES_WITHOUT_BUMP.has(match.groups.type) ? "none" : "patch";
+}
+
+/**
+ * Revertir deshace lo mismo que el commit original, al revés: si el original
+ * agregó una funcionalidad (minor), revertirlo la quita y el sitio cambia en la
+ * misma medida. La subida de un revert es entonces la de los commits que
+ * revierte, no la de su tipo. Devuelve `undefined` si no declara qué revierte o
+ * si no se encuentra ninguno.
+ */
+function bumpOfRevertedCommits(commit: Commit, lookup?: CommitLookup): Bump | undefined {
+  const originals = revertedHashes(commit.body)
+    .map((hash) => lookup?.(hash))
+    .filter((original): original is Commit => original !== undefined);
+  if (originals.length === 0) {
+    return undefined;
+  }
+  return highestBump(originals.map((original) => classifyCommit(original, lookup) ?? "patch"));
 }
 
 export function highestBump(bumps: readonly Bump[]): Bump {
@@ -78,8 +109,11 @@ export function highestBump(bumps: readonly Bump[]): Bump {
  * La mayor subida entre los commits. Falla listando todos los commits no
  * convencionales a la vez, para corregirlos en una sola pasada.
  */
-export function bumpForCommits(commits: readonly Commit[]): Bump {
-  const classified = commits.map((commit) => ({ commit, bump: classifyCommit(commit) }));
+export function bumpForCommits(allCommits: readonly Commit[], lookup?: CommitLookup): Bump {
+  const commits = withoutCancelledPairs(allCommits);
+  const find: CommitLookup = (hash) =>
+    allCommits.find((candidate) => candidate.hash.startsWith(hash)) ?? lookup?.(hash);
+  const classified = commits.map((commit) => ({ commit, bump: classifyCommit(commit, find) }));
   const nonConventional = classified.filter(({ bump }) => bump === null);
 
   if (nonConventional.length > 0) {
@@ -92,6 +126,24 @@ export function bumpForCommits(commits: readonly Commit[]): Bump {
   }
 
   return highestBump(classified.map(({ bump }) => bump as Bump));
+}
+
+/**
+ * Un commit y el revert que lo deshace dentro del mismo rango no cambian nada
+ * para quien lee el sitio: ninguno de los dos subió ni baja la versión.
+ */
+function withoutCancelledPairs(commits: readonly Commit[]): readonly Commit[] {
+  const cancelled = new Set<Commit>();
+  for (const revert of commits) {
+    const originals = revertedHashes(revert.body).flatMap((hash) =>
+      commits.filter((candidate) => candidate !== revert && candidate.hash.startsWith(hash))
+    );
+    if (originals.length > 0) {
+      cancelled.add(revert);
+      originals.forEach((original) => cancelled.add(original));
+    }
+  }
+  return commits.filter((commit) => !cancelled.has(commit));
 }
 
 /** Las líneas en Markdown de los commits que sí suben la versión. */

@@ -1,0 +1,79 @@
+name: Política SemVer
+
+# Check requerido `politica-semver` (ADR 0037). Decide si un PR del bot puede
+# fusionarse solo (subida none o patch, sin rutas protegidas) o espera a una
+# persona (minor, major, ruta protegida). Para PRs de personas y de Dependabot
+# pasa sin evaluar. Con el auto-merge activado, GitHub retiene el PR hasta que
+# este check pase; la aprobación de una persona sobre el último commit lo pasa.
+#
+# Dónde corre importa: `pull_request_target` ejecuta el workflow de la rama BASE,
+# y el script se baja también de la base. Un PR no puede reescribir la regla con
+# la que se lo juzga. Nunca se hace checkout del código del PR.
+#
+# También es reutilizable: mistorias-contenido lo llama con `workflow_call`,
+# fijado por SHA, para que haya una sola implementación de la política.
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, edited, ready_for_review]
+  pull_request_review:
+    types: [submitted, dismissed]
+  workflow_call:
+    inputs:
+      tools-ref:
+        description: Commit de mistorias-web del que se baja el script de la política.
+        type: string
+        required: true
+      bot-logins:
+        description: Logins del bot, separados por coma.
+        type: string
+        required: true
+      protected-patterns:
+        description: Arreglo JSON de globs de rutas protegidas.
+        type: string
+        default: ""
+      minor-when-added:
+        description: Arreglo JSON de globs cuyo archivo nuevo cuenta como minor.
+        type: string
+        default: ""
+
+permissions: {}
+
+concurrency:
+  group: politica-semver-${{ github.repository }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  politica-semver:
+    name: politica-semver
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: read
+    steps:
+      # El script y su configuración salen de la base (o del SHA fijado por
+      # quien nos llama), nunca de la rama del PR.
+      - name: Checkout del script de la política
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: mistorias/mistorias-web
+          ref: ${{ inputs.tools-ref || github.event.pull_request.base.sha }}
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+
+      - name: Evaluar la política
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BOT_LOGINS: ${{ inputs.bot-logins || vars.CONTENT_BOT_LOGIN }}
+          POLICY_PROTECTED: ${{ inputs.protected-patterns }}
+          POLICY_MINOR_WHEN_ADDED: ${{ inputs.minor-when-added }}
+        run: node scripts/check-merge-policy.ts
