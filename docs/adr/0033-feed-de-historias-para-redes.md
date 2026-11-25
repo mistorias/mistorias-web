@@ -2,7 +2,8 @@
 
 ## Estado
 
-Aceptado. La implementación está pendiente.
+Aceptado e implementado en `src/pages/historias.json.ts`, sobre
+`buildStoryFeed` (`src/lib/feed/story-feed.ts`).
 
 ## Contexto
 
@@ -54,12 +55,21 @@ del más reciente al más antiguo:
 | `items[].title`         | `title`                                                               |
 | `items[].summary`       | `summary`                                                             |
 | `items[].content_text`  | `summary` (el estándar exige un contenido; el cuerpo vive en la página) |
-| `items[].image`         | La imagen optimizada, si la historia tiene                            |
+| `items[].image`         | La imagen optimizada, si la historia tiene: el mismo recorte JPEG de 1200×630 que `og:image` |
 | `items[].date_published`| `date`, en ISO 8601                                                   |
 | `items[].authors`       | Nombre y URL de la ficha del autor                                    |
 | `items[].tags`          | Los temas                                                             |
+| `items[]._mistorias.primeraNoticia` | El primer texto en negrita bajo `## Noticias principales` (issue #264) |
+| `items[]._mistorias.imageAlt` | El `imageAlt` del front matter; solo si la historia tiene imagen (issue #264) |
 
-mistorias-redes-sociales lo lee con un cron horario.
+mistorias-redes-sociales lo lee con un cron horario. Arma «Noticia de la
+semana: …» con `primeraNoticia`, y le pasa `imageAlt` a Buffer, que exige un
+texto alternativo por imagen; el estándar no trae campo para ninguno de los dos,
+por eso van en la extensión. Sus nombres los fija el issue #264.
+
+El endpoint declara `application/feed+json`, el tipo propio de JSON Feed, pero
+en un build estático esa cabecera no llega: el servidor decide el tipo por la
+extensión `.json`. Los lectores de feeds aceptan `application/json` igual.
 
 ## Consecuencias
 
@@ -70,6 +80,15 @@ mistorias-redes-sociales lo lee con un cron horario.
   respectivos. El cron de redes lee solo el de producción.
 - La implementación sigue las reglas de siempre: rutas desde `src/lib/routes.ts`
   y un test del endpoint que valide el resultado contra el esquema de JSON Feed.
+- `primeraNoticia` depende del título de una sección, cosa que el resto del
+  sitio evita porque `storySchema` solo valida el front matter. Para que eso no
+  frene una publicación, no falla: si la historia no trae la sección o la
+  sección no trae negritas, el campo no va, y `_mistorias` tampoco si queda
+  vacío. Una historia sin imagen tampoco trae `image` ni `imageAlt`: su difusión
+  falla a propósito en Instagram, que no publica sin imagen.
+- El esquema contra el que se valida es el de SchemaStore, copiado en
+  `tests/fixtures/json-feed/`, y no uno escrito acá: uno propio repetiría la
+  misma lectura del estándar que hizo el código.
 - Un retraso de hasta una hora entre la publicación y el inicio de la difusión
   es aceptable.
 - Enlazar el feed desde el `<head>` (`<link rel="alternate" type="application/feed+json">`)

@@ -13,6 +13,7 @@ interface StoryFixtureOverrides {
   imageAlt?: string;
   imageCredit?: string;
   imageLicense?: string;
+  body?: string;
 }
 
 export function buildStoryFixture(
@@ -21,6 +22,7 @@ export function buildStoryFixture(
   return {
     id: overrides?.id ?? "historia-de-prueba",
     collection: "stories",
+    body: overrides?.body,
     data: {
       title: overrides?.title ?? "Historia de prueba",
       summary: overrides?.summary ?? "Resumen breve",
