@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-20T17:10:26.719Z",
-  "hash": "3d4c82216f2ade5b3f1507af74ed3178496fcf1b45e2afa205c2c1114b0c8aad",
+  "generatedAt": "2026-11-27T22:48:32.136Z",
+  "hash": "08ec9d47918eb23bbd0606db1a3d29f3b8f19221d99dd9ad05bb4b8cd2efba96",
   "order": [
     "2026-07-24-el-aula-de-madera-donde-ximena-aprende",
     "2026-07-31-los-libros-tambien-llegan-a-cotahuasi",
@@ -20,9 +20,10 @@
     "2026-10-29-a-rosalia-le-faltan-dos-anos-para-jubilarse-y-un-dia-para-decidir",
     "2026-11-06-la-cocina-y-el-banco-central-tienen-algo-que-el-colegio-de-celeste-no",
     "2026-11-12-felicita-aprendio-a-traducir-la-libreta-de-brayan-pero-el-reglamento-nuevo-pide-otra-cosa",
-    "2026-11-19-la-ultima-clase-de-matematica-de-ruth-fue-medir-el-techo-que-se-volo"
+    "2026-11-19-la-ultima-clase-de-matematica-de-ruth-fue-medir-el-techo-que-se-volo",
+    "2026-11-26-en-el-salon-de-edith-son-once-y-diez-pueden-postular-al-coar"
   ],
-  "latest": "2026-11-19-la-ultima-clase-de-matematica-de-ruth-fue-medir-el-techo-que-se-volo",
+  "latest": "2026-11-26-en-el-salon-de-edith-son-once-y-diez-pueden-postular-al-coar",
   "stories": {
     "2026-07-24-el-aula-de-madera-donde-ximena-aprende": {
       "previous": null,
@@ -98,6 +99,10 @@
     },
     "2026-11-19-la-ultima-clase-de-matematica-de-ruth-fue-medir-el-techo-que-se-volo": {
       "previous": "2026-11-12-felicita-aprendio-a-traducir-la-libreta-de-brayan-pero-el-reglamento-nuevo-pide-otra-cosa",
+      "next": "2026-11-26-en-el-salon-de-edith-son-once-y-diez-pueden-postular-al-coar"
+    },
+    "2026-11-26-en-el-salon-de-edith-son-once-y-diez-pueden-postular-al-coar": {
+      "previous": "2026-11-19-la-ultima-clase-de-matematica-de-ruth-fue-medir-el-techo-que-se-volo",
       "next": null
     }
   }
